@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_medical') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <form method="post" class="card-station"><div class="card-body">
+          {{ form.hidden_tag() }}
+          <fieldset {% if not can_edit %}disabled{% endif %}>
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label" for="injured_party_id">{{ t('med.injured') }}</label>{{ form.injured_party_id(class="form-select") }}</div>
+            <div class="col-md-6"><label class="form-label" for="hospital_name">{{ t('med.hospital') }}</label>{{ form.hospital_name(class="form-control") }}</div>
+            <div class="col-md-6"><label class="form-label" for="department">{{ t('med.dept') }}</label>{{ form.department(class="form-control") }}</div>
+            <div class="col-md-6"><label class="form-label" for="mlc_no">{{ t('med.mlc') }}</label>{{ form.mlc_no(class="form-control") }}</div>
+            <div class="col-12"><label class="form-label" for="history_reported">{{ t('med.history') }}</label>{{ form.history_reported(class="form-control", rows="4") }}</div>
+            <div class="col-12"><label class="form-label" for="requested_exam">{{ t('med.exam') }}</label>{{ form.requested_exam(class="form-control", rows="3") }}</div>
+            <div class="col-md-6"><label class="form-label" for="escorting_officer_id">{{ t('med.escort') }}</label>{{ form.escorting_officer_id(class="form-select") }}</div>
+          </div>
+          </fieldset>
+          {% if can_edit %}
+          <button class="btn btn-navy mt-3" type="submit">{{ t('case.save_pool') }}</button>
+          {% endif %}
+        </div></form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

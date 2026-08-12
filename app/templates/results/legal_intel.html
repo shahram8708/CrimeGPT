@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}{{ t('intel.result') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('intel.result') }} <span class="ai-pill">AI</span></h1>
+    <hr class="gold-rule">
+    <p>
+      {% if sugg.case %}<a href="{{ url_for('cases.overview', uuid=sugg.case.uuid) }}">{{ sugg.case.display_cr }}</a>{% else %}{{ t('intel.standalone') }}{% endif %}
+      · {{ sugg.created_at|ist }}
+    </p>
+  </div>
+</header>
+<section class="section">
+  <div class="container">
+    <div class="alert alert-warning" role="status">{{ data.disclaimer or t('intel.disclaimer') }}</div>
+    {% if data.refused %}
+    <div class="alert alert-danger">{{ t('intel.ethics') }}</div>
+    {% endif %}
+    <p class="mb-1">{{ t('intel.overall') }} {{ data.overall_confidence or 0 }}</p>
+    <div class="conf-track mb-2" aria-hidden="true"><span class="{% if (data.overall_confidence or 0) >= 75 %}conf-hi{% elif (data.overall_confidence or 0) >= 50 %}conf-mid{% else %}conf-lo{% endif %}" style="width:{{ data.overall_confidence or 0 }}%"></span></div>
+    <p class="small text-muted">{{ t('intel.conf_help') }}</p>
+
+    {% if not sugg.case %}
+    <form method="post" action="{{ url_for('results.link', rid=sugg.uuid) }}" class="card-station mb-4"><div class="card-body">
+      {{ link_form.hidden_tag() }}
+      <p class="mb-2">{{ t('intel.link_first') }}</p>
+      <div class="row g-2 align-items-end">
+        <div class="col-md-6">{{ link_form.case_id(class="form-select") }}</div>
+        <div class="col-md-3"><button class="btn btn-navy" type="submit">{{ t('intel.link') }}</button></div>
+      </div>
+    </div></form>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('results.apply', rid=sugg.uuid) }}" id="apply-form">
+      {{ apply_form.hidden_tag() }}
+      {% for family, key in [('BNS','bns'),('BNSS','bnss'),('BSA','bsa')] %}
+      <h2 class="h5 mt-4">{{ family }} <span class="ai-pill">AI</span></h2>
+      <div class="table-responsive">
+        <table class="table doc-table table-stack">
+          <thead><tr><th></th><th>{{ t('sec.code') }}</th><th>{{ t('sec.title') }}</th><th>{{ t('sec.rationale') }}</th><th>{{ t('intel.elements') }}</th><th>{{ t('intel.confidence') }}</th></tr></thead>
+          <tbody>
+            {% for row in data.get(key) or [] %}
+            <tr>
+              <td>
+                {% if row.applyable and sugg.case and may_apply %}
+                <input type="checkbox" name="selected" value="{{ key }}-{{ loop.index0 }}" class="form-check-input apply-box">
+                {% endif %}
+              </td>
+              <td data-label="{{ t('sec.code') }}">{{ row.code }}</td>
+              <td data-label="{{ t('sec.title') }}">{{ row.title }}</td>
+              <td data-label="{{ t('sec.rationale') }}">{{ row.rationale }}</td>
+              <td data-label="{{ t('intel.elements') }}">
+                {% if row.elements_present %}<span class="small">+ {{ row.elements_present|join(', ') }}</span>{% endif %}
+                {% if row.elements_missing %}<span class="small text-muted d-block">− {{ row.elements_missing|join(', ') }}</span>{% endif %}
+              </td>
+              <td data-label="{{ t('intel.confidence') }}">
+                <span class="conf-badge {% if row.confidence >= 75 %}conf-hi{% elif row.confidence >= 50 %}conf-mid{% else %}conf-lo{% endif %}">{{ row.confidence }}</span>
+                <div class="conf-track"><span class="{% if row.confidence >= 75 %}conf-hi{% elif row.confidence >= 50 %}conf-mid{% else %}conf-lo{% endif %}" style="width:{{ row.confidence }}%"></span></div>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6">{{ t('intel.none') }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endfor %}
+
+      <h2 class="h5 mt-4">{{ t('intel.judgments') }} <span class="ai-pill">AI</span></h2>
+      <div class="table-responsive">
+        <table class="table doc-table table-stack">
+          <thead><tr><th>{{ t('intel.jtitle') }}</th><th>{{ t('intel.citation') }}</th><th>{{ t('intel.holding') }}</th><th>{{ t('intel.why') }}</th><th>{{ t('intel.confidence') }}</th></tr></thead>
+          <tbody>
+            {% for j in data.judgments or [] %}
+            <tr>
+              <td data-label="{{ t('intel.jtitle') }}">{{ j.title }}</td>
+              <td data-label="{{ t('intel.citation') }}">{{ j.citation }}</td>
+              <td data-label="{{ t('intel.holding') }}">{{ j.holding }}</td>
+              <td data-label="{{ t('intel.why') }}">{{ j.why_relevant }}</td>
+              <td data-label="{{ t('intel.confidence') }}">
+                <span class="conf-badge {% if j.confidence >= 75 %}conf-hi{% elif j.confidence >= 50 %}conf-mid{% else %}conf-lo{% endif %}">{{ j.confidence }}</span>
+                {% if j.needs_verification or j.confidence < 80 %}<span class="verify-cite">{{ t('intel.verify') }}</span>{% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">{{ t('intel.none') }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="h5 mt-4">{{ t('intel.crosswalk') }}</h2>
+      <ul>
+        {% for c in data.crosswalk or [] %}
+        <li>{{ c.old }} → {{ c.new }}{% if c.note %} · {{ c.note }}{% endif %}</li>
+        {% else %}
+        <li>{{ t('intel.none') }}</li>
+        {% endfor %}
+      </ul>
+
+      {% if data.unparsed %}
+      <div class="alert alert-danger">
+        <strong>{{ t('intel.unparsed') }}</strong>
+        <ul class="mb-0">
+          {% for u in data.unparsed %}
+          <li>{{ u.family }} · {{ u.code or t('intel.junk') }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if data.limitations %}
+      <p class="small text-muted">{{ t('intel.limits') }} {{ data.limitations|join(' · ') }}</p>
+      {% endif %}
+
+      <details class="mb-4">
+        <summary>{{ t('intel.raw') }}</summary>
+        <pre class="small">{{ raw_json }}</pre>
+      </details>
+
+      {% if sugg.case and may_apply %}
+      <div class="sticky-apply" id="sticky-apply">
+        <span id="apply-count">0</span> {{ t('intel.apply_n') }}
+        <button class="btn btn-gold ms-2" type="submit" id="apply-btn" disabled>{{ t('intel.apply') }}</button>
+      </div>
+      {% elif writer_blocked %}
+      <p class="alert alert-info">{{ t('intel.writer_blocked') }}</p>
+      {% elif not sugg.case %}
+      <p class="text-muted">{{ t('intel.link_first') }}</p>
+      {% endif %}
+    </form>
+
+    <div class="d-flex flex-wrap gap-2 mt-4">
+      <form method="post" action="{{ url_for('results.rerun', rid=sugg.uuid) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-gold-outline" type="submit">{{ t('intel.rerun') }}</button>
+      </form>
+      {% if sugg.case %}
+      <a class="btn btn-gold-outline" href="{{ url_for('cases.sections', uuid=sugg.case.uuid) }}">{{ t('sec.add') }}</a>
+      {% if buckets and not buckets.arrest.ready %}<a class="btn btn-gold-outline" href="{{ url_for('cases.arrests', uuid=sugg.case.uuid) }}">{{ t('case.nav_arrest') }}</a>{% endif %}
+      {% if buckets and not buckets.medical.ready %}<a class="btn btn-gold-outline" href="{{ url_for('cases.medical', uuid=sugg.case.uuid) }}">{{ t('case.nav_medical') }}</a>{% endif %}
+      <a class="btn btn-link" href="{{ url_for('cases.overview', uuid=sugg.case.uuid) }}">{{ t('case.nav_overview') }}</a>
+      {% endif %}
+    </div>
+    <p class="small text-muted mt-3">{{ t('intel.next_docs') }}</p>
+  </div>
+</section>
+{% endblock %}

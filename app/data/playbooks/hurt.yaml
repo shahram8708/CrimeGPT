@@ -1,0 +1,39 @@
+category: hurt
+title: Hurt / assault
+expected_documents:
+  - medical_letter
+  - remand_pc
+  - accused_panchanama
+  - seizure_receipt
+expected_process:
+  - key: medical
+    label: Medical examination of the injured complainant
+    severity: high
+    field: hospital_name
+    deep_link: medical
+  - key: mlc
+    label: MLC number recorded
+    severity: high
+    field: mlc_no
+    deep_link: medical
+  - key: rights
+    label: Arrest rights informed for each accused
+    severity: high
+    field: rights_informed
+    deep_link: arrests
+  - key: weapon
+    label: Weapon or instrument of assault seized
+    severity: medium
+    field: items
+    deep_link: items
+expected_elements:
+  - Bodily pain, wound, or injury on the complainant
+  - Voluntary act by a named or described accused
+  - Time and place of the blow
+  - Instrument used, if any
+common_gaps:
+  - Missing wound certificate or MLC
+  - Hospital name empty on the medical card
+  - Weapon described in the narrative but not seized
+  - No two panch for the seizure
+  - Confirmed section not yet on the pool

@@ -1,0 +1,30 @@
+category: other
+title: Other station case
+expected_documents:
+  - medical_letter
+  - seizure_receipt
+  - remand_pc
+expected_process:
+  - key: complainant
+    label: Complainant or informant on the pool
+    severity: high
+    field: complainant
+    deep_link: parties
+  - key: narrative
+    label: Narrative of at least fifty characters
+    severity: high
+    field: narrative
+    deep_link: edit
+  - key: sections
+    label: At least one confirmed section
+    severity: medium
+    field: sections
+    deep_link: sections
+expected_elements:
+  - A coherent fact pattern
+  - Identified parties
+  - Place and time
+common_gaps:
+  - Empty narrative
+  - No confirmed section
+  - Arrest without rights mark

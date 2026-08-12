@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ t('doc.versions') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <h1 class="h4">{{ titles.get(doc.doc_type) }}</h1>
+        <div class="table-responsive">
+          <table class="table doc-table table-stack">
+            <thead><tr><th>{{ t('doc.version') }}</th><th>{{ t('history.user') }}</th><th>{{ t('history.started') }}</th><th>AI</th><th>{{ t('history.status') }}</th><th></th></tr></thead>
+            <tbody>
+              {% for r in rows %}
+              <tr>
+                <td>v{{ r.version_number }}{% if r.is_incomplete %} · incomplete{% endif %}</td>
+                <td>{{ r.creator.full_name if r.creator else "-" }}</td>
+                <td>{{ r.created_at|ist }}</td>
+                <td>{{ t('users.yes') if r.ai_used else t('users.no') }}</td>
+                <td><span class="badge job-badge {{ r.status }}">{{ r.status }}</span></td>
+                <td>
+                  <a href="{{ url_for('documents.preview', uuid=case.uuid, did=r.uuid) }}">{{ t('doc.view') }}</a>
+                  {% if r.docx_path %} · <a href="{{ url_for('downloads.docx', uuid=r.uuid) }}">DOCX</a>{% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

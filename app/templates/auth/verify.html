@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "includes/macros.html" import field %}
+{% block title %}{{ t('verify.title') }} - CrimeGPT{% endblock %}
+{% block body_class %}auth{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="container">
+    <div class="auth-card">
+      <h1>{{ t('verify.title') }}</h1>
+      <hr class="gold-rule">
+      {% if state == 'ok' %}
+        <p>{{ t('verify.ok') }}</p>
+        <a class="btn btn-navy" href="{{ url_for('auth.login') }}">{{ t('login.submit') }}</a>
+      {% else %}
+        <p>{{ t('verify.bad') }}</p>
+        {% if form %}
+        <form method="post" action="{{ url_for('auth.resend_verification') }}">
+          {{ form.hidden_tag() }}
+          {{ field(form.identifier, t('verify.identifier'), autocomplete="username") }}
+          <button type="submit" class="btn btn-navy w-100">{{ t('verify.resend') }}</button>
+        </form>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

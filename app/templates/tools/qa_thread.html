@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}{{ thread.title }} - CrimeGPT AI{% endblock %}
+{% block content %}
+<section class="section qa-wrap">
+  <div class="container" style="max-width: 54rem;">
+    <!-- Action bar -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+      <a class="btn btn-gold-outline btn-sm" href="{{ url_for('tools.qa_list') }}">← {{ t('qa.title') }}</a>
+      <div class="d-flex flex-wrap gap-2">
+        <form method="post" action="{{ url_for('tools.qa_save_notes', tid=thread.uuid) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-gold-outline btn-sm" type="submit">📌 {{ t('qa.save_notes') }}</button>
+        </form>
+        <form method="post" action="{{ url_for('tools.qa_send_intel', tid=thread.uuid) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-gold-outline btn-sm" type="submit">⚖️ {{ t('qa.send_intel') }}</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- WhatsApp / Chatbot Window Card -->
+    <div class="whatsapp-chat-card">
+      <!-- Chat Header -->
+      <div class="whatsapp-chat-header">
+        <div class="d-flex align-items-center gap-3">
+          <div class="whatsapp-avatar">🤖</div>
+          <div>
+            <h1 class="h6 mb-0 text-white fw-bold d-flex align-items-center gap-2">
+              <span>{{ thread.title }}</span>
+              <span class="ai-pill">AI ASSISTANT</span>
+            </h1>
+            <div class="small text-gold-soft opacity-75">CrimeGPT Station Assistance</div>
+          </div>
+        </div>
+        {% if thread.case %}
+        <a class="btn btn-outline-light btn-sm rounded-pill" href="{{ url_for('cases.overview', uuid=thread.case.uuid) }}">
+          📋 {{ thread.case.display_cr }}
+        </a>
+        {% endif %}
+      </div>
+
+      <!-- Scrollable Message Body (Fixed Height & Auto Scroll) -->
+      <div class="whatsapp-chat-body" id="chat-body">
+        <div class="whatsapp-disclaimer">
+          🔒 {{ t('intel.disclaimer') }}
+        </div>
+
+        {% for m in messages %}
+        {% if m.role == 'user' %}
+        <div class="whatsapp-msg whatsapp-msg-user">
+          <div class="whatsapp-bubble whatsapp-bubble-user">
+            <div class="whatsapp-msg-text">{{ m.body }}</div>
+            <div class="whatsapp-time">
+              {% if m.created_at %}{{ m.created_at|ist }}{% endif %} ✓✓
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="whatsapp-msg whatsapp-msg-assistant">
+          <div class="whatsapp-bubble whatsapp-bubble-assistant">
+            <div class="whatsapp-sender">
+              <span>🤖 CrimeGPT</span>
+              <span class="ai-pill">AI</span>
+            </div>
+            <script type="text/template" class="qa-markdown-source" data-target="qa-msg-render-{{ loop.index }}">{{ m.body }}</script>
+            <div class="qa-markdown-body" id="qa-msg-render-{{ loop.index }}"></div>
+            {% if m.refusal %}
+            <div class="qa-ethics-banner">
+              <span>⚠️</span>
+              <span>{{ t('qa.ethics') }}</span>
+            </div>
+            {% endif %}
+            <div class="whatsapp-time">
+              {% if m.created_at %}{{ m.created_at|ist }}{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        {% if pending %}
+        <div class="whatsapp-msg whatsapp-msg-assistant">
+          <div class="whatsapp-bubble whatsapp-bubble-assistant">
+            <div class="whatsapp-sender">
+              <span>🤖 CrimeGPT</span>
+              <span class="ai-pill">THINKING</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 py-2" id="qa-pending">
+              <div class="spinner-border text-navy" role="status" style="width: 1.2rem; height: 1.2rem;"></div>
+              <span class="text-muted small fw-semibold">{{ t('qa.pending') }}</span>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Suggested Followup Prompts -->
+      {% if follows and not pending %}
+      <div class="whatsapp-chat-suggestions">
+        <div class="small fw-bold text-muted mb-2">💡 SUGGESTED FOLLOW-UP QUESTIONS</div>
+        <div class="d-flex flex-wrap gap-2">
+          {% for q in follows %}
+          <form method="post" action="{{ url_for('tools.qa_thread', tid=thread.uuid) }}" class="d-inline">
+            {{ form.hidden_tag() }}
+            <input type="hidden" name="body" value="{{ q }}">
+            <input type="hidden" name="case_id" value="{{ thread.case_id or 0 }}">
+            <button class="btn btn-sm btn-gold-outline rounded-pill" type="submit" {% if not gemini_ok %}disabled{% endif %}>{{ q }}</button>
+          </form>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Bottom Chat Composer Bar -->
+      <div class="whatsapp-chat-footer">
+        <form method="post" id="chat-composer-form">
+          {{ form.hidden_tag() }}
+          <div class="input-group">
+            {{ form.body(class="form-control whatsapp-input", rows="1", id="body", placeholder="Type a message or ask a legal question...", onkeydown="handleEnterSubmit(event)") }}
+            <button class="btn btn-navy whatsapp-send-btn d-inline-flex align-items-center gap-1" type="submit" {% if not gemini_ok or pending %}disabled{% endif %}>
+              <span>Send</span>
+              <span>➔</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/marked.min.js') }}"></script>
+<script>
+  function renderAllMarkdown() {
+    var sources = document.querySelectorAll(".qa-markdown-source");
+    sources.forEach(function (src) {
+      var targetId = src.getAttribute("data-target");
+      var target = document.getElementById(targetId);
+      if (target) {
+        var rawText = src.textContent || "";
+        if (window.marked && typeof window.marked.parse === "function") {
+          target.innerHTML = window.marked.parse(rawText);
+        } else {
+          target.innerText = rawText;
+        }
+      }
+    });
+  }
+
+  function scrollToBottom() {
+    var chatBody = document.getElementById("chat-body");
+    if (chatBody) {
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+  }
+
+  function handleEnterSubmit(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      var form = document.getElementById("chat-composer-form");
+      if (form) form.submit();
+    }
+  }
+
+  function copyCode(btn) {
+    var codeBlock = btn.closest(".qa-code-block");
+    if (!codeBlock) return;
+    var codeEl = codeBlock.querySelector("code");
+    if (codeEl) {
+      var textToCopy = codeEl.innerText || codeEl.textContent;
+      navigator.clipboard.writeText(textToCopy).then(function () {
+        var oldText = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = oldText; }, 2000);
+      });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    renderAllMarkdown();
+    scrollToBottom();
+  });
+</script>
+{% if pending %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    pollJob({ url: {{ url_for('api.job_status', job_uuid=pending.uuid)|tojson }} });
+  });
+</script>
+{% endif %}
+{% endblock %}

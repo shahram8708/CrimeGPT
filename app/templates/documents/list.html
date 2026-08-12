@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav.documents') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero"><div class="container"><h1>{{ t('nav.documents') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container">
+    <p class="mb-3">
+      <a href="?tab=generated">{{ t('lib.generated') }}</a> ·
+      <a href="?tab=uploaded">{{ t('lib.uploaded') }}</a> ·
+      <a href="?tab=all">{{ t('history.any') }}</a> ·
+      <a href="{{ url_for('documents.upload') }}">{{ t('lib.upload') }}</a>
+    </p>
+    <form class="row g-2 mb-3" method="get">
+      <input type="hidden" name="tab" value="{{ tab or 'generated' }}">
+      <div class="col-md-3">
+        <label class="form-label" for="type">{{ t('history.type') }}</label>
+        <select class="form-select" id="type" name="type">
+          <option value="">{{ t('history.any') }}</option>
+          {% for k, title in titles.items() %}
+          <option value="{{ k }}" {% if request.args.get('type') == k %}selected{% endif %}>{{ title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2"><button class="btn btn-navy mt-4" type="submit">{{ t('history.filter') }}</button></div>
+    </form>
+    <div class="table-responsive">
+      <table class="table doc-table table-stack">
+        <thead><tr><th>{{ t('history.type') }}</th><th>{{ t('history.case') }}</th><th>{{ t('doc.version') }}</th><th>{{ t('history.status') }}</th><th>{{ t('register.language') }}</th><th>{{ t('history.started') }}</th><th></th></tr></thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ titles.get(r.doc_type, r.doc_type) }}</td>
+            <td>{{ cases[r.case_id].display_cr if cases.get(r.case_id) else "-" }}</td>
+            <td>v{{ r.version_number }}</td>
+            <td><span class="badge job-badge {{ r.status }}">{{ r.status }}</span></td>
+            <td>{{ r.language }}</td>
+            <td>{{ r.created_at|ist }}</td>
+            <td>{% if cases.get(r.case_id) %}<a href="{{ url_for('documents.preview', uuid=cases[r.case_id].uuid, did=r.uuid) }}">{{ t('doc.view') }}</a>{% endif %}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7">{{ t('doc.empty') }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

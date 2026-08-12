@@ -1,0 +1,31 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="row g-4 footer-cols">
+      <div class="col-md-4">
+        <h2>{{ t('footer.product') }}</h2>
+        <ul class="list-unstyled mb-0">
+          <li><a href="{{ url_for('main.about') }}">{{ t('nav.about') }}</a></li>
+          <li><a href="{{ url_for('main.features') }}">{{ t('nav.features') }}</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h2>{{ t('footer.legal') }}</h2>
+        <ul class="list-unstyled mb-0">
+          <li><a href="{{ url_for('main.disclaimer') }}">{{ t('nav.disclaimer') }}</a></li>
+          <li><a href="{{ url_for('main.privacy') }}">{{ t('nav.privacy') }}</a></li>
+          <li><a href="{{ url_for('main.terms') }}">{{ t('nav.terms') }}</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h2>{{ t('footer.ops') }}</h2>
+        <ul class="list-unstyled mb-0">
+          <li><a href="{{ url_for('main.contact') }}">{{ t('nav.contact') }}</a></li>
+          <li><a href="{{ url_for('main.offline') }}">{{ t('nav.offline') }}</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-secondary my-4">
+    <p class="footer-disclaimer mb-2">{{ footer_disclaimer }}</p>
+    <p class="footer-meta mb-0">{{ t('footer.copyright') }}</p>
+  </div>
+</footer>

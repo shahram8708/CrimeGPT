@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container prose">
+    <h1>Something went wrong</h1>
+    <hr class="gold-rule">
+    <p>The server could not finish this request. A reference has been written to the audit log.</p>
+    {% if reference %}<p class="text-muted">Reference {{ reference }}</p>{% endif %}
+    <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+  </div>
+</section>
+{% endblock %}

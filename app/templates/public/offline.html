@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ t('offline.title') }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container text-center" style="max-width:36rem">
+    <h1>{{ t('offline.title') }}</h1>
+    <hr class="gold-rule mx-auto">
+    <p>{{ t('offline.body') }}</p>
+    <ul class="text-start">
+      <li>{{ t('offline.can') }}</li>
+      <li>{{ t('offline.cannot') }}</li>
+    </ul>
+    <p class="d-flex flex-wrap justify-content-center gap-2">
+      <button type="button" class="btn btn-navy" onclick="location.reload()">{{ t('btn.retry') }}</button>
+      <a class="btn btn-gold-outline" href="{{ url_for('main.how_it_works') }}">{{ t('nav.how') }}</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

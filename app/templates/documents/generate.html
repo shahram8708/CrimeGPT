@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <div class="alert alert-warning">{{ t('intel.disclaimer') }}</div>
+        <h1 class="h3">{{ title }}</h1>
+        <ul class="list-unstyled mb-4">
+          {% for m in pf.missing %}
+          <li class="text-danger">✗ <a href="{{ m.href }}">{{ m.label }}</a></li>
+          {% endfor %}
+          {% for w in pf.warnings %}
+          <li class="text-muted">! {{ w.label }}</li>
+          {% endfor %}
+          {% if pf.ready %}<li class="text-success">✓ {{ t('doc.ready') }}</li>{% endif %}
+        </ul>
+        <form method="post" class="card-station"><div class="card-body">
+          {{ form.hidden_tag() }}
+          <input type="hidden" name="doc_type" value="{{ dtype }}">
+          <input type="hidden" name="type" value="{{ dtype }}">
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">{{ t('register.language') }}</label>{{ form.language(class="form-select") }}</div>
+            {% if dtype in ('remand_pc','face_identification','accused_panchanama','purvani_chargesheet','court_custody') and form.accused_ids.choices %}
+            <div class="col-md-8"><label class="form-label">{{ t('doc.accused') }}</label>{{ form.accused_ids(class="form-select", size="4") }}</div>
+            <div class="col-md-4"><label class="form-label">{{ t('doc.files') }}</label>{{ form.combined(class="form-select") }}</div>
+            {% endif %}
+            {% if dtype == 'remand_pc' %}
+            <div class="col-md-4"><label class="form-label">{{ t('doc.hours') }}</label>{{ form.custody_hours_sought(class="form-control") }}</div>
+            <div class="col-md-4"><label class="form-label">{{ t('doc.court') }}</label>{{ form.court_name(class="form-control") }}</div>
+            <div class="col-12"><label class="form-label">{{ t('doc.grounds') }}</label>{{ form.grounds(class="form-control", rows="4") }}</div>
+            {% endif %}
+            {% if dtype == 'purvani_chargesheet' %}
+            <div class="col-12"><label class="form-label">{{ t('doc.inv_gist') }}</label>{{ form.investigation_gist(class="form-control", rows="4") }}</div>
+            {% endif %}
+            {% if dtype == 'court_custody' %}
+            <div class="col-md-6"><label class="form-label">{{ t('doc.production') }}</label>{{ form.production_at(class="form-control") }}</div>
+            <div class="col-md-6"><label class="form-label">{{ t('doc.court') }}</label>{{ form.court_name(class="form-control") }}</div>
+            {% endif %}
+            {% if dtype == 'accused_panchanama' %}
+            <div class="col-12"><label class="form-label">{{ t('doc.person_desc') }}</label>{{ form.description(class="form-control", rows="4") }}</div>
+            {% endif %}
+            {% if dtype == 'lers_request' %}
+            <div class="col-md-4"><label class="form-label">{{ t('doc.date_from') }}</label>{{ form.date_from(class="form-control") }}</div>
+            <div class="col-md-4"><label class="form-label">{{ t('doc.date_to') }}</label>{{ form.date_to(class="form-control") }}</div>
+            <div class="col-md-4"><label class="form-label">{{ t('doc.target') }}</label>{{ form.request_target(class="form-control") }}</div>
+            {% endif %}
+            <div class="col-12 form-check">
+              {{ form.use_ai(class="form-check-input", id="use_ai") }}
+              <label class="form-check-label" for="use_ai">{{ t('doc.use_ai') }}</label>
+              <p class="small text-muted mb-0">{{ t('doc.use_ai_help') }}</p>
+            </div>
+            {% if not gemini_ok %}<p class="small">{{ t('intel.missing_key') }}</p>{% endif %}
+            {% if quota %}<p class="small">{{ t('intel.quota') }}</p>{% endif %}
+            {% if not pf.ready %}
+            <div class="col-12 form-check">
+              {{ form.allow_incomplete(class="form-check-input", id="allow_incomplete") }}
+              <label class="form-check-label" for="allow_incomplete">{{ t('doc.allow_incomplete') }}</label>
+            </div>
+            {% endif %}
+            {% if juveniles %}
+            <div class="col-12 form-check">
+              {{ form.juvenile_ack(class="form-check-input", id="juvenile_ack") }}
+              <label class="form-check-label" for="juvenile_ack">{{ t('doc.juvenile_ack') }}</label>
+            </div>
+            {% endif %}
+          </div>
+          <button class="btn btn-navy mt-3" type="submit" {% if not pf.ready %}id="gen-btn"{% endif %}>{{ t('doc.generate') }}</button>
+        </div></form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

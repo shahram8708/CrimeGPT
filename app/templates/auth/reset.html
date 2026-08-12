@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ t('reset.title') }} - CrimeGPT{% endblock %}
+{% block body_class %}auth{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="container">
+    <div class="auth-card">
+      <h1>{{ t('reset.title') }}</h1>
+      <hr class="gold-rule">
+      {% if state != 'ok' %}
+        <p>{{ t('reset.bad') }}</p>
+        <a class="btn btn-navy" href="{{ url_for('auth.forgot_password') }}">{{ t('forgot.title') }}</a>
+      {% else %}
+      <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+          <label class="form-label" for="password">{{ t('reset.password') }}</label>
+          <div class="password-wrap">
+            {{ form.password(class="form-control js-pw-meter" + (" is-invalid" if form.password.errors else ""), id="password", autocomplete="new-password") }}
+            <button type="button" class="toggle-pass" data-password-toggle="password" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}">{{ t('login.show') }}</button>
+          </div>
+          <div class="pw-meter" aria-hidden="true"><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span></div>
+          {% if form.password.errors %}<div class="invalid-feedback d-block">{% for e in form.password.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="confirm">{{ t('register.confirm') }}</label>
+          {{ form.confirm(class="form-control" + (" is-invalid" if form.confirm.errors else ""), id="confirm", autocomplete="new-password") }}
+          {% if form.confirm.errors %}<div class="invalid-feedback d-block">{% for e in form.confirm.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+        <button type="submit" class="btn btn-navy w-100">{{ t('reset.submit') }}</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

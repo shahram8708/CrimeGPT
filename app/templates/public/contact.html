@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% from "includes/macros.html" import field %}
+{% block title %}Contact CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('contact.title') }}</h1>
+    <hr class="gold-rule">
+    <p>Pilot support and challenge evaluators. This is not a police control room.</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-7">
+        {% if sent %}
+          <div class="card-station">
+            <div class="card-body">
+              <div class="alert alert-success mb-3" role="status">{{ t('contact.success') }}</div>
+              <a class="btn btn-navy" href="{{ url_for('main.contact') }}">{{ t('btn.send_another') }}</a>
+            </div>
+          </div>
+        {% else %}
+          <form method="post" action="{{ url_for('main.contact') }}" novalidate class="card-station">
+            <div class="card-body">
+              {{ form.hidden_tag() }}
+              {{ field(form.name, t('contact.name'), autocomplete="name") }}
+              {{ field(form.email, t('contact.email'), type="email", autocomplete="email") }}
+              {{ field(form.organisation, t('contact.org'), autocomplete="organization") }}
+              {{ field(form.station_note, t('contact.station')) }}
+              {{ field(form.message, t('contact.message'), rows="6") }}
+              <div class="hp-field" aria-hidden="true">
+                <label for="website">Website</label>
+                {{ form.website(tabindex="-1", autocomplete="off") }}
+              </div>
+              <button type="submit" class="btn btn-navy">{{ t('btn.send') }}</button>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+      <div class="col-lg-5">
+        <aside class="card-station">
+          <div class="card-body">
+            <h2 class="h5">Duty desk</h2>
+            <p>Use this form for the Ahmedabad City Police Innovation Challenge pilot and for evaluator questions about CrimeGPT. Messages are stored on the server and emailed when mail is configured.</p>
+            <p class="mb-0"><strong>In danger, call the local emergency number.</strong> This form is not a police control room and will not dispatch a unit.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "includes/macros.html" import field %}
+{% block title %}{{ t('case.add_party') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <form method="post" novalidate class="card-station"><div class="card-body">
+          {{ form.hidden_tag() }}
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label" for="role">{{ t('invite.role') }}</label>{{ form.role(class="form-select") }}</div>
+            <div class="col-md-8"><label class="form-label" for="full_name">{{ t('register.name') }}</label>{{ form.full_name(class="form-control") }}{% if form.full_name.errors %}<div class="invalid-feedback d-block">{{ form.full_name.errors[0] }}</div>{% endif %}</div>
+            <div class="col-md-6"><label class="form-label" for="guardian_name">{{ t('party.guardian') }}</label>{{ form.guardian_name(class="form-control") }}</div>
+            <div class="col-md-3"><label class="form-label" for="relation">{{ t('party.relation') }}</label>{{ form.relation(class="form-control") }}</div>
+            <div class="col-md-3"><label class="form-label" for="age">{{ t('party.age') }}</label>{{ form.age(class="form-control") }}</div>
+            <div class="col-md-4"><label class="form-label" for="gender">{{ t('party.gender') }}</label>{{ form.gender(class="form-select") }}</div>
+            <div class="col-md-4"><label class="form-label" for="phone">{{ t('party.phone') }}</label>{{ form.phone(class="form-control") }}{% if form.phone.errors %}<div class="invalid-feedback d-block">{{ form.phone.errors[0] }}</div>{% endif %}</div>
+            <div class="col-md-4"><label class="form-label" for="alias">{{ t('party.alias') }}</label>{{ form.alias(class="form-control") }}</div>
+            <div class="col-12"><label class="form-label" for="address">{{ t('party.address') }}</label>{{ form.address(class="form-control", rows="3") }}</div>
+            <div class="col-md-4"><label class="form-label" for="id_type">{{ t('party.id_type') }}</label>{{ form.id_type(class="form-select") }}</div>
+            <div class="col-md-4"><label class="form-label" for="id_number">{{ t('party.id_no') }}</label>{{ form.id_number(class="form-control") }}</div>
+            <div class="col-12"><div class="form-check">{{ form.is_juvenile(class="form-check-input", id="is_juvenile") }}<label class="form-check-label" for="is_juvenile">{{ t('party.juvenile') }}</label></div>
+              <p class="small text-muted" id="juv-note">{{ t('party.juvenile_note') }}</p>
+            </div>
+            <div class="col-12"><label class="form-label" for="notes">{{ t('party.notes') }}</label>{{ form.notes(class="form-control", rows="3") }}</div>
+          </div>
+          <button class="btn btn-navy mt-3" type="submit">{{ t('case.save_pool') }}</button>
+        </div></form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

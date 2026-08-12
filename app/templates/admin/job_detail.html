@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "includes/macros.html" import status_badge %}
+{% block title %}{{ t('adm.jobs') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero admin-hero"><div class="container"><h1>{{ job.task_name }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container" >
+    {% include "admin/_nav.html" %}
+    <p>{{ status_badge(job.status) }} · {{ job.progress }}%</p>
+    <p class="small text-muted">{{ job.uuid }}</p>
+    {% if job.error_message %}<p class="text-danger">{{ job.error_message }}</p>{% endif %}
+    {% if payload %}
+    <h2 class="h6">{{ t('adm.payload') }}</h2>
+    <ul>
+      {% for k, v in payload.items() %}
+      <li><code>{{ k }}</code> = {{ v }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% if job.status == 'failed' %}
+    <form method="post" action="{{ url_for('admin.job_retry', job_uuid=job.uuid) }}">
+      {{ form.hidden_tag() }}
+      <button class="btn btn-navy" type="submit">{{ t('btn.retry') }}</button>
+    </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

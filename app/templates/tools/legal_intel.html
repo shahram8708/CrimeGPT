@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ t('intel.title') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('intel.title') }} <span class="ai-pill">AI</span></h1>
+    <hr class="gold-rule">
+    <p>{{ t('intel.purpose') }}</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container" style="max-width:46rem">
+    <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+    {% if quota %}
+    <div class="alert alert-danger">{{ t('intel.quota') }}</div>
+    {% endif %}
+    {% if not gemini_ok %}
+    <div class="alert alert-info">{{ t('intel.missing_key') }}</div>
+    {% endif %}
+    <form method="post" class="card-station" id="intel-form" data-hide-modal="{{ '1' if not show_modal else '0' }}">
+      <div class="card-body">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+          <label class="form-label" for="narrative">{{ t('intel.narrative') }}</label>
+          {{ form.narrative(class="form-control", rows="12", id="narrative") }}
+          {% if form.narrative.errors %}<div class="invalid-feedback d-block">{{ form.narrative.errors[0] }}</div>{% endif %}
+        </div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label" for="language">{{ t('register.language') }}</label>
+            {{ form.language(class="form-select") }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="focus">{{ t('intel.focus') }}</label>
+            {{ form.focus(class="form-select") }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="case_id">{{ t('intel.case') }}</label>
+            {{ form.case_id(class="form-select") }}
+          </div>
+          <div class="col-12 form-check">
+            {{ form.use_search(class="form-check-input", id="use_search") }}
+            <label class="form-check-label" for="use_search">{{ t('intel.search') }}</label>
+            <p class="small text-muted mb-0">{{ t('intel.search_help') }}</p>
+          </div>
+        </div>
+        <button class="btn btn-navy mt-3" type="submit" id="intel-submit" {% if not gemini_ok or quota %}disabled{% endif %}>{{ t('intel.submit') }}</button>
+        <p class="small text-muted mt-2">{{ t('intel.verify_bns') }}</p>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

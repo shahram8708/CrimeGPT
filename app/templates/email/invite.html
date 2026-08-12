@@ -1,0 +1,10 @@
+{% extends "email/base.html" %}
+{% block preheader %}{{ inviter_name }} invited you to {{ site_name }} as {{ role_label }}. Accept within 7 days.{% endblock %}
+{% block eyebrow %}Invitation{% endblock %}
+{% block heading %}You are invited to {{ site_name }}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px 0;">Namaste {{ full_name }},</p>
+<p style="margin:0 0 16px 0;"><strong style="color:#0b1f3a;">{{ inviter_name }}</strong> invited you to join {{ site_name }} as <strong style="color:#0b1f3a;">{{ role_label }}</strong>.</p>
+<p style="margin:0 0 16px 0;">Accept the invite to set your password and open the station workspace. The link expires in 7 days.</p>
+<p style="margin:0 0 0 0;">If you were not expecting this invitation, ignore the message or contact your SHO.</p>
+{% endblock %}

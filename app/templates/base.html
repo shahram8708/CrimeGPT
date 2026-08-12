@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang() }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0B1F3A">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="description" content="CrimeGPT - station-grade police documentation assistance for Ahmedabad City Police. Draft assistance only. Not legal advice.">
+  <title>{% block title %}CrimeGPT{% endblock %}</title>
+  <link rel="manifest" href="{{ url_for('main.manifest') }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% block meta %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}" {% if current_user.is_authenticated %}data-user="{{ current_user.id }}"{% endif %}>
+  <a class="skip-link" href="#content">{{ t('nav.skip') }}</a>
+  {% include "includes/navbar.html" %}
+  <main id="content" tabindex="-1">
+    {% include "includes/alerts.html" %}
+    {% block content %}{% endblock %}
+  </main>
+  {% include "includes/footer.html" %}
+  {% include "includes/modals.html" %}
+  <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pwa.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

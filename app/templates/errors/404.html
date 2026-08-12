@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Page not found - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container prose">
+    <h1>Page not found</h1>
+    <hr class="gold-rule">
+    <p>That address is not on this server. If you followed a link from inside CrimeGPT, the destination may belong to a later step that is not installed yet.</p>
+    {% if current_user.is_authenticated %}
+      <a class="btn btn-navy" href="{{ url_for('dashboard.index') }}">{{ t('btn.dashboard') }}</a>
+    {% else %}
+      <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

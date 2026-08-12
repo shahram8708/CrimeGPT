@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_evidence') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        {% if need_consent %}
+        <div class="alert alert-info">{{ t('ev.consent') }}</div>
+        {% endif %}
+        {% for p in proposals %}
+        <div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <span>{{ p.suggested_body }}</span>
+          <span class="d-flex gap-2">
+            <form method="post" action="{{ url_for('evidence.accept_proposal', uuid=case.uuid, pid=p.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-navy btn-sm" type="submit">{{ t('ev.add_diary') }}</button>
+            </form>
+            <form method="post" action="{{ url_for('evidence.dismiss_proposal', uuid=case.uuid, pid=p.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-gold-outline btn-sm" type="submit">{{ t('ev.dismiss') }}</button>
+            </form>
+          </span>
+        </div>
+        {% endfor %}
+
+        {% if can_upload %}
+        <form method="post" enctype="multipart/form-data" class="card-station mb-4" id="ev-form">
+          <div class="card-body">
+            {{ form.hidden_tag() }}
+            <label class="dropzone" id="dropzone" for="file">
+              <span>{{ t('ev.drop') }}</span>
+              <span class="small text-muted d-block">pdf, jpg, jpeg, png · 15 MB</span>
+              {{ form.file(id="file", accept=".pdf,.jpg,.jpeg,.png", class="visually-hidden") }}
+            </label>
+            {% if form.file.errors %}<div class="invalid-feedback d-block">{{ form.file.errors[0] }}</div>{% endif %}
+            <div class="row g-3 mt-1">
+              <div class="col-md-6"><label class="form-label" for="caption">{{ t('ev.caption') }}</label>{{ form.caption(class="form-control") }}</div>
+              <div class="col-md-3"><label class="form-label" for="tag">{{ t('ev.tag') }}</label>{{ form.tag(class="form-select") }}</div>
+              <div class="col-md-3"><label class="form-label" for="exhibit_no">{{ t('item.exhibit') }}</label>{{ form.exhibit_no(class="form-control") }}</div>
+              <div class="col-md-6"><label class="form-label" for="taken_at">{{ t('ev.taken') }}</label>{{ form.taken_at(class="form-control") }}</div>
+              <div class="col-md-6"><label class="form-label" for="case_item_id">{{ t('ev.item') }}</label>{{ form.case_item_id(class="form-select") }}</div>
+              <div class="col-12 form-check">
+                {{ form.keep_exif(class="form-check-input", id="keep_exif") }}
+                <label class="form-check-label" for="keep_exif">{{ t('ev.keep_exif') }}</label>
+              </div>
+              {% if need_consent %}
+              <div class="col-12 form-check">
+                {{ form.consent(class="form-check-input", id="consent") }}
+                <label class="form-check-label" for="consent">{{ t('ev.consent_box') }}</label>
+                {% if form.consent.errors %}<div class="invalid-feedback d-block">{{ form.consent.errors[0] }}</div>{% endif %}
+              </div>
+              {% endif %}
+            </div>
+            <p class="small text-muted d-none" id="ev-offline">{{ t('ev.offline') }}</p>
+            <button class="btn btn-navy mt-3" type="submit" id="ev-submit">{{ t('ev.upload') }}</button>
+          </div>
+        </form>
+        {% endif %}
+
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <a class="btn btn-sm btn-gold-outline {% if not tag %}active{% endif %}" href="{{ url_for('evidence.gallery', uuid=case.uuid) }}">{{ t('history.any') }}</a>
+          {% for tg in ['exhibit','scene','injury','property','document','other'] %}
+          <a class="btn btn-sm btn-gold-outline {% if tag == tg %}active{% endif %}" href="{{ url_for('evidence.gallery', uuid=case.uuid, tag=tg) }}">{{ tg }}</a>
+          {% endfor %}
+        </div>
+
+        {% if items %}
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+          {% for it in items %}
+          <div class="col">
+            <a class="ev-tile card-station d-block" href="{{ url_for('evidence.detail', uuid=case.uuid, eid=it.uuid) }}">
+              <div class="ev-thumb">
+                {% if it.thumbnail_path %}
+                <img src="{{ url_for('downloads.thumb', uuid=it.uuid) }}" alt="">
+                {% else %}
+                <span class="ev-ph">{{ it.original_filename }}</span>
+                {% endif %}
+              </div>
+              <div class="p-2 small">
+                <strong>{{ it.exhibit_no or "-" }}</strong>
+                <span class="pool-chip">{{ it.tag or "" }}</span>
+              </div>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p>{{ t('ev.empty') }}</p>
+        {% endif %}
+
+        {% if can_assign %}
+        <hr>
+        <h2 class="h6">{{ t('ev.assign') }}</h2>
+        <form method="post" action="{{ url_for('evidence.assign', uuid=case.uuid) }}" class="row g-2 align-items-end mb-3">
+          {{ assign_form.hidden_tag() }}
+          <div class="col-md-6">{{ assign_form.user_id(class="form-select") }}</div>
+          <div class="col-md-3"><button class="btn btn-navy" type="submit">{{ t('ev.assign_go') }}</button></div>
+        </form>
+        <ul class="list-unstyled">
+          {% for a in assignees %}
+          <li class="d-flex justify-content-between mb-1">
+            <span>{{ a.user.full_name }} · {{ a.role_on_case }}</span>
+            <form method="post" action="{{ url_for('evidence.unassign', uuid=case.uuid, aid=a.uuid) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-link btn-sm" type="submit">{{ t('ev.remove') }}</button>
+            </form>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

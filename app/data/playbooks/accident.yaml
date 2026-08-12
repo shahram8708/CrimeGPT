@@ -1,0 +1,29 @@
+category: accident
+title: Road or other accident
+expected_documents:
+  - medical_letter
+  - seizure_receipt
+expected_process:
+  - key: medical
+    label: Medical examination of the injured
+    severity: high
+    field: hospital_name
+    deep_link: medical
+  - key: items
+    label: Vehicle or scene articles noted
+    severity: medium
+    field: items
+    deep_link: items
+  - key: place
+    label: Place of occurrence precise enough to find
+    severity: high
+    field: place
+    deep_link: edit
+expected_elements:
+  - Incident on a road or public place
+  - Injury or damage
+  - Vehicle or actor identified or described
+common_gaps:
+  - No hospital name
+  - No scene sketch or photographs
+  - Driver not named

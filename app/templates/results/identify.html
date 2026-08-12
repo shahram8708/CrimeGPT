@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}{{ t('idfy.title') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1 class="h3 mb-1">{{ t('idfy.title') }}</h1>
+    <p class="small text-white-50 mb-0">Fields & Defect Audit Analysis</p>
+    <hr class="gold-rule">
+  </div>
+</header>
+
+<section class="section">
+  <div class="container" style="max-width: 54rem;">
+    <div class="alert alert-warning mb-4" role="status">{{ t('intel.disclaimer') }}</div>
+
+    {% set det = data.deterministic or {} %}
+    {% set flags = det.flags or {} %}
+    {% set ai = data.ai or {} %}
+
+    <!-- Safety Flags Alerts -->
+    {% if flags.missing_second_panch %}
+    <div class="alert alert-warning mb-3 d-flex align-items-center gap-2">
+      <span>⚠️</span>
+      <div><strong>{{ t('idfy.missing_panch') }}</strong></div>
+    </div>
+    {% endif %}
+
+    {% if flags.empty_prayer %}
+    <div class="alert alert-warning mb-3 d-flex align-items-center gap-2">
+      <span>⚠️</span>
+      <div><strong>{{ t('idfy.empty_prayer') }}</strong></div>
+    </div>
+    {% endif %}
+
+    {% if flags.no_confirmed_sections %}
+    <div class="alert alert-warning mb-3 d-flex align-items-center gap-2">
+      <span>⚠️</span>
+      <div><strong>{{ t('idfy.no_sections') }}</strong></div>
+    </div>
+    {% endif %}
+
+    <!-- Deterministic Form Audit Blocks -->
+    {% if det.blocks and det.blocks|length > 0 %}
+    <div class="card-station mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3">📋 Form & Rule Audit</h2>
+        {% for b in det.blocks %}
+        <div class="p-3 mb-2 rounded border {% if b.defect %}border-danger bg-light{% else %}bg-white{% endif %}">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+            <strong class="text-navy fs-6">{{ b.label }}</strong>
+            {% if b.defect %}
+            <span class="badge bg-danger">{{ b.defect_message or 'Defect Detected' }}</span>
+            {% else %}
+            <span class="badge bg-success">Valid</span>
+            {% endif %}
+          </div>
+          {% set text_content = b.plain_language or b.text or b.quote %}
+          {% if text_content %}
+          <p class="small text-secondary mb-1">{{ text_content }}</p>
+          {% endif %}
+          {% if b.quote and b.quote != text_content %}
+          <p class="small text-muted font-monospace mb-0">"{{ b.quote }}"</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- AI Clause & Field Analysis Blocks -->
+    {% if ai and ai.blocks and ai.blocks|length > 0 %}
+    <div class="card-station mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3"><span class="ai-pill">AI</span> Field & Clause Mapping</h2>
+        {% for b in ai.blocks %}
+        <div class="p-3 mb-3 rounded border {% if b.defect %}border-danger bg-light{% else %}bg-white{% endif %}">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <strong class="text-navy fs-6">{{ b.label }}</strong>
+            {% if b.defect %}
+            <span class="badge bg-danger">{{ b.defect_message or 'Attention Required' }}</span>
+            {% endif %}
+          </div>
+          
+          {% set text_val = b.plain_language or b.text or b.quote or b.description or b.detail %}
+          {% if text_val %}
+          <p class="mb-1 text-dark">{{ text_val }}</p>
+          {% else %}
+          <p class="mb-1 text-muted italic">No content extracted for this section.</p>
+          {% endif %}
+
+          {% if b.quote and b.quote != text_val %}
+          <div class="small text-muted font-monospace mt-2 p-2 bg-light rounded border-start border-3 border-navy">
+            "{{ b.quote }}"
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% elif ai and not ai.blocks %}
+    <div class="card-station mb-4"><div class="card-body text-muted">
+      <span class="ai-pill mb-2">AI</span>
+      <p class="mb-0">AI analysis completed. No distinct field defects were identified.</p>
+    </div></div>
+    {% endif %}
+
+    <!-- Collapsible Raw Payload Inspector -->
+    <div class="card-station mb-4">
+      <div class="card-body">
+        <details>
+          <summary class="fw-bold text-navy cursor-pointer">{{ t('intel.raw') }}</summary>
+          <div class="mt-3 p-3 bg-dark text-light rounded font-monospace small" style="max-height: 350px; overflow-y: auto;">
+            <pre class="m-0 text-light">{{ data | tojson(indent=2) }}</pre>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Action Buttons Footer -->
+    <div class="d-flex flex-wrap gap-2 mt-4">
+      {% if row.generated and row.generated.case %}
+        <a class="btn btn-gold-outline" href="{{ url_for('documents.preview', uuid=row.generated.case.uuid, did=row.generated.uuid) }}">{{ t('doc.view') }}</a>
+      {% endif %}
+      {% if row.case %}
+        <a class="btn btn-navy" href="{{ url_for('cases.overview', uuid=row.case.uuid) }}">← Back to Case</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

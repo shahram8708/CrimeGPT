@@ -1,0 +1,105 @@
+<nav class="navbar navbar-expand-lg navbar-dark navbar-crime" aria-label="Primary">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('dashboard.index') if current_user.is_authenticated else url_for('main.landing') }}">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <path fill="#C4A35A" d="M16 2.5l11 4.2v8.6c0 7.1-4.6 13.2-11 14.7C9.6 28.5 5 22.4 5 15.3V6.7L16 2.5z"/>
+        <path fill="#0B1F3A" d="M16 11.1l1.7 3.5 3.8.6-2.8 2.7.7 3.8L16 19.7l-3.4 1.8.7-3.8-2.8-2.7 3.8-.6L16 11.1z"/>
+      </svg>
+      <span>CrimeGPT</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#primaryNav" aria-controls="primaryNav" aria-expanded="false" aria-label="Menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="primaryNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if current_user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}" href="{{ url_for('dashboard.index') }}">{{ t('nav.dashboard') }}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('cases') %}active{% endif %}" href="{{ url_for('cases.case_list') }}">{{ t('nav.cases') }}</a>
+        </li>
+        {% if can_generate_documents %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'documents.cross_list' %}active{% endif %}" href="{{ url_for('documents.cross_list') }}">{{ t('nav.documents') }}</a>
+        </li>
+        {% endif %}
+        {% if can_run_legal_intel %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if request.endpoint and request.endpoint.startswith('tools') %}active{% endif %}" href="#" data-bs-toggle="dropdown">{{ t('nav.tools') }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('tools.legal_intel') }}">{{ t('intel.title') }}</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('tools.qa_list') }}">{{ t('qa.title') }}</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('tools.analyze') }}">{{ t('an.title') }}</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('tools.compare') }}">{{ t('cmp.title') }}</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('tools.explain') }}">{{ t('ex.title') }}</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'dashboard.history' %}active{% endif %}" href="{{ url_for('dashboard.history') }}">{{ t('nav.history') }}</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'main.how_it_works' %}active{% endif %}" href="{{ url_for('main.how_it_works') }}">{{ t('nav.how') }}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'main.features' %}active{% endif %}" href="{{ url_for('main.features') }}">{{ t('nav.features') }}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'main.disclaimer' %}active{% endif %}" href="{{ url_for('main.disclaimer') }}">{{ t('nav.disclaimer') }}</a>
+        </li>
+        {% endif %}
+      </ul>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <button type="button" class="btn btn-gold-outline btn-sm" id="btn-install-app" hidden>{{ t('nav.install') }}</button>
+        <label class="visually-hidden" for="lang-switch">Language</label>
+        <select id="lang-switch" class="lang-select" data-base="{{ url_for('main.set_lang', code='') }}" aria-label="Language">
+          <option value="en" {% if current_lang() == 'en' %}selected{% endif %}>{{ t('lang.en') }}</option>
+          <option value="hi" {% if current_lang() == 'hi' %}selected{% endif %}>{{ t('lang.hi') }}</option>
+          <option value="gu" {% if current_lang() == 'gu' %}selected{% endif %}>{{ t('lang.gu') }}</option>
+        </select>
+        {% if current_user.is_authenticated %}
+        <a class="nav-link position-relative px-2 text-white" href="{{ url_for('dashboard.notifications') }}" aria-label="{{ t('nav.notifications') }}">
+          <span class="bell-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C4A35A" stroke-width="2"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5"/><path d="M9 17a3 3 0 0 0 6 0"/></svg>
+          </span>
+          {% if unread_count %}
+          <span class="notif-badge">{{ unread_count }}</span>
+          {% endif %}
+        </a>
+        <div class="dropdown user-dd">
+          <button class="btn btn-gold-outline btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ current_user.full_name.split(' ')[0] }}
+            <span class="role-badge">{{ current_user.role_label }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-item-text small text-muted">{{ current_user.full_name }}</span></li>
+            <li><a class="dropdown-item" href="{{ url_for('profile.profile') }}">{{ t('nav.profile') }}</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('dashboard.notifications') }}">{{ t('nav.notifications') }}{% if unread_count %} ({{ unread_count }}){% endif %}</a></li>
+            {% if can_manage_station_users %}
+            <li><a class="dropdown-item" href="{{ url_for('admin.home') }}">{{ t('adm.title') }}</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('admin_users.users_list') }}">{{ t('nav.users') }}</a></li>
+            {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form method="post" action="{{ url_for('auth.logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="dropdown-item">{{ t('nav.signout') }}</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+        {% else %}
+        <a class="btn btn-gold-outline btn-sm" href="{{ url_for('auth.login') }}">{{ t('nav.signin') }}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+<div id="ios-install-hint" class="container d-none">
+  <div class="ios-hint d-flex justify-content-between align-items-start gap-2 my-2">
+    <p class="mb-0 small">{{ t('ios.hint') }}</p>
+    <button type="button" class="btn btn-sm btn-link" id="ios-hint-dismiss">{{ t('ios.dismiss') }}</button>
+  </div>
+</div>

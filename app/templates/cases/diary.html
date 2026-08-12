@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_diary') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+          <div>
+            <a class="btn btn-sm btn-gold-outline {% if oldest %}active{% endif %}" href="{{ url_for('diary.timeline', uuid=case.uuid, order='old') }}">{{ t('diary.oldest') }}</a>
+            <a class="btn btn-sm btn-gold-outline {% if not oldest %}active{% endif %}" href="{{ url_for('diary.timeline', uuid=case.uuid, order='new') }}">{{ t('diary.newest') }}</a>
+          </div>
+          {% if can_add %}
+          <a class="btn btn-gold" href="{{ url_for('diary.diary_new', uuid=case.uuid) }}">{{ t('diary.new') }}</a>
+          {% endif %}
+        </div>
+        {% if can_export %}
+        <form method="post" action="{{ url_for('diary.diary_export', uuid=case.uuid) }}" class="card-station mb-4">
+          <div class="card-body row g-2 align-items-end">
+            {{ export_form.hidden_tag() }}
+            <div class="col-md-3"><label class="form-label" for="date_from">{{ t('history.from') }}</label>{{ export_form.date_from(class="form-control") }}</div>
+            <div class="col-md-3"><label class="form-label" for="date_to">{{ t('history.to') }}</label>{{ export_form.date_to(class="form-control") }}</div>
+            <div class="col-md-2"><label class="form-label" for="language">{{ t('register.language') }}</label>{{ export_form.language(class="form-select") }}</div>
+            <div class="col-md-2 form-check mt-4">
+              {{ export_form.summarize(class="form-check-input", id="summarize") }}
+              <label class="form-check-label" for="summarize">{{ t('diary.summarize') }}</label>
+            </div>
+            <div class="col-md-2"><button class="btn btn-navy" type="submit">{{ t('diary.export') }}</button></div>
+          </div>
+        </form>
+        {% endif %}
+
+        {% if entries %}
+        <ol class="diary-line list-unstyled">
+          {% for e in entries %}
+          <li class="diary-card diary-{{ e.entry_type }} {% if e.id in corrected_ids %}was-corrected{% endif %}">
+            {% if e.id in corrected_ids %}
+            <p class="strike-banner">{{ t('diary.corrected_banner') }}</p>
+            {% endif %}
+            <div class="d-flex flex-wrap justify-content-between gap-2">
+              <span class="type-badge type-{{ e.entry_type }}">{{ e.entry_type }}</span>
+              <span class="small text-muted">{{ e.occurred_at|ist }}</span>
+            </div>
+            <p class="mb-1"><strong>{{ e.author.full_name if e.author else "" }}</strong> · {{ e.author.role_label if e.author else "" }}{% if e.place %} · {{ e.place }}{% endif %}</p>
+            <p>{{ e.body|nl2br }}</p>
+            <p class="small mb-0">
+              <span class="badge job-badge {{ e.status }}">{{ e.status }}</span>
+              <a href="{{ url_for('diary.diary_entry', uuid=case.uuid, eid=e.uuid) }}">{{ t('notes.open') }}</a>
+              {% if can_sign and e.status == 'draft' %}
+              <form method="post" action="{{ url_for('diary.diary_sign', uuid=case.uuid, eid=e.uuid) }}" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-link btn-sm" type="submit">{{ t('diary.sign') }}</button>
+              </form>
+              {% endif %}
+            </p>
+            {% if e.status == 'draft' %}
+            <p class="small text-muted">{{ t('diary.awaiting') }}</p>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ol>
+        {% else %}
+        <p>{{ t('diary.empty') }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

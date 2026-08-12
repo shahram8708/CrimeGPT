@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ t('ck.title') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+        <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+          <h1 class="h4 mb-0">{{ t('ck.title') }}</h1>
+          <form method="post" action="{{ url_for('assist.checklist_generate', uuid=case.uuid) }}">
+            {{ form.hidden_tag() }}
+            <button class="btn btn-navy" type="submit" {% if not gemini_ok or quota %}disabled{% endif %}>{{ t('ck.generate') }}</button>
+          </form>
+        </div>
+        {% if not gemini_ok %}<p class="text-muted">{{ t('intel.missing_key') }}</p>{% endif %}
+        {% if current %}
+        <p class="small text-muted">{{ current.title }} · {{ current.created_at|ist }}</p>
+        <ul class="list-unstyled">
+          {% for item in current.items %}
+          <li class="card-station mb-2"><div class="card-body">
+            <form method="post" action="{{ url_for('assist.checklist_toggle', uuid=case.uuid, item_id=item.id) }}" class="d-flex gap-2 align-items-start">
+              {{ form.hidden_tag() }}
+              <button class="btn btn-sm {{ 'btn-navy' if item.is_done else 'btn-gold-outline' }}" type="submit">{{ t('ck.tick') if not item.is_done else t('users.yes') }}</button>
+              <div>
+                <strong>{{ item.label }}</strong>
+                <span class="badge job-badge {{ item.severity }}">{{ item.severity }}</span>
+                {% if item.why_text %}<p class="mb-1 small">{{ item.why_text }}</p>{% endif %}
+                {% if item.deep_link %}<a class="small" href="{{ item.deep_link }}">{{ t('notes.open') }}</a>{% endif %}
+              </div>
+            </form>
+          </div></li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>{{ t('ck.empty') }}</p>
+        {% endif %}
+        {% if history %}
+        <h2 class="h6 mt-4">{{ t('ck.history') }}</h2>
+        <ul>
+          {% for h in history %}
+          <li>{{ h.title }} · {{ h.created_at|ist }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        <p class="small text-muted mt-3">{{ t('ck.next') }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

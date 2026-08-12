@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}CrimeGPT features{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>What the station gets</h1>
+    <hr class="gold-rule">
+    <p>A register, not a chatbot. Every feature below is designed so an officer can still explain the file in court.</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      {% set cards = [
+        ("Unified case pool", "Parties, exhibits, medical notes, and arrest facts sit in one record that feeds every paper."),
+        ("Seven document types", "Purvani chargesheet through face-identification form, generated from confirmed fields."),
+        ("Case diary", "Dated entries that remain with the file when the investigating officer changes."),
+        ("Legal section intelligence", "Gemini-assisted BNS / BNSS / BSA suggestions. Officer confirmation is mandatory."),
+        ("Multilingual", "English, Hindi, and Gujarati for chrome and for later narrative analysis."),
+        ("Evidence locker", "Station-scoped file storage on the server, never in the public static folder."),
+        ("Role-based access", "Constable through SHO, station admin, and a platform Super Admin who bypasses station scope."),
+        ("PWA offline shell", "Installable public shell. Case data and jobs are never cached for offline use."),
+        ("Audit trail", "Logins, contact messages, job enqueue, and server errors write real audit rows.")
+      ] %}
+      {% for title, body in cards %}
+      <div class="col-md-4">
+        <article class="card-station"><div class="card-body">
+          <h2 class="h5">{{ title }}</h2>
+          <p class="mb-0">{{ body }}</p>
+        </div></article>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="section section-paper">
+  <div class="container">
+    <h2>Seven papers, one purpose each</h2>
+    <hr class="gold-rule">
+    <div class="table-responsive">
+      <table class="table doc-table table-stack">
+        <thead><tr><th>Document</th><th>One-line purpose</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Document">Purvani Chargesheet</td><td data-label="Purpose">Opening charge papers from the confirmed pool.</td></tr>
+          <tr><td data-label="Document">Medical Treatment Letter</td><td data-label="Purpose">Hospital referral tied to the person on record.</td></tr>
+          <tr><td data-label="Document">Remand Request (PC)</td><td data-label="Purpose">Police-custody prayer with dated grounds.</td></tr>
+          <tr><td data-label="Document">Seizure Receipt</td><td data-label="Purpose">Exhibits, place, and panchas in one receipt.</td></tr>
+          <tr><td data-label="Document">Court Custody Letter</td><td data-label="Purpose">Production note for judicial custody.</td></tr>
+          <tr><td data-label="Document">Accused Panchanama</td><td data-label="Purpose">Personal search with named witnesses.</td></tr>
+          <tr><td data-label="Document">Face Identification Form</td><td data-label="Purpose">Identification particulars captured once.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="row g-3 mt-2">
+      <div class="col-md-6">
+        <div class="wireframe" aria-hidden="true">
+          <div class="bar"></div>
+          <div class="line" style="width:80%"></div>
+          <div class="line" style="width:64%"></div>
+          <div class="line" style="width:72%"></div>
+          <div class="line" style="width:40%"></div>
+        </div>
+        <p class="small text-muted mt-2 mb-0">Wireframe of a fact-pool card - not a live case screen.</p>
+      </div>
+      <div class="col-md-6">
+        <p>Officer confirmation and the published disclaimer sit on every surface that discusses AI. CrimeGPT does not give legal advice. Suggested sections can be wrong. Gazette notifications and court records remain the source of truth.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

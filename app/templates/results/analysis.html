@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ t('an.result') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('an.result') }} <span class="ai-pill">AI</span></h1>
+    <hr class="gold-rule">
+    <p>{{ row.document_type or "-" }} · {{ row.language or "-" }}</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container">
+    <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+    <h2 class="h5">{{ t('an.summary') }}</h2>
+    <p>{{ row.summary or data.summary or "-" }}</p>
+    {% if data.extracted_fields %}
+    <h2 class="h5">{{ t('an.fields') }}</h2>
+    <div class="table-responsive">
+      <table class="table doc-table table-stack">
+        <thead><tr><th>{{ t('an.key') }}</th><th>{{ t('an.value') }}</th><th>{{ t('intel.confidence') }}</th><th></th></tr></thead>
+        <tbody>
+          {% for f in data.extracted_fields %}
+          <tr>
+            <td>{{ f.key }}</td>
+            <td>{{ f.value }}</td>
+            <td>{{ f.confidence }}</td>
+            <td>
+              {% if may_apply and row.case %}
+              <form method="post" action="{{ url_for('results.analysis_apply', rid=row.uuid) }}" class="d-flex flex-wrap gap-1">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="field_key" value="{{ f.key }}">
+                <input type="hidden" name="field_value" value="{{ f.value }}">
+                {% if f.key in ('injured_name', 'complainant_name', 'party_name') %}
+                <select name="party_id" class="form-select form-select-sm" style="max-width:12rem">
+                  <option value="0">{{ t('an.party') }}</option>
+                  {% for pid, label in parties %}<option value="{{ pid }}">{{ label }}</option>{% endfor %}
+                </select>
+                {% endif %}
+                {% if f.key == 'incident_date' %}
+                <label class="small"><input type="checkbox" name="confirm" value="y"> {{ t('an.confirm_date') }}</label>
+                {% endif %}
+                <button class="btn btn-navy btn-sm" type="submit">{{ t('an.apply') }}</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% if data.flags %}
+    <h2 class="h5">{{ t('an.flags') }}</h2>
+    <ul>
+      {% for fl in data.flags %}
+      <li><strong>{{ fl.severity }}</strong> - {{ fl.message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% if data.raw_limitations %}
+    <p class="small text-muted">{{ t('an.limitations') }} {{ data.raw_limitations|join('; ') }}</p>
+    {% endif %}
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <form method="post" action="{{ url_for('results.analysis_rerun', rid=row.uuid) }}">
+        {{ rerun_form.hidden_tag() }}
+        <button class="btn btn-gold-outline" type="submit">{{ t('an.rerun') }}</button>
+      </form>
+      {% if row.case %}
+      <a class="btn btn-gold-outline" href="{{ url_for('cases.overview', uuid=row.case.uuid) }}">{{ row.case.display_cr }}</a>
+      <a class="btn btn-gold-outline" href="{{ url_for('tools.legal_intel', case=row.case.uuid) }}">{{ t('intel.title') }}</a>
+      {% endif %}
+    </div>
+    <p class="small text-muted mt-3">{{ t('an.next') }}</p>
+  </div>
+</section>
+{% endblock %}

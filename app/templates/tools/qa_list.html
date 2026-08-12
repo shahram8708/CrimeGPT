@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ t('qa.title') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('qa.title') }} <span class="ai-pill">AI</span></h1>
+    <hr class="gold-rule">
+    <p>{{ t('qa.purpose') }}</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container" style="max-width:46rem">
+    <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+    {% if quota %}<div class="alert alert-danger">{{ t('intel.quota') }}</div>{% endif %}
+    {% if not gemini_ok %}<div class="alert alert-info">{{ t('intel.missing_key') }}</div>{% endif %}
+    <form method="post" class="card-station mb-4">
+      <div class="card-body">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+          <label class="form-label" for="body">{{ t('qa.body') }}</label>
+          {{ form.body(class="form-control", rows="5", id="body") }}
+          {% if form.body.errors %}<div class="invalid-feedback d-block">{{ form.body.errors[0] }}</div>{% endif %}
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="case_id">{{ t('qa.case') }}</label>
+            {{ form.case_id(class="form-select") }}
+          </div>
+        </div>
+        <button class="btn btn-navy mt-3" type="submit" {% if not gemini_ok or quota %}disabled{% endif %}>{{ t('qa.submit') }}</button>
+      </div>
+    </form>
+    {% if threads %}
+    <ul class="list-unstyled">
+      {% for th in threads %}
+      <li class="card-station mb-2"><div class="card-body d-flex justify-content-between gap-2">
+        <a href="{{ url_for('tools.qa_thread', tid=th.uuid) }}">{{ th.title }}</a>
+        <span class="small text-muted">{{ th.updated_at|ist }}</span>
+      </div></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-dash">{{ t('qa.empty') }}</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

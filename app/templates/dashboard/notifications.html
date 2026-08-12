@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ t('notes.title') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero"><div class="container"><h1>{{ t('notes.title') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container" >
+    {% if notes %}
+    <form method="post" action="{{ url_for('dashboard.notification_read_all') }}" class="mb-3">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-gold-outline btn-sm">{{ t('notes.read_all') }}</button>
+    </form>
+    <ul class="list-unstyled">
+      {% for n in notes %}
+      <li class="card-station mb-2">
+        <div class="card-body">
+          <div class="d-flex justify-content-between gap-2">
+            <strong class="{% if not n.is_read %}note-unread{% endif %}">{{ n.title }}</strong>
+            <span class="small text-muted">{{ n.created_at|ist }}</span>
+          </div>
+          <p class="mb-2">{{ n.body or "" }}</p>
+          <div class="d-flex gap-2">
+            {% if n.link_path and n.link_path.startswith('/') and not n.link_path.startswith('//') %}
+            <a class="small" href="{{ n.link_path }}">{{ t('notes.open') }}</a>
+            {% endif %}
+            {% if not n.is_read %}
+            <form method="post" action="{{ url_for('dashboard.notification_read', note_id=n.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-link btn-sm p-0">{{ t('notes.mark') }}</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">{{ t('notes.empty') }}</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

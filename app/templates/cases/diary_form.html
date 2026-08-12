@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ t('diary.new') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <form method="post" novalidate class="card-station"><div class="card-body">
+          {{ form.hidden_tag() }}
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label" for="entry_type">{{ t('diary.type') }}</label>{{ form.entry_type(class="form-select") }}</div>
+            <div class="col-md-6"><label class="form-label" for="occurred_at">{{ t('diary.when') }}</label>{{ form.occurred_at(class="form-control") }}{% if form.occurred_at.errors %}<div class="invalid-feedback d-block">{{ form.occurred_at.errors[0] }}</div>{% endif %}</div>
+            <div class="col-12"><label class="form-label" for="place">{{ t('wiz.place') }}</label>{{ form.place(class="form-control") }}</div>
+            <div class="col-12"><label class="form-label" for="body">{{ t('diary.body') }}</label>{{ form.body(class="form-control", rows="10") }}{% if form.body.errors %}<div class="invalid-feedback d-block">{{ form.body.errors[0] }}</div>{% endif %}</div>
+            {% if form.evidence_ids.choices %}
+            <div class="col-12"><label class="form-label" for="evidence_ids">{{ t('diary.exhibits') }}</label>{{ form.evidence_ids(class="form-select", size="4") }}</div>
+            {% endif %}
+          </div>
+          <button class="btn btn-navy mt-3" type="submit">{{ t('diary.save') }}</button>
+        </div></form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

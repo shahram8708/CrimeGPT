@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="format-detection" content="telephone=no,address=no,email=no,date=no,url=no">
+  <title>{{ subject or site_name }}</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:AllowPNG/>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style type="text/css">
+    html, body { margin: 0 !important; padding: 0 !important; height: 100% !important; width: 100% !important; }
+    * { -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt !important; mso-table-rspace: 0pt !important; }
+    table { border-collapse: collapse !important; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    a { text-decoration: none; }
+    a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+    .preheader { display: none !important; visibility: hidden; opacity: 0; color: transparent; height: 0; width: 0; overflow: hidden; mso-hide: all; }
+    @media only screen and (max-width: 620px) {
+      .email-shell { width: 100% !important; }
+      .email-pad { padding: 24px 20px !important; }
+      .email-header { padding: 20px 20px !important; }
+      .email-h1 { font-size: 22px !important; line-height: 1.3 !important; }
+      .email-btn a { display: block !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#e8edf4;width:100%;">
+  <div class="preheader" style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">
+    {% block preheader %}{{ preheader or subject }}{% endblock %}
+  </div>
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:#e8edf4;">
+    <tr>
+      <td align="center" style="padding:28px 12px 36px 12px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="email-shell" style="width:600px;max-width:600px;background-color:#ffffff;">
+          <tr>
+            <td style="height:5px;line-height:5px;font-size:0;background-color:#c4a35a;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="email-header" style="background-color:#0b1f3a;padding:22px 36px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td valign="middle" width="44" style="width:44px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td align="center" valign="middle" style="width:40px;height:40px;background-color:#c4a35a;color:#0b1f3a;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:700;letter-spacing:0.04em;">
+                          CG
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td valign="middle" style="padding-left:12px;">
+                    <div style="font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:700;color:#ffffff;letter-spacing:0.03em;line-height:1.2;">{{ site_name }}</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#e2c98a;letter-spacing:0.08em;text-transform:uppercase;padding-top:3px;">Station workspace</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="email-pad" style="padding:36px 40px 12px 40px;background-color:#ffffff;">
+              {% if eyebrow %}
+              <p style="margin:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c4a35a;">{% block eyebrow %}{{ eyebrow }}{% endblock %}</p>
+              {% endif %}
+              <h1 class="email-h1" style="margin:0 0 18px 0;font-family:Georgia,'Times New Roman',serif;font-size:26px;line-height:1.28;font-weight:700;color:#0b1f3a;">{% block heading %}{{ heading }}{% endblock %}</h1>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.65;color:#1c2430;">
+                {% block content %}{% endblock %}
+              </div>
+              {% if cta_url and cta_label %}
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" class="email-btn" style="margin:28px 0 8px 0;">
+                <tr>
+                  <td align="center" bgcolor="#c4a35a" style="background-color:#c4a35a;">
+                    <a href="{{ cta_url }}" style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;color:#0b1f3a;text-decoration:none;letter-spacing:0.02em;">{{ cta_label }}</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:14px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#5b6675;">
+                If the button does not work, paste this link into your browser:<br>
+                <a href="{{ cta_url }}" style="color:#16325c;word-break:break-all;text-decoration:underline;">{{ cta_url }}</a>
+              </p>
+              {% endif %}
+              {% if note_html %}
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:24px 0 0 0;">
+                <tr>
+                  <td style="background-color:#f7f4ee;border-left:3px solid #c4a35a;padding:14px 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#5b6675;">
+                    {{ note_html }}
+                  </td>
+                </tr>
+              </table>
+              {% endif %}
+              {% block after %}{% endblock %}
+            </td>
+          </tr>
+          <tr>
+            <td class="email-pad" style="padding:8px 40px 32px 40px;background-color:#ffffff;">
+              <p style="margin:20px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#5b6675;">
+                This message was sent by {{ site_name }}. If you were not expecting it, you can ignore it.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#0f1724;padding:24px 36px 28px 36px;">
+              <p style="margin:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;">
+                <a href="{{ home_url }}" style="color:#e2c98a;text-decoration:none;">Home</a>
+                <span style="color:#5b6675;">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+                <a href="{{ privacy_url }}" style="color:#e2c98a;text-decoration:none;">Privacy</a>
+                <span style="color:#5b6675;">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+                <a href="{{ terms_url }}" style="color:#e2c98a;text-decoration:none;">Terms</a>
+                <span style="color:#5b6675;">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+                <a href="{{ disclaimer_url }}" style="color:#e2c98a;text-decoration:none;">Disclaimer</a>
+                <span style="color:#5b6675;">&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+                <a href="{{ contact_url }}" style="color:#e2c98a;text-decoration:none;">Contact</a>
+              </p>
+              <p style="margin:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.55;color:#c9d1db;">{{ disclaimer }}</p>
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.5;color:#8a93a0;">© {{ year }} {{ site_name }}. Ahmedabad City Police Innovation Challenge pilot. Official use only.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

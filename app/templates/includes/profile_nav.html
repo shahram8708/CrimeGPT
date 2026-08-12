@@ -1,0 +1,6 @@
+<nav class="profile-subnav" aria-label="{{ t('profile.nav') }}">
+  <a class="{% if request.endpoint == 'profile.profile' %}active{% endif %}" href="{{ url_for('profile.profile') }}">{{ t('profile.nav_profile') }}</a>
+  <a class="{% if request.endpoint == 'profile.preferences' %}active{% endif %}" href="{{ url_for('profile.preferences') }}">{{ t('profile.nav_prefs') }}</a>
+  <a class="{% if request.endpoint == 'profile.security' %}active{% endif %}" href="{{ url_for('profile.security') }}">{{ t('profile.nav_security') }}</a>
+  <a class="{% if request.endpoint == 'profile.activity' %}active{% endif %}" href="{{ url_for('profile.activity') }}">{{ t('profile.nav_activity') }}</a>
+</nav>

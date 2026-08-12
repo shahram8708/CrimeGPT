@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{{ t('btn.new_case') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('btn.new_case') }}</h1>
+    <hr class="gold-rule">
+  </div>
+</header>
+<section class="section">
+  <div class="container" >
+    <ol class="stepper">
+      <li class="{% if step == 1 %}current{% elif step > 1 %}done{% endif %}">{{ t('wiz.step1') }}</li>
+      <li class="{% if step == 2 %}current{% elif step > 2 %}done{% endif %}">{{ t('wiz.step2') }}</li>
+      <li class="{% if step == 3 %}current{% endif %}">{{ t('wiz.step3') }}</li>
+    </ol>
+    <form method="post" id="wizard-form" data-offline="{{ '1' if offline else '0' }}" data-dirty="0" novalidate>
+      {{ form.csrf_token }}
+      {{ form.case_uuid() }}
+      <input type="hidden" name="step" value="{{ step }}">
+      <input type="hidden" name="action" id="wizard-action" value="next">
+
+      <div class="{% if step != 1 %}d-none{% endif %}">
+        <div class="card-station"><div class="card-body">
+          <h2 class="h5">{{ t('wiz.identity') }}</h2>
+          {% if needs_station %}
+          <div class="mb-3"><label class="form-label" for="station_id">{{ t('register.station') }}</label>{{ form.station_id(class="form-select") }}</div>
+          {% else %}
+          <p class="text-muted">{{ current_user.station.name if current_user.station else "" }}</p>
+          {{ form.station_id(class="d-none") }}
+          {% endif %}
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label" for="year">{{ t('cases.year') }}</label>{{ form.year(class="form-control") }}{% if form.year.errors %}<div class="invalid-feedback d-block">{{ form.year.errors[0] }}</div>{% endif %}</div>
+            <div class="col-md-4"><label class="form-label" for="cr_number">{{ t('wiz.cr') }}</label>{{ form.cr_number(class="form-control") }}{% if form.cr_number.errors %}<div class="invalid-feedback d-block">{{ form.cr_number.errors[0] }}</div>{% endif %}</div>
+            <div class="col-md-4"><label class="form-label" for="gd_number">{{ t('wiz.gd') }}</label>{{ form.gd_number(class="form-control") }}</div>
+            <div class="col-md-6"><label class="form-label" for="incident_at">{{ t('wiz.incident') }}</label>{{ form.incident_at(class="form-control") }}{% if form.incident_at.errors %}<div class="invalid-feedback d-block">{{ form.incident_at.errors[0] }}</div>{% endif %}</div>
+            <div class="col-md-6"><label class="form-label" for="category">{{ t('cases.category') }}</label>{{ form.category(class="form-select") }}</div>
+            <div class="col-12"><label class="form-label" for="place_of_occurrence">{{ t('wiz.place') }}</label>{{ form.place_of_occurrence(class="form-control") }}{% if form.place_of_occurrence.errors %}<div class="invalid-feedback d-block">{{ form.place_of_occurrence.errors[0] }}</div>{% endif %}</div>
+            <div class="col-md-6"><label class="form-label" for="assigned_io_id">{{ t('case.io') }}</label>{{ form.assigned_io_id(class="form-select") }}</div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="{% if step != 2 %}d-none{% endif %}">
+        <div class="card-station"><div class="card-body">
+          <h2 class="h5">{{ t('wiz.complainant') }}</h2>
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label" for="complainant_name">{{ t('register.name') }}</label>{{ form.complainant_name(class="form-control") }}{% if form.complainant_name.errors %}<div class="invalid-feedback d-block">{{ form.complainant_name.errors[0] }}</div>{% endif %}</div>
+            <div class="col-md-6"><label class="form-label" for="guardian_name">{{ t('party.guardian') }}</label>{{ form.guardian_name(class="form-control") }}</div>
+            <div class="col-md-4"><label class="form-label" for="relation">{{ t('party.relation') }}</label>{{ form.relation(class="form-control") }}</div>
+            <div class="col-md-4"><label class="form-label" for="age">{{ t('party.age') }}</label>{{ form.age(class="form-control") }}</div>
+            <div class="col-md-4"><label class="form-label" for="gender">{{ t('party.gender') }}</label>{{ form.gender(class="form-select") }}</div>
+            <div class="col-12"><label class="form-label" for="address">{{ t('party.address') }}</label>{{ form.address(class="form-control", rows="3") }}</div>
+            <div class="col-md-4"><label class="form-label" for="phone">{{ t('party.phone') }}</label>{{ form.phone(class="form-control") }}{% if form.phone.errors %}<div class="invalid-feedback d-block">{{ form.phone.errors[0] }}</div>{% endif %}</div>
+            <div class="col-md-4"><label class="form-label" for="id_type">{{ t('party.id_type') }}</label>{{ form.id_type(class="form-select") }}</div>
+            <div class="col-md-4"><label class="form-label" for="id_number">{{ t('party.id_no') }}</label>{{ form.id_number(class="form-control") }}</div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="{% if step != 3 %}d-none{% endif %}">
+        <div class="card-station"><div class="card-body">
+          <h2 class="h5">{{ t('wiz.narrative') }}</h2>
+          <div class="mb-3">
+            <label class="form-label" for="narrative">{{ t('wiz.narrative') }}</label>
+            {{ form.narrative(class="form-control", rows="10", id="narrative") }}
+            <p class="small text-muted mb-0"><span id="nar-count">0</span> / 50 {{ t('wiz.nar_min') }}</p>
+          </div>
+          <div class="mb-3"><label class="form-label" for="narrative_language">{{ t('wiz.nar_lang') }}</label>{{ form.narrative_language(class="form-select") }}</div>
+        </div></div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        {% if step > 1 %}
+        <button type="submit" class="btn btn-gold-outline" data-wiz="back">{{ t('wiz.back') }}</button>
+        {% endif %}
+        {% if step < 3 %}
+        <button type="submit" class="btn btn-navy" data-wiz="next">{{ t('wiz.next') }}</button>
+        {% endif %}
+        {% if step == 2 %}
+        <button type="submit" class="btn btn-link" data-wiz="skip_complainant">{{ t('wiz.skip') }}</button>
+        {% endif %}
+        <button type="submit" class="btn btn-gold-outline" data-wiz="save_draft">{{ t('wiz.draft') }}</button>
+        {% if step == 3 %}
+        <button type="submit" class="btn btn-gold" data-wiz="create">{{ t('wiz.create') }}</button>
+        {% endif %}
+        <button type="button" class="btn btn-link" id="wiz-cancel">{{ t('wiz.cancel') }}</button>
+      </div>
+    </form>
+  </div>
+</section>
+<div class="modal fade" id="wizLeave" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h2 class="h5 modal-title">{{ t('wiz.leave') }}</h2></div>
+    <div class="modal-body">{{ t('wiz.leave_body') }}</div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-gold-outline" data-bs-dismiss="modal">{{ t('wiz.stay') }}</button>
+      <a class="btn btn-navy" href="{{ url_for('cases.case_list') }}">{{ t('wiz.leave_ok') }}</a>
+    </div>
+  </div></div>
+</div>
+{% endblock %}

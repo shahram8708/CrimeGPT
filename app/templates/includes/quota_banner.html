@@ -1,0 +1,10 @@
+{% if entitlements %}
+  {% if entitlements.ai_blocked %}
+  <div class="alert alert-warning">{{ t('adm.ai_blocked') }}</div>
+  {% elif current_user.role in ('sho', 'admin', 'super_admin') %}
+  <div class="alert alert-info">{{ t('adm.month_left') }} {{ entitlements.monthly_remaining }} · {{ t('adm.daily_left') }} {{ entitlements.daily_remaining if entitlements.daily_remaining is not none else '-' }}</div>
+  {% endif %}
+  {% if entitlements.evidence_hot %}
+  <div class="alert alert-warning">{{ t('adm.disk_hot') }} {{ entitlements.evidence_pct }}%</div>
+  {% endif %}
+{% endif %}

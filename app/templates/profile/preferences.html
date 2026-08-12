@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ t('profile.nav_prefs') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero"><div class="container"><h1>{{ t('profile.nav_prefs') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3">{% include "includes/profile_nav.html" %}</div>
+      <div class="col-md-8">
+        <form method="post" class="card-station"><div class="card-body">
+          {{ form.hidden_tag() }}
+          <div class="mb-3"><label class="form-label" for="ui_language">{{ t('profile.ui_lang') }}</label>{{ form.ui_language(class="form-select") }}</div>
+          <div class="mb-3"><label class="form-label" for="document_language">{{ t('profile.doc_lang') }}</label>{{ form.document_language(class="form-select") }}</div>
+          <div class="form-check mb-2">{{ form.offline_drafts(class="form-check-input", id="offline_drafts") }}<label class="form-check-label" for="offline_drafts">{{ t('profile.offline') }}</label></div>
+          <div class="form-check mb-2">{{ form.email_notifications(class="form-check-input", id="email_notifications") }}<label class="form-check-label" for="email_notifications">{{ t('profile.email_n') }}</label></div>
+          <div class="form-check mb-2">{{ form.hide_intel_modal(class="form-check-input", id="hide_intel_modal") }}<label class="form-check-label" for="hide_intel_modal">{{ t('profile.hide_intel') }}</label></div>
+          <div class="form-check mb-3">{{ form.diary_oldest_first(class="form-check-input", id="diary_oldest_first") }}<label class="form-check-label" for="diary_oldest_first">{{ t('profile.diary') }}</label></div>
+          <button type="submit" class="btn btn-navy">{{ t('profile.save') }}</button>
+        </div></form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

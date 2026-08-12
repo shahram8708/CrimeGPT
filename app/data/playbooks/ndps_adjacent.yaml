@@ -1,0 +1,31 @@
+category: ndps_adjacent
+title: NDPS-adjacent recovery
+expected_documents:
+  - seizure_receipt
+  - accused_panchanama
+  - remand_pc
+expected_process:
+  - key: items
+    label: Substance and quantity recorded
+    severity: high
+    field: items
+    deep_link: items
+  - key: panch
+    label: Two independent panch
+    severity: high
+    field: panch
+    deep_link: parties
+  - key: rights
+    label: Arrest and search rights recorded
+    severity: high
+    field: rights_informed
+    deep_link: arrests
+expected_elements:
+  - Recovery of a notified or suspected substance
+  - Search and seizure process recorded
+  - Possessor identified
+common_gaps:
+  - Quantity unit missing
+  - Single panch
+  - Sample sealing not described in the diary
+  - This playbook is operational only - it is not an NDPS charging authority

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ t('gap.title') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+        <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+          <h1 class="h4 mb-0">{{ t('gap.title') }}</h1>
+          <form method="post" action="{{ url_for('assist.gaps_run', uuid=case.uuid) }}">
+            {{ form.hidden_tag() }}
+            <button class="btn btn-navy" type="submit" {% if quota %}disabled{% endif %}>{{ t('gap.run') }}</button>
+          </form>
+        </div>
+        {% if data.cards %}
+        {% for card in data.cards %}
+        <article class="card-station mb-3 gap-card gap-{{ card.severity }}"><div class="card-body">
+          <span class="badge job-badge {{ card.severity }}">{{ card.severity }}</span>
+          {% if card.source == 'playbook' %}<span class="small text-muted">{{ t('gap.det') }}</span>{% endif %}
+          <h2 class="h6 mt-2">{{ card.label }}</h2>
+          <p>{{ card.message }}</p>
+          <div class="d-flex flex-wrap gap-2">
+            {% if card.href %}<a class="btn btn-gold-outline btn-sm" href="{{ card.href }}">{{ t('notes.open') }}</a>{% endif %}
+            <form method="post" action="{{ url_for('assist.gaps_accept', uuid=case.uuid) }}">
+              {{ accept_form.csrf_token }}
+              <input type="hidden" name="label" value="{{ card.label }}">
+              <input type="hidden" name="why" value="{{ card.message }}">
+              <input type="hidden" name="severity" value="{{ card.severity }}">
+              <input type="hidden" name="deep_link" value="{{ card.deep_link or '' }}">
+              <button class="btn btn-navy btn-sm" type="submit">{{ t('gap.accept') }}</button>
+            </form>
+          </div>
+        </article>
+        {% endfor %}
+        {% elif row %}
+        <p>{{ t('gap.empty') }}</p>
+        {% else %}
+        <p>{{ t('gap.empty') }}</p>
+        {% endif %}
+        {% if data.limitations %}
+        <p class="small text-muted">{{ data.limitations|join('; ') }}</p>
+        {% endif %}
+        <p class="small text-muted mt-3">{{ t('gap.next') }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

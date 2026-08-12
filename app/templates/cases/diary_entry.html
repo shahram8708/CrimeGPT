@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_diary') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <article class="card-station"><div class="card-body">
+          {% if entry.corrects_entry_id %}
+          <p class="strike-banner">{{ t('diary.correction_of') }}</p>
+          {% endif %}
+          <p><span class="type-badge type-{{ entry.entry_type }}">{{ entry.entry_type }}</span> <span class="badge job-badge {{ entry.status }}">{{ entry.status }}</span></p>
+          <p class="text-muted">{{ entry.occurred_at|ist }} · {{ entry.author.full_name if entry.author else "" }}{% if entry.place %} · {{ entry.place }}{% endif %}</p>
+          <p>{{ entry.body|nl2br }}</p>
+          <div class="d-flex flex-wrap gap-2">
+            {% if can_sign %}
+            <form method="post" action="{{ url_for('diary.diary_sign', uuid=case.uuid, eid=entry.uuid) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-navy" type="submit">{{ t('diary.sign') }}</button>
+            </form>
+            {% endif %}
+            {% if can_correct %}
+            <button type="button" class="btn btn-gold-outline" data-bs-toggle="modal" data-bs-target="#corr">{{ t('diary.correct') }}</button>
+            {% endif %}
+          </div>
+        </div></article>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="modal fade" id="corr" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <form method="post" action="{{ url_for('diary.diary_correct', uuid=case.uuid, eid=entry.uuid) }}">
+      <div class="modal-header"><h2 class="h5 modal-title">{{ t('diary.correct') }}</h2></div>
+      <div class="modal-body">
+        {{ form.hidden_tag() }}
+        <div class="mb-3"><label class="form-label" for="occurred_at">{{ t('diary.when') }}</label>{{ form.occurred_at(class="form-control") }}</div>
+        <div class="mb-0"><label class="form-label" for="body">{{ t('diary.body') }}</label>{{ form.body(class="form-control", rows="6") }}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gold-outline" type="button" data-bs-dismiss="modal">{{ t('wiz.stay') }}</button>
+        <button class="btn btn-navy" type="submit">{{ t('diary.save') }}</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+{% endblock %}

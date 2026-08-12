@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ t('an.title') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('an.title') }} <span class="ai-pill">AI</span></h1>
+    <hr class="gold-rule">
+    <p>{{ t('an.purpose') }}</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container">
+    <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+    {% if quota %}<div class="alert alert-danger">{{ t('intel.quota') }}</div>{% endif %}
+    {% if not gemini_ok %}<div class="alert alert-info">{{ t('intel.missing_key') }}</div>{% endif %}
+    <form method="post" enctype="multipart/form-data" class="card-station">
+      <div class="card-body">
+        {{ form.hidden_tag() }}
+        <label class="dropzone" id="dropzone" for="file">{{ t('an.drop') }}</label>
+        <input class="form-control mt-2" type="file" name="file" id="file" accept=".pdf,.docx,.jpg,.jpeg,.png">
+        <div class="row g-3 mt-1">
+          <div class="col-md-6">
+            <label class="form-label" for="case_id">{{ t('an.case') }}</label>
+            {{ form.case_id(class="form-select") }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="language">{{ t('an.lang') }}</label>
+            {{ form.language(class="form-select") }}
+          </div>
+        </div>
+        {% if need_consent %}
+        <div class="form-check mt-3">
+          {{ form.consent(class="form-check-input", id="consent") }}
+          <label class="form-check-label" for="consent">{{ t('ev.consent_box') }}</label>
+        </div>
+        {% endif %}
+        <button class="btn btn-navy mt-3" type="submit" {% if not gemini_ok or quota %}disabled{% endif %}>{{ t('an.submit') }}</button>
+        <p class="small text-muted mt-2">{{ t('an.help') }}</p>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

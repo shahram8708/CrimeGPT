@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}How CrimeGPT works{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>How a remand is built</h1>
+    <hr class="gold-rule">
+    <p>Four steps sit between a street fact and a paper the Magistrate can read. The officer stays in every step.</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3">
+        <article class="card-station"><div class="card-body">
+          <p class="text-muted mb-1">01</p>
+          <h2 class="h5">Capture facts</h2>
+          <p class="mb-0">Names, place, time, exhibits, panchas, and medical notes go into one case pool - not into seven separate drafts.</p>
+        </div></article>
+      </div>
+      <div class="col-md-3">
+        <article class="card-station"><div class="card-body">
+          <p class="text-muted mb-1">02</p>
+          <h2 class="h5">Confirm sections</h2>
+          <p class="mb-0">Suggested BNS / BNSS / BSA provisions are listed. The officer accepts, rejects, or edits before anything is printed.</p>
+        </div></article>
+      </div>
+      <div class="col-md-3">
+        <article class="card-station"><div class="card-body">
+          <p class="text-muted mb-1">03</p>
+          <h2 class="h5">Generate papers</h2>
+          <p class="mb-0">The seven statutory forms pull from the same pool. Letterhead, station, and diary references stay consistent.</p>
+        </div></article>
+      </div>
+      <div class="col-md-3">
+        <article class="card-station"><div class="card-body">
+          <p class="text-muted mb-1">04</p>
+          <h2 class="h5">Keep the diary</h2>
+          <p class="mb-0">Each material step is dated. When the file moves, the diary moves with it.</p>
+        </div></article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-paper">
+  <div class="container">
+    <h2>Static sample - seizure receipt fields</h2>
+    <hr class="gold-rule">
+    <p>Anonymised illustration only. No live generation on this page.</p>
+    <div class="sample-grid">
+      <div class="card-station">
+        <div class="card-body">
+          <h3 class="h6 text-uppercase text-muted">Receipt excerpt</h3>
+          <p>Seized from the place near Navrangpura Cross Roads, one iron rod, about two feet, produced by the complainant and identified in the presence of the undersigned panchas.</p>
+        </div>
+      </div>
+      <div class="card-station">
+        <div class="card-body">
+          <h3 class="h6 text-uppercase text-muted">Pool fields that would feed it</h3>
+          <span class="pool-chip">Complainant: R. M. Joshi</span>
+          <span class="pool-chip">Place: Navrangpura Cross Roads</span>
+          <span class="pool-chip">Exhibit: iron rod, ~2 ft</span>
+          <span class="pool-chip">Panch 1: S. K. Pathan</span>
+          <span class="pool-chip">Panch 2: N. B. Raval</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container prose">
+    <h2>Questions officers actually ask</h2>
+    <div class="accordion" id="faq">
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1">Does this file the FIR in CCTNS?</button></h3>
+        <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faq"><div class="accordion-body">No. CrimeGPT does not write back to CCTNS or ICJS. The FIR remains in the systems the State already runs.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2">Does AI apply sections automatically?</button></h3>
+        <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">No. Suggested provisions are candidates. An authorised officer must confirm every section before it appears on a generated paper.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3">Which languages?</button></h3>
+        <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">English, Hindi, and Gujarati for the interface and for narratives that later steps will read.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q4">Is this legal advice?</button></h3>
+        <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">No. AI-generated legal information may contain errors. Verify against authoritative sources. Read the <a href="{{ url_for('main.disclaimer') }}">disclaimer</a>.</div></div>
+      </div>
+    </div>
+    <p class="mt-4">
+      <a class="btn btn-navy" href="{{ url_for('auth.login') }}">Sign in to start a case</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

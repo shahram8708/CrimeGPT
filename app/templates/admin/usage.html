@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ t('adm.usage') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero admin-hero"><div class="container"><h1>{{ t('adm.usage') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container">
+    {% include "admin/_nav.html" %}
+    {% if snap %}
+    <p>{{ t('adm.month_left') }} {{ snap.monthly_remaining }} / {{ snap.monthly_cap }} · {{ t('adm.daily_limit') }} {{ snap.daily_used }} / {{ snap.daily_limit }}</p>
+    {% endif %}
+    {% if platform %}<p><a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.usage_export') }}">{{ t('adm.export_csv') }}</a></p>{% endif %}
+    <div class="table-responsive">
+      <table class="table doc-table table-stack">
+        <thead><tr><th>{{ t('history.from') }}</th><th>{{ t('dash.station') }}</th><th>{{ t('history.user') }}</th><th>{{ t('adm.gemini') }}</th><th>{{ t('nav.documents') }}</th></tr></thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.day }}</td>
+            <td>{{ stations[r.station_id].code if stations.get(r.station_id) else r.station_id }}</td>
+            <td>{{ r.user_id or "-" }}</td>
+            <td>{{ r.gemini_calls }}</td>
+            <td>{{ r.doc_generations }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5">{{ t('adm.none') }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

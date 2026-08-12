@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.add_item') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <form method="post" novalidate class="card-station"><div class="card-body">
+          {{ form.hidden_tag() }}
+          <div class="row g-3">
+            <div class="col-12"><label class="form-label" for="description">{{ t('item.desc') }}</label>{{ form.description(class="form-control") }}{% if form.description.errors %}<div class="invalid-feedback d-block">{{ form.description.errors[0] }}</div>{% endif %}</div>
+            <div class="col-md-3"><label class="form-label" for="quantity">{{ t('item.qty') }}</label>{{ form.quantity(class="form-control") }}</div>
+            <div class="col-md-3"><label class="form-label" for="unit">{{ t('item.unit') }}</label>{{ form.unit(class="form-control") }}</div>
+            <div class="col-md-3"><label class="form-label" for="estimated_value">{{ t('item.value') }}</label>{{ form.estimated_value(class="form-control") }}</div>
+            <div class="col-md-3"><label class="form-label" for="exhibit_no">{{ t('item.exhibit') }}</label>{{ form.exhibit_no(class="form-control") }}</div>
+            <div class="col-md-6"><label class="form-label" for="serial_or_marking">{{ t('item.serial') }}</label>{{ form.serial_or_marking(class="form-control") }}</div>
+            <div class="col-md-6"><label class="form-label" for="seized_from_party_id">{{ t('item.from') }}</label>{{ form.seized_from_party_id(class="form-select") }}</div>
+            <div class="col-md-6"><label class="form-label" for="place">{{ t('wiz.place') }}</label>{{ form.place(class="form-control") }}</div>
+            <div class="col-md-6"><label class="form-label" for="seized_at">{{ t('item.when') }}</label>{{ form.seized_at(class="form-control") }}</div>
+            <div class="col-12"><label class="form-label" for="notes">{{ t('party.notes') }}</label>{{ form.notes(class="form-control", rows="3") }}</div>
+          </div>
+          <button class="btn btn-navy mt-3" type="submit">{{ t('case.save_pool') }}</button>
+        </div></form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

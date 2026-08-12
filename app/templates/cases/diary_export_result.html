@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ t('diary.export') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" >
+    <h1>{{ t('diary.export_ready') }}</h1>
+    <hr class="gold-rule">
+    <div class="alert alert-warning">{{ t('diary.export_notice') }}</div>
+    <p>{{ t('diary.export_full') }} {{ exp.date_from }} – {{ exp.date_to }}</p>
+    <div class="d-flex flex-wrap gap-2">
+      {% if exp.docx_path %}
+      <a class="btn btn-navy" href="{{ url_for('downloads.docx', uuid=exp.uuid) }}">{{ t('diary.dl_docx') }}</a>
+      {% endif %}
+      {% if exp.pdf_path %}
+      <a class="btn btn-gold-outline" href="{{ url_for('downloads.pdf', uuid=exp.uuid) }}">{{ t('diary.dl_pdf') }}</a>
+      {% endif %}
+      <a class="btn btn-link" href="{{ url_for('diary.timeline', uuid=case.uuid) }}">{{ t('case.nav_diary') }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

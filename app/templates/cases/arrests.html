@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_arrest') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        {% if not accused %}
+        <p>{{ t('arrest.need_accused') }} <a href="{{ url_for('cases.party_new', uuid=case.uuid) }}">{{ t('case.add_party') }}</a></p>
+        {% else %}
+        <div class="accordion" id="arrestAcc">
+          {% for p in accused %}
+          {% set a = arrests.get(p.id) %}
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#acc{{ p.id }}">{{ p.full_name }}</button></h2>
+            <div id="acc{{ p.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#arrestAcc">
+              <div class="accordion-body">
+                {% if can_edit %}
+                <form method="post">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="accused_id" value="{{ p.id }}">
+                  <div class="row g-3">
+                    <div class="col-md-6"><label class="form-label" for="arrest_at{{ p.id }}">{{ t('arrest.when') }}</label>
+                      <input class="form-control" type="datetime-local" id="arrest_at{{ p.id }}" name="arrest_at" value="{{ to_local(a.arrest_at) if a else '' }}">
+                    </div>
+                    <div class="col-md-6"><label class="form-label" for="place{{ p.id }}">{{ t('wiz.place') }}</label>
+                      <input class="form-control" id="place{{ p.id }}" name="place" value="{{ a.place if a else '' }}">
+                    </div>
+                    <div class="col-12 form-check">
+                      <input class="form-check-input" type="checkbox" name="rights_informed" id="ri{{ p.id }}" value="y" {% if a and a.rights_informed %}checked{% endif %}>
+                      <label class="form-check-label" for="ri{{ p.id }}">{{ t('arrest.rights') }}</label>
+                    </div>
+                    <div class="col-12"><label class="form-label" for="gr{{ p.id }}">{{ t('arrest.grounds') }}</label>
+                      <textarea class="form-control" id="gr{{ p.id }}" name="grounds_brief" rows="3">{{ a.grounds_brief if a and a.grounds_brief else '' }}</textarea>
+                    </div>
+                    <div class="col-md-6"><label class="form-label" for="pb{{ p.id }}">{{ t('arrest.produced') }}</label>
+                      <input class="form-control" id="pb{{ p.id }}" name="produced_before" value="{{ a.produced_before if a else '' }}">
+                    </div>
+                    <div class="col-md-6"><label class="form-label" for="rn{{ p.id }}">{{ t('arrest.relative') }}</label>
+                      <input class="form-control" id="rn{{ p.id }}" name="relative_name" value="{{ a.relative_name if a else '' }}">
+                    </div>
+                    <div class="col-12 form-check">
+                      <input class="form-check-input" type="checkbox" name="relative_informed" id="rel{{ p.id }}" value="y" {% if a and a.relative_informed %}checked{% endif %}>
+                      <label class="form-check-label" for="rel{{ p.id }}">{{ t('arrest.rel_informed') }}</label>
+                    </div>
+                  </div>
+                  <button class="btn btn-navy mt-3" type="submit">{{ t('case.save_pool') }}</button>
+                </form>
+                {% else %}
+                <p>{{ a.place if a else t('arrest.none') }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

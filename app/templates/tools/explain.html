@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ t('ex.title') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('ex.title') }} <span class="ai-pill">AI</span></h1>
+    <hr class="gold-rule">
+    <p>{{ t('ex.purpose') }}</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container" style="max-width:46rem">
+    <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+    {% if quota %}<div class="alert alert-danger">{{ t('intel.quota') }}</div>{% endif %}
+    {% if not gemini_ok %}<div class="alert alert-info">{{ t('intel.missing_key') }}</div>{% endif %}
+    <form method="post" class="card-station">
+      <div class="card-body">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+          <label class="form-label" for="source_text">{{ t('ex.source') }}</label>
+          {{ form.source_text(class="form-control", rows="10", id="source_text") }}
+          {% if form.source_text.errors %}<div class="invalid-feedback d-block">{{ form.source_text.errors[0] }}</div>{% endif %}
+        </div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label" for="mode">{{ t('ex.mode') }}</label>
+            {{ form.mode(class="form-select") }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="target_lang">{{ t('ex.target') }}</label>
+            {{ form.target_lang(class="form-select") }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="case_id">{{ t('intel.case') }}</label>
+            {{ form.case_id(class="form-select") }}
+          </div>
+        </div>
+        <button class="btn btn-navy mt-3" type="submit" {% if not gemini_ok or quota %}disabled{% endif %}>{{ t('ex.submit') }}</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "email/base.html" %}
+{% block preheader %}New contact form message from {{ sender_name }}{% endblock %}
+{% block eyebrow %}Support desk{% endblock %}
+{% block heading %}New contact message{% endblock %}
+{% block content %}
+<p style="margin:0 0 18px 0;">A visitor submitted the {{ site_name }} contact form.</p>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border:1px solid #d7d0c4;">
+  <tr>
+    <td style="width:140px;padding:10px 12px;background-color:#f7f4ee;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;color:#0b1f3a;border-bottom:1px solid #d7d0c4;">Name</td>
+    <td style="padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c2430;border-bottom:1px solid #d7d0c4;">{{ sender_name }}</td>
+  </tr>
+  <tr>
+    <td style="width:140px;padding:10px 12px;background-color:#f7f4ee;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;color:#0b1f3a;border-bottom:1px solid #d7d0c4;">Email</td>
+    <td style="padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c2430;border-bottom:1px solid #d7d0c4;"><a href="mailto:{{ sender_email }}" style="color:#16325c;text-decoration:underline;">{{ sender_email }}</a></td>
+  </tr>
+  <tr>
+    <td style="width:140px;padding:10px 12px;background-color:#f7f4ee;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;color:#0b1f3a;border-bottom:1px solid #d7d0c4;">Organisation</td>
+    <td style="padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c2430;border-bottom:1px solid #d7d0c4;">{{ organisation }}</td>
+  </tr>
+  <tr>
+    <td style="width:140px;padding:10px 12px;background-color:#f7f4ee;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;color:#0b1f3a;border-bottom:1px solid #d7d0c4;">Station</td>
+    <td style="padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c2430;border-bottom:1px solid #d7d0c4;">{{ station_note }}</td>
+  </tr>
+  <tr>
+    <td valign="top" style="width:140px;padding:10px 12px;background-color:#f7f4ee;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:700;color:#0b1f3a;">Message</td>
+    <td style="padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#1c2430;">{{ message_html }}</td>
+  </tr>
+</table>
+{% endblock %}

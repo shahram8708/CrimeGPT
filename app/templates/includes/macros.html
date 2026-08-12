@@ -1,0 +1,18 @@
+{% macro field(f, label=None, type=None, autocomplete=None, extra_class="") %}
+  <div class="mb-3">
+    <label class="form-label" for="{{ f.id }}">{{ label or f.label.text }}</label>
+    {% set widget_args = kwargs %}
+    {% if type %}{% set _ = widget_args.update({"type": type}) %}{% endif %}
+    {% if autocomplete %}{% set _ = widget_args.update({"autocomplete": autocomplete}) %}{% endif %}
+    {{ f(class="form-control" + (" is-invalid" if f.errors else "") + (" " + extra_class if extra_class else ""), **widget_args) }}
+    {% if f.errors %}
+      <div class="invalid-feedback" id="{{ f.id }}-error">
+        {% for e in f.errors %}{{ e }}{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro status_badge(status) %}
+  <span class="badge job-badge {{ status }}">{{ status }}</span>
+{% endmacro %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_items') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        {% if not items %}
+        <p class="doc-chip missing mb-3">{{ t('item.seizure_need') }}</p>
+        <p>{{ t('item.empty') }}</p>
+        {% endif %}
+        {% if not case.is_locked %}
+        <p><a class="btn btn-gold" href="{{ url_for('cases.item_new', uuid=case.uuid) }}">{{ t('case.add_item') }}</a></p>
+        {% endif %}
+        {% for it in items %}
+        <article class="card-station mb-2"><div class="card-body d-flex justify-content-between flex-wrap gap-2">
+          <div>
+            <strong>{{ it.description }}</strong>
+            {% if it.exhibit_no %}<span class="pool-chip">{{ it.exhibit_no }}</span>{% endif %}
+            <p class="small text-muted mb-0">{{ it.quantity or "" }} {{ it.unit or "" }} · {{ it.place or "" }}</p>
+          </div>
+          {% if not case.is_locked %}
+          <div>
+            <a href="{{ url_for('cases.item_edit', uuid=case.uuid, iid=it.uuid) }}">{{ t('users.edit') }}</a>
+            <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#deli{{ it.id }}">{{ t('case.delete') }}</button>
+          </div>
+          {% endif %}
+        </div></article>
+        <div class="modal fade" id="deli{{ it.id }}" tabindex="-1">
+          <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-body">{{ t('item.delete_q') }}</div>
+            <div class="modal-footer">
+              <button class="btn btn-gold-outline" data-bs-dismiss="modal" type="button">{{ t('wiz.stay') }}</button>
+              <form method="post" action="{{ url_for('cases.item_delete', uuid=case.uuid, iid=it.uuid) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-outline-danger" type="submit">{{ t('case.delete') }}</button>
+              </form>
+            </div>
+          </div></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

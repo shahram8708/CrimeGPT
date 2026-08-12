@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_sections') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+        <div class="table-responsive mb-4">
+          <table class="table doc-table table-stack">
+            <thead><tr><th>{{ t('sec.family') }}</th><th>{{ t('sec.code') }}</th><th>{{ t('sec.title') }}</th><th>{{ t('cases.status') }}</th><th>{{ t('sec.source') }}</th><th></th></tr></thead>
+            <tbody>
+              {% for s in sections %}
+              <tr>
+                <td data-label="{{ t('sec.family') }}">{{ s.statute_family }}</td>
+                <td data-label="{{ t('sec.code') }}">{{ s.code }}</td>
+                <td data-label="{{ t('sec.title') }}">{{ s.title or "-" }}</td>
+                <td data-label="{{ t('cases.status') }}"><span class="badge job-badge {{ s.status }}">{{ s.status }}</span></td>
+                <td data-label="{{ t('sec.source') }}">{{ s.source }}{% if s.confirmed_by %} · {{ s.confirmed_by.full_name }}{% endif %}</td>
+                <td>
+                  {% if can_confirm and s.status == 'suggested' %}
+                  <form method="post" action="{{ url_for('cases.section_confirm', uuid=case.uuid, sid=s.uuid) }}" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-sm btn-navy" type="submit">{{ t('sec.confirm') }}</button>
+                  </form>
+                  {% endif %}
+                  {% if can_confirm %}
+                  <form method="post" action="{{ url_for('cases.section_remove', uuid=case.uuid, sid=s.uuid) }}" class="d-inline">
+                    {{ remove_form.hidden_tag() }}
+                    <input class="form-control form-control-sm d-inline-block" style="width:10rem" name="reason" placeholder="{{ t('sec.reason') }}" required>
+                    <button class="btn btn-sm btn-outline-danger" type="submit">{{ t('case.delete') }}</button>
+                  </form>
+                  {% endif %}
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="6">{{ t('sec.empty') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-station mb-4">
+          <div class="card-body">
+            <h2 class="h5">{{ t('intel.last') }} <span class="ai-pill">AI</span></h2>
+            {% if last_run %}
+            <p class="mb-2">{{ last_run.created_at|ist }} · {{ t('intel.overall') }} {{ last_run.overall_confidence or 0 }}</p>
+            <a href="{{ url_for('results.legal_intel', rid=last_run.uuid) }}">{{ t('intel.open_result') }}</a>
+            {% else %}
+            <p class="text-muted">{{ t('intel.no_run') }}</p>
+            {% endif %}
+            {% if can_intel %}
+            <form method="post" action="{{ url_for('cases.section_suggest', uuid=case.uuid) }}" class="row g-2 align-items-end mt-3" id="intel-form" data-hide-modal="{{ '1' if not show_modal else '0' }}">
+              {{ suggest_form.hidden_tag() }}
+              <div class="col-md-4">{{ suggest_form.focus(class="form-select") }}</div>
+              <div class="col-md-5 form-check mt-4">
+                {{ suggest_form.use_search(class="form-check-input", id="use_search") }}
+                <label class="form-check-label" for="use_search">{{ t('intel.search') }}</label>
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-navy" type="submit" {% if not gemini_ok or quota or not narrative_ready %}disabled{% endif %}>{{ t('intel.suggest') }}</button>
+              </div>
+            </form>
+            {% if not gemini_ok %}<p class="small text-muted mt-2">{{ t('intel.missing_key') }}</p>{% endif %}
+            {% if quota %}<p class="small text-muted mt-2">{{ t('intel.quota') }}</p>{% endif %}
+            {% if not narrative_ready %}<p class="small">{{ t('intel.narrative_short') }} <a href="{{ url_for('cases.case_edit', uuid=case.uuid) }}">{{ t('case.edit_facts') }}</a></p>{% endif %}
+            {% endif %}
+          </div>
+        </div>
+
+        {% if can_edit %}
+        <form method="post" action="{{ url_for('cases.section_manual', uuid=case.uuid) }}" class="card-station"><div class="card-body">
+          {{ add_form.hidden_tag() }}
+          <h2 class="h5">{{ t('sec.add') }}</h2>
+          <div class="row g-3">
+            <div class="col-md-3"><label class="form-label" for="statute_family">{{ t('sec.family') }}</label>{{ add_form.statute_family(class="form-select") }}</div>
+            <div class="col-md-3"><label class="form-label" for="code">{{ t('sec.code') }}</label>{{ add_form.code(class="form-control") }}</div>
+            <div class="col-md-6"><label class="form-label" for="title">{{ t('sec.title') }}</label>{{ add_form.title(class="form-control") }}</div>
+            <div class="col-12"><label class="form-label" for="rationale">{{ t('sec.rationale') }}</label>{{ add_form.rationale(class="form-control", rows="3") }}</div>
+          </div>
+          <button class="btn btn-navy mt-3" type="submit">{{ t('sec.add') }}</button>
+        </div></form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

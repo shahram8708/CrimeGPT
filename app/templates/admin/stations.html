@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ t('adm.stations') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero admin-hero"><div class="container"><h1>{{ t('adm.stations') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container">
+    {% include "admin/_nav.html" %}
+    <p><a class="btn btn-gold" href="{{ url_for('admin.station_new') }}">{{ t('adm.station_new') }}</a></p>
+    <div class="table-responsive">
+      <table class="table doc-table table-stack">
+        <thead><tr><th>{{ t('register.name') }}</th><th>{{ t('adm.code') }}</th><th>{{ t('adm.district') }}</th><th>{{ t('users.active') }}</th><th>{{ t('dash.users') }}</th><th>{{ t('nav.cases') }}</th><th>{{ t('adm.plan') }}</th><th></th></tr></thead>
+        <tbody>
+          {% for c in cards %}
+          <tr>
+            <td>{{ c.station.name }}</td>
+            <td>{{ c.station.code }}</td>
+            <td>{{ c.station.district or "-" }}</td>
+            <td>{{ t('users.yes') if c.station.is_active else t('users.no') }}</td>
+            <td>{{ c.users }}</td>
+            <td>{{ c.cases }}</td>
+            <td>{{ c.station.plan_key }}</td>
+            <td><a href="{{ url_for('admin.station_edit', uuid=c.station.uuid) }}">{{ t('users.open') }}</a></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8">{{ t('adm.none') }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

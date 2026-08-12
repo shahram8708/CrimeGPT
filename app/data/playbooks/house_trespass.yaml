@@ -1,0 +1,30 @@
+category: house_trespass
+title: House-trespass
+expected_documents:
+  - remand_pc
+  - accused_panchanama
+  - seizure_receipt
+expected_process:
+  - key: place
+    label: House or building identified
+    severity: high
+    field: place
+    deep_link: edit
+  - key: rights
+    label: Arrest rights informed
+    severity: high
+    field: rights_informed
+    deep_link: arrests
+  - key: complainant
+    label: Occupier or complainant named
+    severity: high
+    field: complainant
+    deep_link: parties
+expected_elements:
+  - Entry into or upon a building or house
+  - Intent to commit an offence or to intimidate, insult, or annoy
+  - Occupier’s lack of consent
+common_gaps:
+  - Premises not described
+  - Intent left as a bare conclusion
+  - No sketch or scene photograph

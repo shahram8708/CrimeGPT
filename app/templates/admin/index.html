@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ t('adm.title') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero admin-hero"><div class="container"><h1>{{ t('adm.title') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container">
+    {% include "admin/_nav.html" %}
+    <div class="row g-3 mt-2">
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="label">{{ t('dash.stations') }}</div><div class="value">{{ counts.stations }}</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="label">{{ t('dash.users') }}</div><div class="value">{{ counts.users }}</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="label">{{ t('dash.awaiting') }}</div><div class="value">{{ counts.awaiting }}</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="label">{{ t('dash.open_cases') }}</div><div class="value">{{ counts.open_cases }}</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="label">{{ t('dash.failed_today') }}</div><div class="value">{{ counts.failed_today }}</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="label">{{ t('adm.gemini_today') }}</div><div class="value">{{ counts.gemini_today }}</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="label">{{ t('adm.uploads') }}</div><div class="value">{{ (counts.uploads / 1048576)|round(1) }} MB</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="label">{{ t('adm.generated') }}</div><div class="value">{{ (counts.generated / 1048576)|round(1) }} MB</div></div></div>
+    </div>
+    {% if snap %}
+    <p class="small text-muted mt-3">{{ t('adm.plan') }} {{ snap.plan }} · {{ t('adm.month_left') }} {{ snap.monthly_remaining }} / {{ snap.monthly_cap }}</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

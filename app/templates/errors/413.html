@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}File too large - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container prose">
+    <h1>File too large</h1>
+    <hr class="gold-rule">
+    <p>The application rejects uploads larger than 16 MB (the configured 15 MB working limit plus protocol overhead). Reduce the file and try again.</p>
+    <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+  </div>
+</section>
+{% endblock %}

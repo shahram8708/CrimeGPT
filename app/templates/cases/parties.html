@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_parties') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <a class="btn btn-sm btn-gold-outline {% if not role %}active{% endif %}" href="{{ url_for('cases.parties', uuid=case.uuid) }}">{{ t('history.any') }}</a>
+          {% for r in ['complainant','injured','accused','witness','panch','surety','other'] %}
+          <a class="btn btn-sm btn-gold-outline {% if role == r %}active{% endif %}" href="{{ url_for('cases.parties', uuid=case.uuid, role=r) }}">{{ r }}</a>
+          {% endfor %}
+          {% if not case.is_locked %}
+          <a class="btn btn-gold btn-sm" href="{{ url_for('cases.party_new', uuid=case.uuid) }}">{{ t('case.add_party') }}</a>
+          {% endif %}
+        </div>
+        {% for p in parties %}
+        <article class="card-station mb-2"><div class="card-body d-flex justify-content-between flex-wrap gap-2">
+          <div>
+            <strong>{{ p.full_name }}</strong>
+            <span class="pool-chip">{{ p.role }}</span>
+            {% if p.is_juvenile %}<span class="badge job-badge processing">{{ t('party.juvenile') }}</span>{% endif %}
+            <p class="small text-muted mb-0">{{ p.address or "" }}</p>
+          </div>
+          {% if not case.is_locked %}
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('cases.party_edit', uuid=case.uuid, pid=p.uuid) }}">{{ t('users.edit') }}</a>
+            <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#del{{ p.id }}">{{ t('case.delete') }}</button>
+          </div>
+          {% endif %}
+        </div></article>
+        <div class="modal fade" id="del{{ p.id }}" tabindex="-1">
+          <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-body">{{ t('party.delete_q') }} {{ p.full_name }}?</div>
+            <div class="modal-footer">
+              <button class="btn btn-gold-outline" data-bs-dismiss="modal" type="button">{{ t('wiz.stay') }}</button>
+              <form method="post" action="{{ url_for('cases.party_delete', uuid=case.uuid, pid=p.uuid) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-outline-danger" type="submit">{{ t('case.delete') }}</button>
+              </form>
+            </div>
+          </div></div>
+        </div>
+        {% else %}
+        <p class="text-muted">{{ t('party.empty') }}</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

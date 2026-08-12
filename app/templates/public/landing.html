@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}CrimeGPT - One case record. Every police paper.{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <h1>One case record. Every police paper.</h1>
+    <hr class="gold-rule">
+    <p class="lead">CrimeGPT helps investigating officers and writers build seizure receipts, medical letters, remand applications, and a case diary from a single, auditable pool - with Gemini-assisted BNS / BNSS / BSA suggestions you must confirm.</p>
+    <div class="hero-actions">
+      {% if current_user.is_authenticated %}
+        <a class="btn btn-gold" href="{{ url_for('dashboard.index') }}">{{ t('btn.dashboard') }}</a>
+      {% else %}
+        <a class="btn btn-gold" href="{{ url_for('auth.login') }}">{{ t('btn.signin') }}</a>
+      {% endif %}
+      <a class="btn btn-gold-outline" href="{{ url_for('main.how_it_works') }}">See how a remand is built</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <article class="card-station">
+          <div class="card-body">
+            <h2 class="h3">Stop retyping.</h2>
+            <p class="mb-0">Complainant, accused, exhibits, panchas, and medical facts live once. Each paper draws from the same pool so a name change does not have to be typed seven times.</p>
+          </div>
+        </article>
+      </div>
+      <div class="col-md-4">
+        <article class="card-station">
+          <div class="card-body">
+            <h2 class="h3">Suggest BNS / BNSS / BSA.</h2>
+            <p class="mb-0">Narratives in English, Hindi, or Gujarati can be read for candidate provisions. The officer confirms every section. Nothing is charged unsupervised.</p>
+          </div>
+        </article>
+      </div>
+      <div class="col-md-4">
+        <article class="card-station">
+          <div class="card-body">
+            <h2 class="h3">Case diary that survives transfer.</h2>
+            <p class="mb-0">A dated, station-scoped diary stays with the record when an IO changes. The paper trail is meant to travel with the file, not sit in one officer’s notebook.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-paper">
+  <div class="container">
+    <h2>Seven documents from one record</h2>
+    <hr class="gold-rule">
+    <p class="text-muted">Informational list of the statutory papers CrimeGPT is built to draft. Generation arrives in a later station workspace step.</p>
+    <div class="table-responsive">
+      <table class="table doc-table table-stack mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Document</th>
+            <th scope="col">Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Document">Purvani Chargesheet</td>
+            <td data-label="Purpose">Opening charge papers drawn from the confirmed fact pool.</td>
+          </tr>
+          <tr>
+            <td data-label="Document">Medical Treatment Letter</td>
+            <td data-label="Purpose">Hospital referral language tied to the accused or injured party on record.</td>
+          </tr>
+          <tr>
+            <td data-label="Document">Remand Request Letter (Police Custody)</td>
+            <td data-label="Purpose">Custody prayer with dates, grounds, and already-recorded investigation steps.</td>
+          </tr>
+          <tr>
+            <td data-label="Document">Seizure Receipt</td>
+            <td data-label="Purpose">Exhibit list, place, panchas, and complainant particulars in one receipt.</td>
+          </tr>
+          <tr>
+            <td data-label="Document">Court Custody Letter</td>
+            <td data-label="Purpose">Production and judicial custody covering note for the Magistrate.</td>
+          </tr>
+          <tr>
+            <td data-label="Document">Accused Panchanama</td>
+            <td data-label="Purpose">Personal search and seizure around the accused, with witnesses named from the pool.</td>
+          </tr>
+          <tr>
+            <td data-label="Document">Accused Face Identification Form</td>
+            <td data-label="Purpose">Identification particulars captured once and reused without retyping.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="trust-band">
+  Draft assistance only - the officer remains responsible for every paper that leaves the station.
+</div>
+{% endblock %}

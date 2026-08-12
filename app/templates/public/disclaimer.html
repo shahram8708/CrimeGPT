@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Disclaimer - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>Disclaimer</h1>
+    <hr class="gold-rule">
+    <p>Last updated 12 August 2026. Print-friendly. Read this before you treat any suggestion as a section to charge.</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container prose">
+    <h2>English</h2>
+    <blockquote class="border-start border-4 ps-3" style="border-color:#C4A35A!important">
+      <p>{{ disclaimer_en }}</p>
+    </blockquote>
+
+    <h2>हिन्दी</h2>
+    <blockquote class="border-start border-4 ps-3" style="border-color:#C4A35A!important">
+      <p>{{ disclaimer_hi }}</p>
+    </blockquote>
+
+    <h2>ગુજરાતી</h2>
+    <blockquote class="border-start border-4 ps-3" style="border-color:#C4A35A!important">
+      <p>{{ disclaimer_gu }}</p>
+    </blockquote>
+
+    <h2>Operational limits</h2>
+    <ul>
+      <li>CrimeGPT does not authorise unsupervised charging decisions.</li>
+      <li>CrimeGPT does not replace CCTNS, ICJS, or a public prosecutor.</li>
+      <li>AI output is not an official legal opinion.</li>
+      <li>Officers must verify BNS, BNSS, BSA, gazette notifications, and court records.</li>
+    </ul>
+    <p class="no-print"><a class="btn btn-navy" href="javascript:window.print()">Print this page</a></p>
+  </div>
+</section>
+{% endblock %}

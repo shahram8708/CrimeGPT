@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Permission denied - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container prose">
+    <h1>You do not have permission</h1>
+    <hr class="gold-rule">
+    <p>This action is outside your role or station scope.</p>
+    <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+  </div>
+</section>
+{% endblock %}

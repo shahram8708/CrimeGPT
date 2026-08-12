@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "includes/macros.html" import field %}
+{% block title %}{{ t('adm.settings') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero admin-hero"><div class="container"><h1>{{ t('adm.settings') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container" >
+    {% include "admin/_nav.html" %}
+    {% if shown_code %}
+    <div class="alert alert-warning">{{ t('adm.enroll_once') }} <strong>{{ shown_code }}</strong></div>
+    {% endif %}
+    <form method="post" class="card-station mt-3"><div class="card-body">
+      {{ form.hidden_tag() }}
+      {{ field(form.site_name, t('adm.site_name')) }}
+      <div class="form-check mb-3">{{ form.registration_open(class="form-check-input", id="reg") }}<label class="form-check-label" for="reg">{{ t('adm.reg_open') }}</label></div>
+      {{ field(form.gemini_daily_soft_limit, t('adm.daily_limit')) }}
+      {{ field(form.retention_days, t('adm.retention')) }}
+      <div class="mb-3"><label class="form-label" for="disclaimer_en">{{ t('nav.disclaimer') }} (EN)</label>{{ form.disclaimer_en(class="form-control", rows="4") }}</div>
+      <div class="mb-3"><label class="form-label" for="disclaimer_hi">{{ t('nav.disclaimer') }} (HI)</label>{{ form.disclaimer_hi(class="form-control", rows="3") }}</div>
+      <div class="mb-3"><label class="form-label" for="disclaimer_gu">{{ t('nav.disclaimer') }} (GU)</label>{{ form.disclaimer_gu(class="form-control", rows="3") }}</div>
+      <div class="mb-3"><label class="form-label" for="disclaimer_short_en">{{ t('adm.short') }} EN</label>{{ form.disclaimer_short_en(class="form-control", rows="2") }}</div>
+      <div class="mb-3"><label class="form-label" for="disclaimer_short_hi">{{ t('adm.short') }} HI</label>{{ form.disclaimer_short_hi(class="form-control", rows="2") }}</div>
+      <div class="mb-3"><label class="form-label" for="disclaimer_short_gu">{{ t('adm.short') }} GU</label>{{ form.disclaimer_short_gu(class="form-control", rows="2") }}</div>
+      <button class="btn btn-navy" type="submit">{{ t('profile.save') }}</button>
+    </div></form>
+    <form method="post" action="{{ url_for('admin.settings_enroll') }}" class="mt-3">
+      {{ rotate.hidden_tag() }}
+      <button class="btn btn-gold-outline" type="submit">{{ t('adm.rotate_enroll') }}</button>
+      {% if enroll_at %}<span class="small text-muted">{{ t('adm.enroll_set') }} {{ enroll_at|ist }}</span>{% endif %}
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ t('profile.nav_security') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero"><div class="container"><h1>{{ t('profile.nav_security') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3">{% include "includes/profile_nav.html" %}</div>
+      <div class="col-md-8">
+        <p class="text-muted">{{ t('profile.session_note') }}</p>
+        <form method="post" novalidate class="card-station"><div class="card-body">
+          {{ form.hidden_tag() }}
+          <div class="mb-3">
+            <label class="form-label" for="current_password">{{ t('profile.current') }}</label>
+            <div class="password-wrap">
+              {{ form.current_password(class="form-control" + (" is-invalid" if form.current_password.errors else ""), id="current_password", autocomplete="current-password") }}
+              <button type="button" class="toggle-pass" data-password-toggle="current_password" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}">{{ t('login.show') }}</button>
+            </div>
+            {% if form.current_password.errors %}<div class="invalid-feedback d-block">{% for e in form.current_password.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="new_password">{{ t('profile.new') }}</label>
+            <div class="password-wrap">
+              {{ form.new_password(class="form-control js-pw-meter", id="new_password", autocomplete="new-password") }}
+              <button type="button" class="toggle-pass" data-password-toggle="new_password" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}">{{ t('login.show') }}</button>
+            </div>
+            <div class="pw-meter" aria-hidden="true"><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span></div>
+            {% if form.new_password.errors %}<div class="invalid-feedback d-block">{% for e in form.new_password.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="confirm">{{ t('register.confirm') }}</label>
+            {{ form.confirm(class="form-control", id="confirm", autocomplete="new-password") }}
+            {% if form.confirm.errors %}<div class="invalid-feedback d-block">{% for e in form.confirm.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <button type="submit" class="btn btn-navy">{{ t('profile.save') }}</button>
+        </div></form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_docs') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        <div class="alert alert-warning">{{ t('intel.disclaimer') }}</div>
+        <div class="row g-3">
+          {% for c in cards %}
+          <div class="col-md-6">
+            <div class="card-station doc-card {% if not c.live %}muted{% elif c.ready %}ready{% else %}missing{% endif %}{% if c.last and c.last.status == 'final' %} final{% endif %}">
+              <div class="card-body">
+                <h2 class="h5">{{ c.title }}</h2>
+                {% if c.gated %}
+                <p class="small mb-0">{{ t('adm.doc_gated') }}</p>
+                {% elif c.live %}
+                <p class="small mb-2">{% if c.ready %}{{ t('doc.ready') }}{% else %}{{ c.missing }} {{ t('doc.missing_n') }}{% endif %}
+                  {% if c.last %} · v{{ c.last.version_number }} {{ c.last.status }}{% endif %}</p>
+                <div class="d-flex flex-wrap gap-2">
+                  {% if can_generate %}
+                  <a class="btn btn-navy btn-sm" href="{{ url_for('documents.generate', uuid=case.uuid, type=c.key) }}">{{ t('doc.generate') }}</a>
+                  {% endif %}
+                  {% if c.last %}
+                  <a class="btn btn-gold-outline btn-sm" href="{{ url_for('documents.preview', uuid=case.uuid, did=c.last.uuid) }}">{{ t('doc.view') }}</a>
+                  {% endif %}
+                </div>
+                {% else %}
+                <p class="small mb-0">{{ t('doc.not_available') }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

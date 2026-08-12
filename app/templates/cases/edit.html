@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ t('case.nav_facts') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
+      <div class="col-lg-9">
+        {% if locked or not form %}
+          <div class="alert alert-warning">{{ t('case.locked_edit') }} {% if case.locked_by %}{{ case.locked_by.full_name }}{% endif %}</div>
+        {% else %}
+          {% if diffs %}
+          <div class="alert alert-danger" role="alert">
+            <p class="mb-2">{{ t('case.stale') }}</p>
+            <ul>{% for d in diffs %}<li>{{ d.field }}: {{ d.old }} → {{ d.new }}</li>{% endfor %}</ul>
+            <a class="btn btn-navy btn-sm" href="{{ url_for('cases.case_edit', uuid=case.uuid) }}">{{ t('case.reload') }}</a>
+          </div>
+          {% endif %}
+          <form method="post" novalidate class="card-station"><div class="card-body">
+            {{ form.hidden_tag() }}
+            <div class="row g-3">
+              <div class="col-md-3"><label class="form-label" for="year">{{ t('cases.year') }}</label>{{ form.year(class="form-control") }}</div>
+              <div class="col-md-3"><label class="form-label" for="cr_number">{{ t('wiz.cr') }}</label>{{ form.cr_number(class="form-control") }}{% if form.cr_number.errors %}<div class="invalid-feedback d-block">{{ form.cr_number.errors[0] }}</div>{% endif %}</div>
+              <div class="col-md-3"><label class="form-label" for="gd_number">{{ t('wiz.gd') }}</label>{{ form.gd_number(class="form-control") }}</div>
+              <div class="col-md-3"><label class="form-label" for="status">{{ t('cases.status') }}</label>{{ form.status(class="form-select") }}</div>
+              <div class="col-md-6"><label class="form-label" for="incident_at">{{ t('wiz.incident') }}</label>{{ form.incident_at(class="form-control") }}</div>
+              <div class="col-md-6"><label class="form-label" for="category">{{ t('cases.category') }}</label>{{ form.category(class="form-select") }}</div>
+              <div class="col-12"><label class="form-label" for="place_of_occurrence">{{ t('wiz.place') }}</label>{{ form.place_of_occurrence(class="form-control") }}</div>
+              <div class="col-md-6"><label class="form-label" for="assigned_io_id">{{ t('case.io') }}</label>{{ form.assigned_io_id(class="form-select") }}</div>
+              {% if current_user.role in ('sho', 'admin', 'super_admin') %}
+              <div class="col-md-6"><label class="form-label" for="assigned_legal_id">{{ t('case.legal') }}</label>{{ form.assigned_legal_id(class="form-select") }}</div>
+              {% endif %}
+              <div class="col-12"><label class="form-label" for="narrative">{{ t('wiz.narrative') }}</label>{{ form.narrative(class="form-control", rows="10") }}</div>
+              <div class="col-md-4"><label class="form-label" for="narrative_language">{{ t('wiz.nar_lang') }}</label>{{ form.narrative_language(class="form-select") }}</div>
+            </div>
+            <button class="btn btn-navy mt-3" type="submit">{{ t('case.save_pool') }}</button>
+          </div></form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

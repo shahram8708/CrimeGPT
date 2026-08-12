@@ -1,0 +1,30 @@
+category: theft
+title: Theft
+expected_documents:
+  - seizure_receipt
+  - remand_pc
+  - accused_panchanama
+expected_process:
+  - key: items
+    label: Stolen or recovered property listed
+    severity: high
+    field: items
+    deep_link: items
+  - key: panch
+    label: Two panch for the seizure
+    severity: high
+    field: panch
+    deep_link: parties
+  - key: rights
+    label: Arrest rights informed
+    severity: high
+    field: rights_informed
+    deep_link: arrests
+expected_elements:
+  - Movable property belonging to another
+  - Dishonest taking or moving
+  - Without consent
+common_gaps:
+  - Property value or quantity blank
+  - Recovery without a seizure memo
+  - Accused not produced with the property

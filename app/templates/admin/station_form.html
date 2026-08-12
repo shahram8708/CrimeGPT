@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "includes/macros.html" import field %}
+{% block title %}{{ t('adm.stations') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero admin-hero"><div class="container"><h1>{{ t('adm.station_new') if not station else station.name }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container" >
+    {% include "admin/_nav.html" %}
+    <form method="post" enctype="multipart/form-data" class="card-station mt-3"><div class="card-body">
+      {{ form.hidden_tag() }}
+      {{ field(form.name, t('register.name')) }}
+      {{ field(form.code, t('adm.code')) }}
+      {{ field(form.district, t('adm.district')) }}
+      {{ field(form.city, t('adm.city')) }}
+      {{ field(form.state, t('adm.state')) }}
+      {{ field(form.address, t('party.address')) }}
+      {{ field(form.phone, t('party.phone')) }}
+      {{ field(form.letterhead_line2, t('adm.lh2')) }}
+      {{ field(form.letterhead_line3, t('adm.lh3')) }}
+      <div class="form-check mb-3">{{ form.is_active(class="form-check-input", id="is_active") }}<label class="form-check-label" for="is_active">{{ t('users.active') }}</label></div>
+      <div class="mb-3"><label class="form-label" for="plan_key">{{ t('adm.plan') }}</label>{{ form.plan_key(class="form-select") }}</div>
+      {{ field(form.monthly_gemini_allowance, t('adm.allowance')) }}
+      {{ field(form.extra_credits, t('adm.credits')) }}
+      {{ field(form.max_users, t('adm.max_users')) }}
+      <div class="form-check">{{ form.allow_all_document_types(class="form-check-input", id="alldocs") }}<label class="form-check-label" for="alldocs">{{ t('adm.all_docs') }}</label></div>
+      <div class="form-check">{{ form.allow_legal_review(class="form-check-input", id="rev") }}<label class="form-check-label" for="rev">{{ t('adm.legal_review') }}</label></div>
+      <div class="form-check">{{ form.allow_sho_queue(class="form-check-input", id="shoq") }}<label class="form-check-label" for="shoq">{{ t('adm.sho_queue') }}</label></div>
+      <div class="form-check">{{ form.allow_station_fts(class="form-check-input", id="fts") }}<label class="form-check-label" for="fts">{{ t('adm.station_fts') }}</label></div>
+      <div class="form-check">{{ form.allow_cctns_demo(class="form-check-input", id="cctns") }}<label class="form-check-label" for="cctns">{{ t('adm.cctns') }}</label></div>
+      <div class="form-check mb-3">{{ form.allow_audit_export(class="form-check-input", id="audx") }}<label class="form-check-label" for="audx">{{ t('adm.audit_export') }}</label></div>
+      {% if station %}
+      <div class="mb-3"><label class="form-label" for="logo">{{ t('adm.logo') }}</label><input class="form-control" type="file" name="logo" id="logo" accept="image/png"></div>
+      {% if station.logo_path %}<p><img src="{{ url_for('admin.station_logo', uuid=station.uuid) }}" alt="" height="48"></p>{% endif %}
+      {% endif %}
+      <button class="btn btn-navy" type="submit">{{ t('profile.save') }}</button>
+    </div></form>
+  </div>
+</section>
+{% endblock %}

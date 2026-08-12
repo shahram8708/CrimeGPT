@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ t('lib.upload') }} - CrimeGPT{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" >
+    <h1 class="h3">{{ t('lib.upload') }}</h1>
+    <div class="alert alert-warning">{{ t('intel.disclaimer') }}</div>
+    <form method="post" enctype="multipart/form-data" class="card-station"><div class="card-body">
+      {{ form.hidden_tag() }}
+      <div class="mb-3"><label class="form-label" for="file">{{ t('lib.file') }}</label>
+        <input class="form-control" type="file" name="file" id="file" accept=".pdf,.docx,.jpg,.jpeg,.png" required>
+      </div>
+      <div class="mb-3"><label class="form-label">{{ t('intel.case') }}</label>{{ form.case_id(class="form-select") }}</div>
+      <div class="form-check mb-2">{{ form.run_identify(class="form-check-input", id="run_identify") }}
+        <label class="form-check-label" for="run_identify">{{ t('idfy.run') }}</label></div>
+      {% if need_consent %}
+      <div class="form-check mb-2">{{ form.consent(class="form-check-input", id="consent") }}
+        <label class="form-check-label" for="consent">{{ t('ev.consent_box') }}</label></div>
+      {% endif %}
+      <button class="btn btn-navy" type="submit">{{ t('ev.upload') }}</button>
+    </div></form>
+  </div>
+</section>
+{% endblock %}

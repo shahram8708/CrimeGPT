@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ t('profile.nav_activity') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero"><div class="container"><h1>{{ t('profile.nav_activity') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3">{% include "includes/profile_nav.html" %}</div>
+      <div class="col-md-9">
+        <div class="table-responsive">
+          <table class="table doc-table table-stack">
+            <thead><tr><th>{{ t('activity.action') }}</th><th>{{ t('activity.time') }}</th><th>{{ t('activity.ip') }}</th><th>{{ t('activity.object') }}</th></tr></thead>
+            <tbody>
+              {% for row in rows %}
+              <tr>
+                <td data-label="{{ t('activity.action') }}">{{ row.action }}</td>
+                <td data-label="{{ t('activity.time') }}">{{ row.created_at|ist }}</td>
+                <td data-label="{{ t('activity.ip') }}">{{ row.ip or "-" }}</td>
+                <td data-label="{{ t('activity.object') }}">{{ row.object_type or "-" }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4">{{ t('activity.empty') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

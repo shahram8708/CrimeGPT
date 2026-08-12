@@ -1,0 +1,28 @@
+<div class="modal fade" id="emptyModalSlot" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content d-none"></div></div>
+</div>
+<div class="modal fade" id="intelModal" tabindex="-1" aria-labelledby="intelModalTitle">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="h5 modal-title" id="intelModalTitle">{{ t('intel.modal_title') }}</h2>
+      </div>
+      <div class="modal-body">
+        <p>{{ t('intel.disclaimer') }}</p>
+        <ul>
+          <li>{{ t('onboard.limit1') }}</li>
+          <li>{{ t('onboard.limit2') }}</li>
+          <li>{{ t('intel.verify_bns') }}</li>
+        </ul>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="intel-hide-again">
+          <label class="form-check-label" for="intel-hide-again">{{ t('intel.hide_again') }}</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-gold-outline" data-bs-dismiss="modal">{{ t('wiz.stay') }}</button>
+        <button type="button" class="btn btn-navy" id="intel-ack">{{ t('onboard.i_understand') }}</button>
+      </div>
+    </div>
+  </div>
+</div>

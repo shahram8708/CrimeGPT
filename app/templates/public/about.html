@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}About CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>About CrimeGPT</h1>
+    <hr class="gold-rule">
+    <p>Built for Ahmedabad City Police under the Kanad S.H.I.E.L.D. Ahmedabad City Police Innovation Challenge 2026. Problem ID PS-69EEFDFB90B99. Category 2 - Legal-tech / Policing.</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container prose">
+    <p>CrimeGPT is a station-grade assistance system for police documentation. It is specified against the daily cost of retyping the same facts into seizure receipts, medical letters, remand applications, panchanamas, and the case diary - and against the risk of an unsupervised model “charging” a file.</p>
+
+    <h2>Challenge context</h2>
+    <p>Kanad S.H.I.E.L.D. asked for tools that help officers work inside the law, not around it. This product answers that brief with one auditable case record, seven statutory papers, a digital diary, and Gemini-assisted suggestions for Bharatiya Nyaya Sanhita, Bharatiya Nagarik Suraksha Sanhita, and Bharatiya Sakshya Adhiniyam. Those workspace features are delivered in later steps. This public site is the platform face and the legal envelope around them.</p>
+
+    <h2>Philosophy</h2>
+    <ul>
+      <li><strong>One fact, many papers.</strong> A name, a belt number, an exhibit, or a panch is entered once.</li>
+      <li><strong>Officer in the loop.</strong> Suggested sections are candidates. The IO or writer confirms them.</li>
+      <li><strong>No unsupervised charging.</strong> The system does not file an FIR, does not write back to CCTNS, and does not replace a public prosecutor.</li>
+    </ul>
+
+    <h2>What this product is not</h2>
+    <ul class="non-goals">
+      <li>It does not auto-charge an accused.</li>
+      <li>It does not perform live CCTNS or ICJS write-back.</li>
+      <li>It does not run face recognition.</li>
+      <li>It does not claim that Gemini is a legal opinion.</li>
+      <li>It does not replace the Magistrate or the public prosecutor.</li>
+    </ul>
+
+    <h2>Who it is for</h2>
+    <p>Investigating officers, writers, Station House Officers, legal cell officers, and constables attached to a pilot station. Super Admin holds platform control. Access is provisioned by the station administrator - this is not a public self-serve product.</p>
+
+    <p class="mt-4">
+      <a class="btn btn-navy" href="{{ url_for('auth.login') }}">{{ t('btn.signin') }}</a>
+      <a class="btn btn-gold-outline ms-2" href="{{ url_for('main.disclaimer') }}">Read the disclaimer</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

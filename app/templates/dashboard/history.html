@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% from "includes/macros.html" import status_badge %}
+{% block title %}{{ t('nav.history') }} - CrimeGPT{% endblock %}
+{% block content %}
+<header class="page-hero"><div class="container"><h1>{{ t('history.title') }}</h1><hr class="gold-rule"></div></header>
+<section class="section">
+  <div class="container">
+    <form class="row g-2 mb-3" method="get">
+      <div class="col-md-2"><label class="form-label" for="type">{{ t('history.type') }}</label>
+        <select class="form-select" id="type" name="type">
+          <option value="">{{ t('history.any') }}</option>
+          <option value="intel" {% if filters.get('type') == 'intel' %}selected{% endif %}>{{ t('intel.title') }}</option>
+          <option value="qa" {% if filters.get('type') == 'qa' %}selected{% endif %}>{{ t('qa.title') }}</option>
+          <option value="analysis" {% if filters.get('type') == 'analysis' %}selected{% endif %}>{{ t('an.title') }}</option>
+          <option value="translate" {% if filters.get('type') == 'translate' %}selected{% endif %}>{{ t('ex.title') }}</option>
+          <option value="checklist" {% if filters.get('type') == 'checklist' %}selected{% endif %}>{{ t('ck.title') }}</option>
+          <option value="gap" {% if filters.get('type') == 'gap' %}selected{% endif %}>{{ t('gap.title') }}</option>
+        </select>
+      </div>
+      <div class="col-md-3"><label class="form-label" for="task">{{ t('history.task') }}</label><input class="form-control" id="task" name="task" value="{{ filters.get('task', '') }}"></div>
+      <div class="col-md-2"><label class="form-label" for="status">{{ t('history.status') }}</label>
+        <select class="form-select" id="status" name="status">
+          <option value="">{{ t('history.any') }}</option>
+          {% for s in ['queued','processing','completed','failed'] %}
+          <option value="{{ s }}" {% if filters.get('status') == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2"><label class="form-label" for="date_from">{{ t('history.from') }}</label><input class="form-control" type="date" id="date_from" name="date_from" value="{{ filters.get('date_from', '') }}"></div>
+      <div class="col-md-2"><label class="form-label" for="date_to">{{ t('history.to') }}</label><input class="form-control" type="date" id="date_to" name="date_to" value="{{ filters.get('date_to', '') }}"></div>
+      <div class="col-md-2"><label class="form-label" for="case">{{ t('history.case') }}</label><input class="form-control" id="case" name="case" value="{{ filters.get('case', '') }}"></div>
+      {% if current_user.role == 'super_admin' %}
+      <div class="col-md-3"><label class="form-label" for="user">{{ t('history.user') }}</label><input class="form-control" id="user" name="user" value="{{ filters.get('user', '') }}"></div>
+      {% endif %}
+      <div class="col-md-2 d-flex align-items-end"><button class="btn btn-navy" type="submit">{{ t('history.filter') }}</button></div>
+    </form>
+    <div class="table-responsive">
+      <table class="table doc-table table-stack">
+        <thead><tr><th>{{ t('history.task') }}</th><th>{{ t('history.case') }}</th><th>{{ t('history.started') }}</th><th>{{ t('history.status') }}</th><th>{{ t('history.progress') }}</th><th></th><th></th></tr></thead>
+        <tbody>
+          {% for job in jobs %}
+          <tr>
+            <td data-label="{{ t('history.task') }}">{{ job.task_name }}</td>
+            <td data-label="{{ t('history.case') }}">-</td>
+            <td data-label="{{ t('history.started') }}">{{ (job.started_at or job.created_at)|ist }}</td>
+            <td data-label="{{ t('history.status') }}">{{ status_badge(job.status) }}</td>
+            <td data-label="{{ t('history.progress') }}">{{ job.progress }}%</td>
+            <td data-label=""><a href="{{ url_for('jobs.progress', job_uuid=job.uuid) }}">{{ t('notes.open') }}</a></td>
+            <td data-label="">
+              <form method="post" action="{{ url_for('dashboard.star_job', job_uuid=job.uuid) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-link btn-sm" aria-pressed="{{ 'true' if job.is_starred else 'false' }}">{% if job.is_starred %}★{% else %}☆{% endif %}</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7">{{ t('history.empty') }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if saved %}
+    <h2 class="h5 mt-4">{{ t('history.saved') }}</h2>
+    <div class="table-responsive">
+      <table class="table doc-table table-stack">
+        <thead><tr><th>{{ t('intel.result') }}</th><th>{{ t('history.started') }}</th><th></th><th></th></tr></thead>
+        <tbody>
+          {% for row in saved %}
+          <tr>
+            <td>{{ row.title }}</td>
+            <td>{{ row.created_at|ist }}</td>
+            <td>{% if saved_links.get(row.id) %}<a href="{{ saved_links[row.id] }}">{{ t('notes.open') }}</a>{% endif %}</td>
+            <td>
+              <form method="post" action="{{ url_for('results.star_saved', sid=row.uuid) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-link btn-sm">{% if row.is_starred %}★{% else %}☆{% endif %}</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    <p class="small text-muted">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+    {% if pages > 1 %}
+    <nav class="d-flex gap-2">
+      {% if page > 1 %}<a class="btn btn-gold-outline btn-sm" href="?page={{ page-1 }}">{{ t('history.prev') }}</a>{% endif %}
+      {% if page < pages %}<a class="btn btn-gold-outline btn-sm" href="?page={{ page+1 }}">{{ t('history.next') }}</a>{% endif %}
+    </nav>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
