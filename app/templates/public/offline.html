@@ -1,19 +1,40 @@
 {% extends "base.html" %}
 {% block title %}{{ t('offline.title') }}{% endblock %}
+{% block body_class %}public-page{% endblock %}
 {% block content %}
-<section class="section">
-  <div class="container text-center" style="max-width:36rem">
+<header class="page-hero">
+  <div class="container">
     <h1>{{ t('offline.title') }}</h1>
-    <hr class="gold-rule mx-auto">
-    <p>{{ t('offline.body') }}</p>
-    <ul class="text-start">
-      <li>{{ t('offline.can') }}</li>
-      <li>{{ t('offline.cannot') }}</li>
-    </ul>
-    <p class="d-flex flex-wrap justify-content-center gap-2">
-      <button type="button" class="btn btn-navy" onclick="location.reload()">{{ t('btn.retry') }}</button>
-      <a class="btn btn-gold-outline" href="{{ url_for('main.how_it_works') }}">{{ t('nav.how') }}</a>
-    </p>
+    <hr class="gold-rule">
+    <p>You are working offline. CrimeGPT interface chrome is available, but AI analysis requires a live connection.</p>
+  </div>
+</header>
+<section class="section">
+  <div class="container">
+    <div class="offline-shell public-offline-shell">
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <article class="card-station public-offline-card h-100">
+            <div class="card-body">
+              <h2 class="h6 text-uppercase text-muted">Available now</h2>
+              <p class="mb-0">{{ t('offline.can') }}</p>
+            </div>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="card-station public-offline-card h-100">
+            <div class="card-body">
+              <h2 class="h6 text-uppercase text-muted">Requires connection</h2>
+              <p class="mb-0">{{ t('offline.cannot') }}</p>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap justify-content-center gap-2 mb-0">
+        <button type="button" class="btn btn-navy" onclick="location.reload()">{{ t('btn.retry') }}</button>
+        <a class="btn btn-gold-outline" href="{{ url_for('main.how_it_works') }}">Continue with local draft</a>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}

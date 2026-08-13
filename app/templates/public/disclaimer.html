@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Disclaimer - CrimeGPT{% endblock %}
+{% block body_class %}public-page{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
@@ -9,30 +10,56 @@
   </div>
 </header>
 <section class="section">
-  <div class="container prose">
-    <h2>English</h2>
-    <blockquote class="border-start border-4 ps-3" style="border-color:#C4A35A!important">
-      <p>{{ disclaimer_en }}</p>
-    </blockquote>
+  <div class="container">
+    <div class="alert ai-disclaimer mb-4" role="status">
+      <span class="ai-pill">AI</span> AI-generated legal information may contain errors. Verify against official texts before action.
+    </div>
 
-    <h2>हिन्दी</h2>
-    <blockquote class="border-start border-4 ps-3" style="border-color:#C4A35A!important">
-      <p>{{ disclaimer_hi }}</p>
-    </blockquote>
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <article class="card-station public-disclaimer-card h-100">
+          <div class="card-body">
+            <h2 class="h5">English</h2>
+            <blockquote class="mb-0 public-disclaimer-quote">
+              <p class="mb-0">{{ disclaimer_en }}</p>
+            </blockquote>
+          </div>
+        </article>
+      </div>
+      <div class="col-lg-4">
+        <article class="card-station public-disclaimer-card h-100">
+          <div class="card-body">
+            <h2 class="h5">हिन्दी</h2>
+            <blockquote class="mb-0 public-disclaimer-quote">
+              <p class="mb-0">{{ disclaimer_hi }}</p>
+            </blockquote>
+          </div>
+        </article>
+      </div>
+      <div class="col-lg-4">
+        <article class="card-station public-disclaimer-card h-100">
+          <div class="card-body">
+            <h2 class="h5">ગુજરાતી</h2>
+            <blockquote class="mb-0 public-disclaimer-quote">
+              <p class="mb-0">{{ disclaimer_gu }}</p>
+            </blockquote>
+          </div>
+        </article>
+      </div>
+    </div>
 
-    <h2>ગુજરાતી</h2>
-    <blockquote class="border-start border-4 ps-3" style="border-color:#C4A35A!important">
-      <p>{{ disclaimer_gu }}</p>
-    </blockquote>
-
-    <h2>Operational limits</h2>
-    <ul>
-      <li>CrimeGPT does not authorise unsupervised charging decisions.</li>
-      <li>CrimeGPT does not replace CCTNS, ICJS, or a public prosecutor.</li>
-      <li>AI output is not an official legal opinion.</li>
-      <li>Officers must verify BNS, BNSS, BSA, gazette notifications, and court records.</li>
-    </ul>
-    <p class="no-print"><a class="btn btn-navy" href="javascript:window.print()">Print this page</a></p>
+    <article class="card-station public-guardrail-card mt-4">
+      <div class="card-body">
+        <h2 class="h5">Operational limits</h2>
+        <ul class="mb-3">
+          <li>CrimeGPT does not authorise unsupervised charging decisions.</li>
+          <li>CrimeGPT does not replace CCTNS, ICJS, or a public prosecutor.</li>
+          <li>AI output is not an official legal opinion.</li>
+          <li>Officers must verify BNS, BNSS, BSA, gazette notifications, and court records.</li>
+        </ul>
+        <p class="no-print mb-0"><a class="btn btn-navy" href="javascript:window.print()">Print this page</a></p>
+      </div>
+    </article>
   </div>
 </section>
 {% endblock %}

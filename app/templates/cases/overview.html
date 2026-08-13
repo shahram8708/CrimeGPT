@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block title %}{{ case.display_cr }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
     <h1>{{ case.display_cr }}</h1>
     <hr class="gold-rule">
-    <p>
+    <p class="mb-0">
       <span class="pool-chip">{{ case.category_label }}</span>
       <span class="badge job-badge {{ case.status }}">{{ case.status }}</span>
       {% if case.assigned_io %} · {{ case.assigned_io.full_name }}{% endif %}
@@ -18,84 +19,108 @@
     <div class="row g-4">
       <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
       <div class="col-lg-9">
-        <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-          <div class="donut" style="--p:{{ completeness.percent }}" aria-hidden="true"></div>
-          <div>
-            <p class="mb-0 fw-bold">{{ t('case.completeness') }} {{ completeness.percent }} {{ t('case.percent') }}</p>
-            <p class="small text-muted mb-0">{{ t('case.completeness_help') }}</p>
+        <article class="card-station mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+              <div class="donut" style="--p:{{ completeness.percent }}" aria-hidden="true"></div>
+              <div>
+                <p class="mb-0 fw-bold">{{ t('case.completeness') }} {{ completeness.percent }} {{ t('case.percent') }}</p>
+                <p class="small text-muted mb-0">{{ t('case.completeness_help') }}</p>
+              </div>
+            </div>
+            <h2 class="h5">{{ t('case.next') }}</h2>
+            <ol class="mb-0">
+              {% for a in actions %}
+              <li><a href="{{ a.href }}">{{ a.label }}</a></li>
+              {% endfor %}
+            </ol>
           </div>
-        </div>
-        <h2 class="h5">{{ t('case.next') }}</h2>
-        <ol>
-          {% for a in actions %}
-          <li><a href="{{ a.href }}">{{ a.label }}</a></li>
-          {% endfor %}
-        </ol>
-        <div class="d-flex flex-wrap gap-2 my-3">
-          {% for p in case.live_parties() %}
-          <span class="avatar-initials" title="{{ p.full_name }}">{{ p.initials }}</span>
-          {% endfor %}
-          <span class="text-muted small">{{ case.live_items()|length }} {{ t('case.items_count') }}</span>
-          {% for s in case.sections.filter_by(status='confirmed') %}
-          <span class="section-chip">{{ s.statute_family }} {{ s.code }}</span>
-          {% endfor %}
-        </div>
+        </article>
+
+        <article class="card-station mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+              {% for p in case.live_parties() %}
+              <span class="avatar-initials" title="{{ p.full_name }}">{{ p.initials }}</span>
+              {% endfor %}
+              <span class="text-muted small align-self-center">{{ case.live_items()|length }} {{ t('case.items_count') }}</span>
+              {% for s in case.sections.filter_by(status='confirmed') %}
+              <span class="section-chip">{{ s.statute_family }} {{ s.code }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </article>
+
+        <article class="card-station mb-3">
+          <div class="card-body">
         {% if diary_lines %}
-        <h2 class="h6">{{ t('case.nav_diary') }}</h2>
-        <ul class="list-unstyled">
-          {% for e in diary_lines %}
-          <li class="mb-1"><a href="{{ url_for('diary.diary_entry', uuid=case.uuid, eid=e.uuid) }}">{{ e.entry_type }}</a> · {{ e.occurred_at|ist }}</li>
-          {% endfor %}
-        </ul>
+            <h2 class="h6">{{ t('case.nav_diary') }}</h2>
+            <ul class="list-unstyled mb-0">
+              {% for e in diary_lines %}
+              <li class="mb-1"><a href="{{ url_for('diary.diary_entry', uuid=case.uuid, eid=e.uuid) }}">{{ e.entry_type }}</a> · {{ e.occurred_at|ist }}</li>
+              {% endfor %}
+            </ul>
         {% else %}
-        <p class="text-muted small">{{ t('case.no_diary') }}</p>
+            <p class="text-muted small mb-0">{{ t('case.no_diary') }}</p>
         {% endif %}
-        <div class="d-flex flex-wrap gap-2 mb-4">
-          {% for d in docs %}
-          {% if d.href %}
-          <a class="doc-chip missing" href="{{ d.href }}">{{ d.title }} · {{ d.label }}</a>
-          {% else %}
-          <span class="doc-chip">{{ d.title }} · {{ d.label }}</span>
-          {% endif %}
-          {% endfor %}
-        </div>
-        <ol class="progress-chain">
-          {% for s in chain %}
-          <li class="{% if s.current %}current{% endif %}{% if s.key == 'key_docs' %} muted{% endif %}">{{ s.label }}</li>
-          {% endfor %}
-        </ol>
-        <div class="d-flex flex-wrap gap-2 mt-4">
-          {% if can_edit %}
-          <a class="btn btn-navy" href="{{ url_for('cases.case_edit', uuid=case.uuid) }}">{{ t('case.edit_facts') }}</a>
-          <a class="btn btn-gold-outline" href="{{ url_for('cases.party_new', uuid=case.uuid) }}">{{ t('case.add_party') }}</a>
-          <a class="btn btn-gold-outline" href="{{ url_for('cases.item_new', uuid=case.uuid) }}">{{ t('case.add_item') }}</a>
-          <a class="btn btn-gold-outline" href="{{ url_for('cases.arrests', uuid=case.uuid) }}">{{ t('case.nav_arrest') }}</a>
-          <a class="btn btn-gold-outline" href="{{ url_for('cases.medical', uuid=case.uuid) }}">{{ t('case.nav_medical') }}</a>
-          {% endif %}
-          <a class="btn btn-gold-outline" href="{{ url_for('cases.sections', uuid=case.uuid) }}">{{ t('case.nav_sections') }}</a>
-          {% if can_cctns %}
-          <form method="post" action="{{ url_for('cases.cctns_export', uuid=case.uuid) }}">
-            {{ cctns_form.hidden_tag() }}
-            <button class="btn btn-gold-outline" type="submit">{{ t('adm.cctns_btn') }}</button>
-          </form>
-          {% if last_ack %}<span class="small text-muted">{{ t('adm.cctns_ack') }} {{ last_ack.ack_number }}</span>{% endif %}
-          {% endif %}
-          {% if can_lock and not case.is_locked %}
-          <form method="post" action="{{ url_for('cases.case_lock', uuid=case.uuid) }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button class="btn btn-gold-outline" type="submit">{{ t('case.lock') }}</button>
-          </form>
-          {% endif %}
-          {% if can_lock and case.is_locked %}
-          <form method="post" action="{{ url_for('cases.case_unlock', uuid=case.uuid) }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button class="btn btn-navy" type="submit">{{ t('case.unlock') }}</button>
-          </form>
-          {% endif %}
-          {% if can_delete %}
-          <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delCase">{{ t('case.delete') }}</button>
-          {% endif %}
-        </div>
+          </div>
+        </article>
+
+        <article class="card-station mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              {% for d in docs %}
+              {% if d.href %}
+              <a class="doc-chip missing" href="{{ d.href }}">{{ d.title }} · {{ d.label }}</a>
+              {% else %}
+              <span class="doc-chip">{{ d.title }} · {{ d.label }}</span>
+              {% endif %}
+              {% endfor %}
+            </div>
+            <ol class="progress-chain mb-0">
+              {% for s in chain %}
+              <li class="{% if s.current %}current{% endif %}{% if s.key == 'key_docs' %} muted{% endif %}">{{ s.label }}</li>
+              {% endfor %}
+            </ol>
+          </div>
+        </article>
+
+        <article class="card-station">
+          <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+              {% if can_edit %}
+              <a class="btn btn-navy" href="{{ url_for('cases.case_edit', uuid=case.uuid) }}">{{ t('case.edit_facts') }}</a>
+              <a class="btn btn-gold-outline" href="{{ url_for('cases.party_new', uuid=case.uuid) }}">{{ t('case.add_party') }}</a>
+              <a class="btn btn-gold-outline" href="{{ url_for('cases.item_new', uuid=case.uuid) }}">{{ t('case.add_item') }}</a>
+              <a class="btn btn-gold-outline" href="{{ url_for('cases.arrests', uuid=case.uuid) }}">{{ t('case.nav_arrest') }}</a>
+              <a class="btn btn-gold-outline" href="{{ url_for('cases.medical', uuid=case.uuid) }}">{{ t('case.nav_medical') }}</a>
+              {% endif %}
+              <a class="btn btn-gold-outline" href="{{ url_for('cases.sections', uuid=case.uuid) }}">{{ t('case.nav_sections') }}</a>
+              {% if can_cctns %}
+              <form method="post" action="{{ url_for('cases.cctns_export', uuid=case.uuid) }}">
+                {{ cctns_form.hidden_tag() }}
+                <button class="btn btn-gold-outline" type="submit">{{ t('adm.cctns_btn') }}</button>
+              </form>
+              {% if last_ack %}<span class="small text-muted align-self-center">{{ t('adm.cctns_ack') }} {{ last_ack.ack_number }}</span>{% endif %}
+              {% endif %}
+              {% if can_lock and not case.is_locked %}
+              <form method="post" action="{{ url_for('cases.case_lock', uuid=case.uuid) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-gold-outline" type="submit">{{ t('case.lock') }}</button>
+              </form>
+              {% endif %}
+              {% if can_lock and case.is_locked %}
+              <form method="post" action="{{ url_for('cases.case_unlock', uuid=case.uuid) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-navy" type="submit">{{ t('case.unlock') }}</button>
+              </form>
+              {% endif %}
+              {% if can_delete %}
+              <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delCase">{{ t('case.delete') }}</button>
+              {% endif %}
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </div>

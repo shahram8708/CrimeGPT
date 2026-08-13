@@ -1,13 +1,16 @@
+<div class="admin-nav-head d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+  <p class="small text-uppercase fw-bold text-muted mb-0">Administration</p>
+</div>
 <nav class="admin-subnav" aria-label="{{ t('adm.title') }}">
-  <a class="{% if request.endpoint == 'admin.home' %}active{% endif %}" href="{{ url_for('admin.home') }}">{{ t('adm.home') }}</a>
-  <a class="{% if request.endpoint and request.endpoint.startswith('admin_users') %}active{% endif %}" href="{{ url_for('admin_users.users_list') }}">{{ t('nav.users') }}</a>
+  <a class="admin-subnav-link {% if request.endpoint == 'admin.home' %}active{% endif %}" href="{{ url_for('admin.home') }}">{{ t('adm.home') }}</a>
+  <a class="admin-subnav-link {% if request.endpoint and request.endpoint.startswith('admin_users') %}active{% endif %}" href="{{ url_for('admin_users.users_list') }}">{{ t('nav.users') }}</a>
   {% if current_user.role in ('admin', 'super_admin') %}
-  <a class="{% if request.endpoint and 'station' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.stations') }}">{{ t('adm.stations') }}</a>
+  <a class="admin-subnav-link {% if request.endpoint and 'station' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.stations') }}">{{ t('adm.stations') }}</a>
   {% endif %}
-  <a class="{% if request.endpoint == 'admin.audit' %}active{% endif %}" href="{{ url_for('admin.audit') }}">{{ t('adm.audit') }}</a>
+  <a class="admin-subnav-link {% if request.endpoint == 'admin.audit' %}active{% endif %}" href="{{ url_for('admin.audit') }}">{{ t('adm.audit') }}</a>
   {% if current_user.role in ('admin', 'super_admin') %}
-  <a class="{% if request.endpoint and request.endpoint.startswith('admin.settings') %}active{% endif %}" href="{{ url_for('admin.settings') }}">{{ t('adm.settings') }}</a>
-  <a class="{% if request.endpoint and 'job' in (request.endpoint or '') %}active{% endif %}" href="{{ url_for('admin.jobs') }}">{{ t('adm.jobs') }}</a>
+  <a class="admin-subnav-link {% if request.endpoint and request.endpoint.startswith('admin.settings') %}active{% endif %}" href="{{ url_for('admin.settings') }}">{{ t('adm.settings') }}</a>
+  <a class="admin-subnav-link {% if request.endpoint and 'job' in (request.endpoint or '') %}active{% endif %}" href="{{ url_for('admin.jobs') }}">{{ t('adm.jobs') }}</a>
   {% endif %}
-  <a class="{% if request.endpoint and request.endpoint.startswith('admin.usage') %}active{% endif %}" href="{{ url_for('admin.usage') }}">{{ t('adm.usage') }}</a>
+  <a class="admin-subnav-link {% if request.endpoint and request.endpoint.startswith('admin.usage') %}active{% endif %}" href="{{ url_for('admin.usage') }}">{{ t('adm.usage') }}</a>
 </nav>

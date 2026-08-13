@@ -1,19 +1,32 @@
 {% extends "base.html" %}
 {% block title %}{{ t('case.nav_arrest') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('case.nav_arrest') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
       <div class="col-lg-9">
         {% if not accused %}
-        <p>{{ t('arrest.need_accused') }} <a href="{{ url_for('cases.party_new', uuid=case.uuid) }}">{{ t('case.add_party') }}</a></p>
+        <article class="card-station"><div class="card-body">
+          <p class="mb-0">{{ t('arrest.need_accused') }} <a href="{{ url_for('cases.party_new', uuid=case.uuid) }}">{{ t('case.add_party') }}</a></p>
+        </div></article>
         {% else %}
+        <article class="card-station mb-3"><div class="card-body py-3">
+          <p class="small text-muted mb-0">{{ accused|length }} {{ t('case.nav_parties') }}</p>
+        </div></article>
         <div class="accordion" id="arrestAcc">
           {% for p in accused %}
           {% set a = arrests.get(p.id) %}
           <div class="accordion-item">
-            <h2 class="accordion-header"><button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#acc{{ p.id }}">{{ p.full_name }}</button></h2>
+            <h2 class="accordion-header"><button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#acc{{ p.id }}">{{ p.full_name }}{% if p.alias %} · {{ p.alias }}{% endif %}</button></h2>
             <div id="acc{{ p.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#arrestAcc">
               <div class="accordion-body">
                 {% if can_edit %}
@@ -48,7 +61,7 @@
                   <button class="btn btn-navy mt-3" type="submit">{{ t('case.save_pool') }}</button>
                 </form>
                 {% else %}
-                <p>{{ a.place if a else t('arrest.none') }}</p>
+                <p class="mb-0">{{ a.place if a else t('arrest.none') }}</p>
                 {% endif %}
               </div>
             </div>

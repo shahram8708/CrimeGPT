@@ -2,11 +2,18 @@
 {% block title %}File too large - CrimeGPT{% endblock %}
 {% block content %}
 <section class="section">
-  <div class="container prose">
-    <h1>File too large</h1>
-    <hr class="gold-rule">
-    <p>The application rejects uploads larger than 16 MB (the configured 15 MB working limit plus protocol overhead). Reduce the file and try again.</p>
-    <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+  <div class="container">
+    <div class="error-shell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#8A6200" stroke-width="1.8" aria-hidden="true"><path d="M12 16v-4"/><path d="M12 8h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <h1 class="h3 mt-3">File too large</h1>
+      <hr class="gold-rule">
+      <p>The maximum upload size is 15 MB. Please compress the file and try again.</p>
+      {% if current_user.is_authenticated %}
+      <a class="btn btn-navy" href="{{ url_for('dashboard.index') }}">{{ t('btn.dashboard') }}</a>
+      {% else %}
+      <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+      {% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

@@ -1,19 +1,26 @@
 {% extends "base.html" %}
 {% block title %}{{ t('btn.new_case') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
     <h1>{{ t('btn.new_case') }}</h1>
     <hr class="gold-rule">
+    <p class="mb-0">{{ t('wiz.step1') }} · {{ t('wiz.step2') }} · {{ t('wiz.step3') }}</p>
   </div>
 </header>
 <section class="section">
-  <div class="container" >
-    <ol class="stepper">
-      <li class="{% if step == 1 %}current{% elif step > 1 %}done{% endif %}">{{ t('wiz.step1') }}</li>
-      <li class="{% if step == 2 %}current{% elif step > 2 %}done{% endif %}">{{ t('wiz.step2') }}</li>
-      <li class="{% if step == 3 %}current{% endif %}">{{ t('wiz.step3') }}</li>
-    </ol>
+  <div class="container">
+    <article class="card-station mb-3">
+      <div class="card-body py-3">
+        <ol class="stepper mb-0">
+          <li class="{% if step == 1 %}current{% elif step > 1 %}done{% endif %}">{{ t('wiz.step1') }}</li>
+          <li class="{% if step == 2 %}current{% elif step > 2 %}done{% endif %}">{{ t('wiz.step2') }}</li>
+          <li class="{% if step == 3 %}current{% endif %}">{{ t('wiz.step3') }}</li>
+        </ol>
+      </div>
+    </article>
+
     <form method="post" id="wizard-form" data-offline="{{ '1' if offline else '0' }}" data-dirty="0" novalidate>
       {{ form.csrf_token }}
       {{ form.case_uuid() }}
@@ -84,7 +91,7 @@
         {% if step == 3 %}
         <button type="submit" class="btn btn-gold" data-wiz="create">{{ t('wiz.create') }}</button>
         {% endif %}
-        <button type="button" class="btn btn-link" id="wiz-cancel">{{ t('wiz.cancel') }}</button>
+        <button type="button" class="btn btn-link ms-auto" id="wiz-cancel">{{ t('wiz.cancel') }}</button>
       </div>
     </form>
   </div>

@@ -1,24 +1,37 @@
 {% extends "base.html" %}
 {% block title %}{{ t('doc.versions') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('doc.versions') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
       <div class="col-lg-9">
-        <h1 class="h4">{{ titles.get(doc.doc_type) }}</h1>
+        <article class="card-station mb-3">
+          <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <h2 class="h5 mb-0">{{ titles.get(doc.doc_type) }}</h2>
+            <a class="btn btn-gold-outline btn-sm" href="{{ url_for('documents.preview', uuid=case.uuid, did=doc.uuid) }}">{{ t('doc.view') }}</a>
+          </div>
+        </article>
         <div class="table-responsive">
           <table class="table doc-table table-stack">
             <thead><tr><th>{{ t('doc.version') }}</th><th>{{ t('history.user') }}</th><th>{{ t('history.started') }}</th><th>AI</th><th>{{ t('history.status') }}</th><th></th></tr></thead>
             <tbody>
               {% for r in rows %}
               <tr>
-                <td>v{{ r.version_number }}{% if r.is_incomplete %} · incomplete{% endif %}</td>
-                <td>{{ r.creator.full_name if r.creator else "-" }}</td>
-                <td>{{ r.created_at|ist }}</td>
-                <td>{{ t('users.yes') if r.ai_used else t('users.no') }}</td>
-                <td><span class="badge job-badge {{ r.status }}">{{ r.status }}</span></td>
-                <td>
+                <td data-label="{{ t('doc.version') }}">v{{ r.version_number }}{% if r.is_incomplete %} · incomplete{% endif %}</td>
+                <td data-label="{{ t('history.user') }}">{{ r.creator.full_name if r.creator else "-" }}</td>
+                <td data-label="{{ t('history.started') }}">{{ r.created_at|ist }}</td>
+                <td data-label="AI">{{ t('users.yes') if r.ai_used else t('users.no') }}</td>
+                <td data-label="{{ t('history.status') }}"><span class="badge job-badge {{ r.status }}">{{ r.status }}</span></td>
+                <td data-label="{{ t('doc.view') }}">
                   <a href="{{ url_for('documents.preview', uuid=case.uuid, did=r.uuid) }}">{{ t('doc.view') }}</a>
                   {% if r.docx_path %} · <a href="{{ url_for('downloads.docx', uuid=r.uuid) }}">DOCX</a>{% endif %}
                 </td>

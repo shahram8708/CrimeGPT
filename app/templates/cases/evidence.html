@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% block title %}{{ t('case.nav_evidence') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('case.nav_evidence') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
@@ -9,26 +17,33 @@
         {% if need_consent %}
         <div class="alert alert-info">{{ t('ev.consent') }}</div>
         {% endif %}
+
         {% for p in proposals %}
-        <div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2">
-          <span>{{ p.suggested_body }}</span>
-          <span class="d-flex gap-2">
-            <form method="post" action="{{ url_for('evidence.accept_proposal', uuid=case.uuid, pid=p.id) }}">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button class="btn btn-navy btn-sm" type="submit">{{ t('ev.add_diary') }}</button>
-            </form>
-            <form method="post" action="{{ url_for('evidence.dismiss_proposal', uuid=case.uuid, pid=p.id) }}">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button class="btn btn-gold-outline btn-sm" type="submit">{{ t('ev.dismiss') }}</button>
-            </form>
-          </span>
-        </div>
+        <article class="card-station mb-2"><div class="card-body">
+          <div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2 mb-0">
+            <span>{{ p.suggested_body }}</span>
+            <span class="d-flex gap-2">
+              <form method="post" action="{{ url_for('evidence.accept_proposal', uuid=case.uuid, pid=p.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-navy btn-sm" type="submit">{{ t('ev.add_diary') }}</button>
+              </form>
+              <form method="post" action="{{ url_for('evidence.dismiss_proposal', uuid=case.uuid, pid=p.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-gold-outline btn-sm" type="submit">{{ t('ev.dismiss') }}</button>
+              </form>
+            </span>
+          </div>
+        </div></article>
         {% endfor %}
 
         {% if can_upload %}
         <form method="post" enctype="multipart/form-data" class="card-station mb-4" id="ev-form">
           <div class="card-body">
             {{ form.hidden_tag() }}
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+              <h2 class="h5 mb-0">{{ t('ev.upload') }}</h2>
+              <span class="small text-muted">pdf, jpg, jpeg, png · 15 MB</span>
+            </div>
             <label class="dropzone" id="dropzone" for="file">
               <span>{{ t('ev.drop') }}</span>
               <span class="small text-muted d-block">pdf, jpg, jpeg, png · 15 MB</span>
@@ -59,15 +74,17 @@
         </form>
         {% endif %}
 
-        <div class="d-flex flex-wrap gap-2 mb-3">
-          <a class="btn btn-sm btn-gold-outline {% if not tag %}active{% endif %}" href="{{ url_for('evidence.gallery', uuid=case.uuid) }}">{{ t('history.any') }}</a>
-          {% for tg in ['exhibit','scene','injury','property','document','other'] %}
-          <a class="btn btn-sm btn-gold-outline {% if tag == tg %}active{% endif %}" href="{{ url_for('evidence.gallery', uuid=case.uuid, tag=tg) }}">{{ tg }}</a>
-          {% endfor %}
-        </div>
+        <article class="card-station mb-3">
+          <div class="card-body d-flex flex-wrap gap-2">
+            <a class="btn btn-sm btn-gold-outline {% if not tag %}active{% endif %}" href="{{ url_for('evidence.gallery', uuid=case.uuid) }}">{{ t('history.any') }}</a>
+            {% for tg in ['exhibit','scene','injury','property','document','other'] %}
+            <a class="btn btn-sm btn-gold-outline {% if tag == tg %}active{% endif %}" href="{{ url_for('evidence.gallery', uuid=case.uuid, tag=tg) }}">{{ tg }}</a>
+            {% endfor %}
+          </div>
+        </article>
 
         {% if items %}
-        <div class="row row-cols-2 row-cols-md-4 g-3">
+        <div class="row row-cols-2 row-cols-md-4 g-3 case-evidence-grid">
           {% for it in items %}
           <div class="col">
             <a class="ev-tile card-station d-block" href="{{ url_for('evidence.detail', uuid=case.uuid, eid=it.uuid) }}">
@@ -87,28 +104,31 @@
           {% endfor %}
         </div>
         {% else %}
-        <p>{{ t('ev.empty') }}</p>
+        <article class="card-station"><div class="card-body"><p class="mb-0">{{ t('ev.empty') }}</p></div></article>
         {% endif %}
 
         {% if can_assign %}
-        <hr>
-        <h2 class="h6">{{ t('ev.assign') }}</h2>
-        <form method="post" action="{{ url_for('evidence.assign', uuid=case.uuid) }}" class="row g-2 align-items-end mb-3">
-          {{ assign_form.hidden_tag() }}
-          <div class="col-md-6">{{ assign_form.user_id(class="form-select") }}</div>
-          <div class="col-md-3"><button class="btn btn-navy" type="submit">{{ t('ev.assign_go') }}</button></div>
-        </form>
-        <ul class="list-unstyled">
-          {% for a in assignees %}
-          <li class="d-flex justify-content-between mb-1">
-            <span>{{ a.user.full_name }} · {{ a.role_on_case }}</span>
-            <form method="post" action="{{ url_for('evidence.unassign', uuid=case.uuid, aid=a.uuid) }}">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button class="btn btn-link btn-sm" type="submit">{{ t('ev.remove') }}</button>
+        <article class="card-station mt-4">
+          <div class="card-body">
+            <h2 class="h6">{{ t('ev.assign') }}</h2>
+            <form method="post" action="{{ url_for('evidence.assign', uuid=case.uuid) }}" class="row g-2 align-items-end mb-3">
+              {{ assign_form.hidden_tag() }}
+              <div class="col-md-6">{{ assign_form.user_id(class="form-select") }}</div>
+              <div class="col-md-3"><button class="btn btn-navy" type="submit">{{ t('ev.assign_go') }}</button></div>
             </form>
-          </li>
-          {% endfor %}
-        </ul>
+            <ul class="list-unstyled mb-0">
+              {% for a in assignees %}
+              <li class="d-flex justify-content-between mb-1">
+                <span>{{ a.user.full_name }} · {{ a.role_on_case }}</span>
+                <form method="post" action="{{ url_for('evidence.unassign', uuid=case.uuid, aid=a.uuid) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-link btn-sm" type="submit">{{ t('ev.remove') }}</button>
+                </form>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </article>
         {% endif %}
       </div>
     </div>

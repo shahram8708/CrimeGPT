@@ -1,18 +1,42 @@
 {% extends "base.html" %}
 {% block title %}CrimeGPT - One case record. Every police paper.{% endblock %}
+{% block body_class %}public-page{% endblock %}
 {% block content %}
-<section class="hero">
+<section class="hero public-hero-shell">
   <div class="container">
-    <h1>One case record. Every police paper.</h1>
-    <hr class="gold-rule">
-    <p class="lead">CrimeGPT helps investigating officers and writers build seizure receipts, medical letters, remand applications, and a case diary from a single, auditable pool - with Gemini-assisted BNS / BNSS / BSA suggestions you must confirm.</p>
-    <div class="hero-actions">
-      {% if current_user.is_authenticated %}
-        <a class="btn btn-gold" href="{{ url_for('dashboard.index') }}">{{ t('btn.dashboard') }}</a>
-      {% else %}
-        <a class="btn btn-gold" href="{{ url_for('auth.login') }}">{{ t('btn.signin') }}</a>
-      {% endif %}
-      <a class="btn btn-gold-outline" href="{{ url_for('main.how_it_works') }}">See how a remand is built</a>
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-7">
+        <p class="public-kicker mb-2">Ahmedabad City Police Innovation Challenge 2026</p>
+        <h1>One case record. Every police paper.</h1>
+        <hr class="gold-rule">
+        <p class="lead">CrimeGPT helps investigating officers and writers build seizure receipts, medical letters, remand applications, and a case diary from a single, auditable pool - with AI-assisted BNS / BNSS / BSA suggestions you must confirm.</p>
+        <div class="hero-actions">
+          {% if current_user.is_authenticated %}
+            <a class="btn btn-gold" href="{{ url_for('dashboard.index') }}">{{ t('btn.dashboard') }}</a>
+          {% else %}
+            <a class="btn btn-gold" href="{{ url_for('auth.login') }}">{{ t('btn.signin') }}</a>
+          {% endif %}
+          <a class="btn btn-gold-outline" href="{{ url_for('main.how_it_works') }}">See how a remand is built</a>
+        </div>
+        <div class="public-trust-inline mt-3" aria-label="Platform identifiers">
+          <span class="public-chip">Problem ID PS-69EEFDFB90B99</span>
+          <span class="public-chip">BNS / BNSS / BSA aware</span>
+          <span class="public-chip">Officer-confirmed output</span>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <article class="card-station public-register-card">
+          <div class="card-body">
+            <h2 class="h5">Station register snapshot</h2>
+            <ul class="list-unstyled mb-0 public-register-list">
+              <li><strong>Single fact pool:</strong> parties, exhibits, sections, diary.</li>
+              <li><strong>Draft pipeline:</strong> seven papers from one confirmed record.</li>
+              <li><strong>Audit first:</strong> each key action leaves a traceable log row.</li>
+              <li><strong>Scope control:</strong> station-bound access with role gates.</li>
+            </ul>
+          </div>
+        </article>
+      </div>
     </div>
   </div>
 </section>
@@ -21,26 +45,35 @@
   <div class="container">
     <div class="row g-4">
       <div class="col-md-4">
-        <article class="card-station">
+        <article class="card-station public-feature-card h-100">
           <div class="card-body">
-            <h2 class="h3">Stop retyping.</h2>
+            <div class="public-icon-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"></path></svg>
+            </div>
+            <h2 class="h5">Stop retyping</h2>
             <p class="mb-0">Complainant, accused, exhibits, panchas, and medical facts live once. Each paper draws from the same pool so a name change does not have to be typed seven times.</p>
           </div>
         </article>
       </div>
       <div class="col-md-4">
-        <article class="card-station">
+        <article class="card-station public-feature-card h-100">
           <div class="card-body">
-            <h2 class="h3">Suggest BNS / BNSS / BSA.</h2>
+            <div class="public-icon-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M12 2 3 6v6c0 5 3.8 9.6 9 10 5.2-.4 9-5 9-10V6zm0 2.2 7 3.1V12c0 4-2.9 7.7-7 8.1-4.1-.4-7-4.1-7-8.1V7.3z"></path></svg>
+            </div>
+            <h2 class="h5">Suggest BNS / BNSS / BSA</h2>
             <p class="mb-0">Narratives in English, Hindi, or Gujarati can be read for candidate provisions. The officer confirms every section. Nothing is charged unsupervised.</p>
           </div>
         </article>
       </div>
       <div class="col-md-4">
-        <article class="card-station">
+        <article class="card-station public-feature-card h-100">
           <div class="card-body">
-            <h2 class="h3">Case diary that survives transfer.</h2>
-            <p class="mb-0">A dated, station-scoped diary stays with the record when an IO changes. The paper trail is meant to travel with the file, not sit in one officer’s notebook.</p>
+            <div class="public-icon-badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M7 2h10v2h3v18H4V4h3zm0 4H6v14h12V6h-1v2H7zm2 0h6V4H9zm0 4h6v2H9zm0 4h6v2H9z"></path></svg>
+            </div>
+            <h2 class="h5">Diary that survives transfer</h2>
+            <p class="mb-0">A dated, station-scoped diary stays with the record when an IO changes. The paper trail is meant to travel with the file, not sit in one officer notebook.</p>
           </div>
         </article>
       </div>
@@ -50,53 +83,63 @@
 
 <section class="section section-paper">
   <div class="container">
-    <h2>Seven documents from one record</h2>
-    <hr class="gold-rule">
-    <p class="text-muted">Informational list of the statutory papers CrimeGPT is built to draft. Generation arrives in a later station workspace step.</p>
-    <div class="table-responsive">
-      <table class="table doc-table table-stack mb-0">
-        <thead>
-          <tr>
-            <th scope="col">Document</th>
-            <th scope="col">Purpose</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td data-label="Document">Purvani Chargesheet</td>
-            <td data-label="Purpose">Opening charge papers drawn from the confirmed fact pool.</td>
-          </tr>
-          <tr>
-            <td data-label="Document">Medical Treatment Letter</td>
-            <td data-label="Purpose">Hospital referral language tied to the accused or injured party on record.</td>
-          </tr>
-          <tr>
-            <td data-label="Document">Remand Request Letter (Police Custody)</td>
-            <td data-label="Purpose">Custody prayer with dates, grounds, and already-recorded investigation steps.</td>
-          </tr>
-          <tr>
-            <td data-label="Document">Seizure Receipt</td>
-            <td data-label="Purpose">Exhibit list, place, panchas, and complainant particulars in one receipt.</td>
-          </tr>
-          <tr>
-            <td data-label="Document">Court Custody Letter</td>
-            <td data-label="Purpose">Production and judicial custody covering note for the Magistrate.</td>
-          </tr>
-          <tr>
-            <td data-label="Document">Accused Panchanama</td>
-            <td data-label="Purpose">Personal search and seizure around the accused, with witnesses named from the pool.</td>
-          </tr>
-          <tr>
-            <td data-label="Document">Accused Face Identification Form</td>
-            <td data-label="Purpose">Identification particulars captured once and reused without retyping.</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="card-station public-doc-register">
+      <div class="card-body">
+        <h2>Seven documents from one record</h2>
+        <hr class="gold-rule">
+        <p class="text-muted">Informational list of the statutory papers CrimeGPT is built to draft. Generation arrives in a later station workspace step.</p>
+        <div class="table-responsive">
+          <table class="table doc-table table-stack mb-0">
+            <thead>
+              <tr>
+                <th scope="col">Document</th>
+                <th scope="col">Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Document">Purvani Chargesheet</td>
+                <td data-label="Purpose">Opening charge papers drawn from the confirmed fact pool.</td>
+              </tr>
+              <tr>
+                <td data-label="Document">Medical Treatment Letter</td>
+                <td data-label="Purpose">Hospital referral language tied to the accused or injured party on record.</td>
+              </tr>
+              <tr>
+                <td data-label="Document">Remand Request Letter (Police Custody)</td>
+                <td data-label="Purpose">Custody prayer with dates, grounds, and already-recorded investigation steps.</td>
+              </tr>
+              <tr>
+                <td data-label="Document">Seizure Receipt</td>
+                <td data-label="Purpose">Exhibit list, place, panchas, and complainant particulars in one receipt.</td>
+              </tr>
+              <tr>
+                <td data-label="Document">Court Custody Letter</td>
+                <td data-label="Purpose">Production and judicial custody covering note for the Magistrate.</td>
+              </tr>
+              <tr>
+                <td data-label="Document">Accused Panchanama</td>
+                <td data-label="Purpose">Personal search and seizure around the accused, with witnesses named from the pool.</td>
+              </tr>
+              <tr>
+                <td data-label="Document">Accused Face Identification Form</td>
+                <td data-label="Purpose">Identification particulars captured once and reused without retyping.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="trust-band">
-  Draft assistance only - the officer remains responsible for every paper that leaves the station.
+<div class="trust-band public-trust-band">
+  <div class="container">
+    <div class="row g-2">
+      <div class="col-md-4">Draft assistance only.</div>
+      <div class="col-md-4">Officer remains responsible for every paper.</div>
+      <div class="col-md-4">No unsupervised charging decision.</div>
+    </div>
+  </div>
 </div>
 {% endblock %}

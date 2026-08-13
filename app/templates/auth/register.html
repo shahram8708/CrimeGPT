@@ -1,72 +1,78 @@
 {% extends "base.html" %}
 {% from "includes/macros.html" import field %}
 {% block title %}{{ t('register.title') }} - CrimeGPT{% endblock %}
-{% block body_class %}auth{% endblock %}
+{% block body_class %}auth auth-entry{% endblock %}
 {% block content %}
 <div class="auth-shell">
   <div class="container">
-    <div class="auth-card auth-card-wide">
-      <h1>{{ t('register.title') }}</h1>
-      <hr class="gold-rule">
-      <p class="text-muted">{{ t('register.lead') }}</p>
+    <section class="auth-card auth-card-wide" aria-labelledby="auth-register-title">
+      <div class="auth-card-head">
+        <p class="auth-kicker mb-2">CrimeGPT</p>
+        <h1 id="auth-register-title">{{ t('register.title') }}</h1>
+        <hr class="gold-rule">
+        <p class="text-muted mb-0">{{ t('register.lead') }}</p>
+      </div>
       {% if form.errors %}
-      <div class="alert alert-danger" role="alert">{{ t('form.fix') }}</div>
+      <div class="alert alert-danger mt-3" role="alert">{{ t('form.fix') }}</div>
       {% endif %}
-      <form method="post" action="{{ url_for('auth.register') }}" novalidate>
+      <form class="mt-4" method="post" action="{{ url_for('auth.register') }}" novalidate>
         {{ form.hidden_tag() }}
-        {{ field(form.full_name, t('register.name'), autocomplete="name") }}
-        {{ field(form.identifier, t('register.identifier'), autocomplete="username") }}
-        {{ field(form.email, t('register.email'), type="email", autocomplete="email") }}
-        {{ field(form.mobile, t('register.mobile'), autocomplete="tel") }}
-        <div class="mb-3">
-          <label class="form-label" for="password">{{ t('register.password') }}</label>
-          <div class="password-wrap">
-            {{ form.password(class="form-control js-pw-meter" + (" is-invalid" if form.password.errors else ""), id="password", autocomplete="new-password") }}
-            <button type="button" class="toggle-pass" data-password-toggle="password" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}">{{ t('login.show') }}</button>
+
+        <div class="row g-3">
+          <div class="col-12">{{ field(form.full_name, t('register.name'), autocomplete="name") }}</div>
+          <div class="col-md-6">{{ field(form.identifier, t('register.identifier'), autocomplete="username") }}</div>
+          <div class="col-md-6">{{ field(form.email, t('register.email'), type="email", autocomplete="email") }}</div>
+          <div class="col-md-6">{{ field(form.mobile, t('register.mobile'), autocomplete="tel") }}</div>
+          <div class="col-md-6">
+            <label class="form-label" for="station_id">{{ t('register.station') }} <span class="text-warning" aria-hidden="true">*</span></label>
+            {{ form.station_id(class="form-select" + (" is-invalid" if form.station_id.errors else ""), id="station_id", aria_required="true") }}
+            {% if form.station_id.errors %}<div class="invalid-feedback d-block">{% for e in form.station_id.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
-          <div class="pw-meter" aria-hidden="true"><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span></div>
-          {% if form.password.errors %}<div class="invalid-feedback d-block">{% for e in form.password.errors %}{{ e }}{% endfor %}</div>{% endif %}
-        </div>
-        <div class="mb-3">
-          <label class="form-label" for="confirm">{{ t('register.confirm') }}</label>
-          <div class="password-wrap">
-            {{ form.confirm(class="form-control" + (" is-invalid" if form.confirm.errors else ""), id="confirm", autocomplete="new-password") }}
-            <button type="button" class="toggle-pass" data-password-toggle="confirm" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}">{{ t('login.show') }}</button>
+          <div class="col-md-6">
+            <label class="form-label" for="role">{{ t('register.role') }} <span class="text-warning" aria-hidden="true">*</span></label>
+            {{ form.role(class="form-select", id="role", aria_required="true") }}
           </div>
-          {% if form.confirm.errors %}<div class="invalid-feedback d-block">{% for e in form.confirm.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          <div class="col-md-6">
+            <label class="form-label" for="password">{{ t('register.password') }}</label>
+            <div class="password-wrap">
+              {{ form.password(class="form-control js-pw-meter" + (" is-invalid" if form.password.errors else ""), id="password", autocomplete="new-password") }}
+              <button type="button" class="toggle-pass" data-password-toggle="password" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}" aria-label="{{ t('login.show') }}" aria-pressed="false">{{ t('login.show') }}</button>
+            </div>
+            <div class="pw-meter" aria-hidden="true"><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span></div>
+            {% if form.password.errors %}<div class="invalid-feedback d-block">{% for e in form.password.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="confirm">{{ t('register.confirm') }}</label>
+            <div class="password-wrap">
+              {{ form.confirm(class="form-control" + (" is-invalid" if form.confirm.errors else ""), id="confirm", autocomplete="new-password") }}
+              <button type="button" class="toggle-pass" data-password-toggle="confirm" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}" aria-label="{{ t('login.show') }}" aria-pressed="false">{{ t('login.show') }}</button>
+            </div>
+            {% if form.confirm.errors %}<div class="invalid-feedback d-block">{% for e in form.confirm.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <div class="col-md-6">{% if need_code %}{{ field(form.enrollment_code, t('register.code')) }}{% else %}{{ field(form.enrollment_code, t('register.code_optional')) }}{% endif %}</div>
+          <div class="col-md-6">
+            <label class="form-label" for="language">{{ t('register.language') }}</label>
+            {{ form.language(class="form-select", id="language") }}
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label" for="station_id">{{ t('register.station') }}</label>
-          {{ form.station_id(class="form-select" + (" is-invalid" if form.station_id.errors else "")) }}
-          {% if form.station_id.errors %}<div class="invalid-feedback d-block">{% for e in form.station_id.errors %}{{ e }}{% endfor %}</div>{% endif %}
+
+        <div class="auth-consent-list mt-2">
+          <div class="form-check mb-2">
+            {{ form.understand(class="form-check-input" + (" is-invalid" if form.understand.errors else ""), id="understand") }}
+            <label class="form-check-label" for="understand">{{ t('register.understand') }}</label>
+            {% if form.understand.errors %}<div class="invalid-feedback d-block">{% for e in form.understand.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <div class="form-check mb-3">
+            {{ form.accept_terms(class="form-check-input" + (" is-invalid" if form.accept_terms.errors else ""), id="accept_terms") }}
+            <label class="form-check-label" for="accept_terms">{{ t('register.terms') }} <a href="{{ url_for('main.terms') }}">{{ t('nav.terms') }}</a></label>
+            {% if form.accept_terms.errors %}<div class="invalid-feedback d-block">{% for e in form.accept_terms.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label" for="role">{{ t('register.role') }}</label>
-          {{ form.role(class="form-select") }}
-        </div>
-        {% if need_code %}
-        {{ field(form.enrollment_code, t('register.code')) }}
-        {% else %}
-        {{ field(form.enrollment_code, t('register.code_optional')) }}
-        {% endif %}
-        <div class="mb-3">
-          <label class="form-label" for="language">{{ t('register.language') }}</label>
-          {{ form.language(class="form-select") }}
-        </div>
-        <div class="form-check mb-2">
-          {{ form.understand(class="form-check-input" + (" is-invalid" if form.understand.errors else ""), id="understand") }}
-          <label class="form-check-label" for="understand">{{ t('register.understand') }}</label>
-          {% if form.understand.errors %}<div class="invalid-feedback d-block">{% for e in form.understand.errors %}{{ e }}{% endfor %}</div>{% endif %}
-        </div>
-        <div class="form-check mb-3">
-          {{ form.accept_terms(class="form-check-input" + (" is-invalid" if form.accept_terms.errors else ""), id="accept_terms") }}
-          <label class="form-check-label" for="accept_terms">{{ t('register.terms') }} <a href="{{ url_for('main.terms') }}">{{ t('nav.terms') }}</a></label>
-          {% if form.accept_terms.errors %}<div class="invalid-feedback d-block">{% for e in form.accept_terms.errors %}{{ e }}{% endfor %}</div>{% endif %}
-        </div>
+
         <button type="submit" class="btn btn-navy w-100">{{ t('register.submit') }}</button>
       </form>
       <p class="mt-3 mb-0 small"><a href="{{ url_for('auth.login') }}">{{ t('register.have') }}</a></p>
-    </div>
+    </section>
   </div>
 </div>
 {% endblock %}

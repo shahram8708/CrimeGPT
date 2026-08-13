@@ -1,41 +1,55 @@
 {% extends "base.html" %}
 {% block title %}{{ t('nav.documents') }} - CrimeGPT{% endblock %}
+{% block body_class %}documents-page{% endblock %}
 {% block content %}
-<header class="page-hero"><div class="container"><h1>{{ t('nav.documents') }}</h1><hr class="gold-rule"></div></header>
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('nav.documents') }}</h1>
+    <hr class="gold-rule">
+  </div>
+</header>
 <section class="section">
   <div class="container">
-    <p class="mb-3">
-      <a href="?tab=generated">{{ t('lib.generated') }}</a> ·
-      <a href="?tab=uploaded">{{ t('lib.uploaded') }}</a> ·
-      <a href="?tab=all">{{ t('history.any') }}</a> ·
-      <a href="{{ url_for('documents.upload') }}">{{ t('lib.upload') }}</a>
-    </p>
-    <form class="row g-2 mb-3" method="get">
-      <input type="hidden" name="tab" value="{{ tab or 'generated' }}">
-      <div class="col-md-3">
-        <label class="form-label" for="type">{{ t('history.type') }}</label>
-        <select class="form-select" id="type" name="type">
-          <option value="">{{ t('history.any') }}</option>
-          {% for k, title in titles.items() %}
-          <option value="{{ k }}" {% if request.args.get('type') == k %}selected{% endif %}>{{ title }}</option>
-          {% endfor %}
-        </select>
+    <article class="card-station docs-library-toolbar mb-3">
+      <div class="card-body">
+        <div class="docs-library-tabs">
+          <a class="docs-tab {% if (tab or 'generated') == 'generated' %}active{% endif %}" href="?tab=generated">{{ t('lib.generated') }}</a>
+          <a class="docs-tab {% if tab == 'uploaded' %}active{% endif %}" href="?tab=uploaded">{{ t('lib.uploaded') }}</a>
+          <a class="docs-tab {% if tab == 'all' %}active{% endif %}" href="?tab=all">{{ t('history.any') }}</a>
+          <a class="btn btn-gold-outline btn-sm" href="{{ url_for('documents.upload') }}">{{ t('lib.upload') }}</a>
+        </div>
+
+        <form class="row g-2 mt-2" method="get">
+          <input type="hidden" name="tab" value="{{ tab or 'generated' }}">
+          <div class="col-md-4">
+            <label class="form-label" for="type">{{ t('history.type') }}</label>
+            <select class="form-select" id="type" name="type">
+              <option value="">{{ t('history.any') }}</option>
+              {% for k, title in titles.items() %}
+              <option value="{{ k }}" {% if request.args.get('type') == k %}selected{% endif %}>{{ title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-navy" type="submit">{{ t('history.filter') }}</button>
+          </div>
+        </form>
       </div>
-      <div class="col-md-2"><button class="btn btn-navy mt-4" type="submit">{{ t('history.filter') }}</button></div>
-    </form>
+    </article>
+
     <div class="table-responsive">
       <table class="table doc-table table-stack">
         <thead><tr><th>{{ t('history.type') }}</th><th>{{ t('history.case') }}</th><th>{{ t('doc.version') }}</th><th>{{ t('history.status') }}</th><th>{{ t('register.language') }}</th><th>{{ t('history.started') }}</th><th></th></tr></thead>
         <tbody>
           {% for r in rows %}
           <tr>
-            <td>{{ titles.get(r.doc_type, r.doc_type) }}</td>
-            <td>{{ cases[r.case_id].display_cr if cases.get(r.case_id) else "-" }}</td>
-            <td>v{{ r.version_number }}</td>
-            <td><span class="badge job-badge {{ r.status }}">{{ r.status }}</span></td>
-            <td>{{ r.language }}</td>
-            <td>{{ r.created_at|ist }}</td>
-            <td>{% if cases.get(r.case_id) %}<a href="{{ url_for('documents.preview', uuid=cases[r.case_id].uuid, did=r.uuid) }}">{{ t('doc.view') }}</a>{% endif %}</td>
+            <td data-label="{{ t('history.type') }}">{{ titles.get(r.doc_type, r.doc_type) }}</td>
+            <td data-label="{{ t('history.case') }}">{{ cases[r.case_id].display_cr if cases.get(r.case_id) else "-" }}</td>
+            <td data-label="{{ t('doc.version') }}">v{{ r.version_number }}</td>
+            <td data-label="{{ t('history.status') }}"><span class="badge job-badge {{ r.status }}">{{ r.status }}</span></td>
+            <td data-label="{{ t('register.language') }}">{{ r.language }}</td>
+            <td data-label="{{ t('history.started') }}">{{ r.created_at|ist }}</td>
+            <td data-label="{{ t('doc.view') }}">{% if cases.get(r.case_id) %}<a href="{{ url_for('documents.preview', uuid=cases[r.case_id].uuid, did=r.uuid) }}">{{ t('doc.view') }}</a>{% endif %}</td>
           </tr>
           {% else %}
           <tr><td colspan="7">{{ t('doc.empty') }}</td></tr>

@@ -2,11 +2,18 @@
 {% block title %}Permission denied - CrimeGPT{% endblock %}
 {% block content %}
 <section class="section">
-  <div class="container prose">
-    <h1>You do not have permission</h1>
-    <hr class="gold-rule">
-    <p>This action is outside your role or station scope.</p>
-    <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+  <div class="container">
+    <div class="error-shell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#7A1F2B" stroke-width="1.8" aria-hidden="true"><path d="M12 2l9 4v6c0 5-3.2 9.5-9 10-5.8-.5-9-5-9-10V6l9-4z"/><path d="M9 12l2 2 4-4"/></svg>
+      <h1 class="h3 mt-3">Access restricted</h1>
+      <hr class="gold-rule">
+      <p>You do not have permission to view this page. Contact your administrator if this is incorrect.</p>
+      {% if current_user.is_authenticated %}
+      <a class="btn btn-navy" href="{{ url_for('dashboard.index') }}">{{ t('btn.dashboard') }}</a>
+      {% else %}
+      <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+      {% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

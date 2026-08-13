@@ -1,4 +1,4 @@
-const CACHE_VERSION = "crimegpt-shell-v2";
+const CACHE_VERSION = "crimegpt-shell-v3";
 const PRECACHE = [
   "/",
   "/offline",

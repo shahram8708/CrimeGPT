@@ -1,27 +1,45 @@
 {% extends "base.html" %}
 {% block title %}{{ t('mail.title') }} - CrimeGPT{% endblock %}
+{% block body_class %}admin-page{% endblock %}
 {% block content %}
-<header class="page-hero"><div class="container"><h1>{{ t('mail.title') }}</h1><hr class="gold-rule"><p>{{ t('mail.lead') }}</p></div></header>
+<header class="page-hero admin-hero">
+  <div class="container">
+    <h1>{{ t('mail.title') }}</h1>
+    <hr class="gold-rule">
+    <p>{{ t('mail.lead') }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
-    <div class="table-responsive">
-      <table class="table doc-table">
-        <thead><tr><th>{{ t('mail.when') }}</th><th>{{ t('mail.to') }}</th><th>{{ t('mail.subject') }}</th><th>{{ t('mail.purpose') }}</th><th>{{ t('mail.sent') }}</th><th>{{ t('mail.body') }}</th></tr></thead>
-        <tbody>
-          {% for row in rows %}
-          <tr>
-            <td>{{ row.created_at|ist }}</td>
-            <td>{{ row.to_address }}</td>
-            <td>{{ row.subject }}</td>
-            <td>{{ row.purpose or "-" }}</td>
-            <td>{{ t('users.yes') if row.sent_ok else t('users.no') }}</td>
-            <td class="small" style="max-width:28rem;white-space:pre-wrap">{{ row.body or "" }}</td>
-          </tr>
-          {% else %}
-          <tr><td colspan="6">{{ t('mail.empty') }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    {% include "admin/_nav.html" %}
+
+    <div class="card-station">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table doc-table table-stack mb-0">
+            <thead><tr><th>{{ t('mail.when') }}</th><th>{{ t('mail.to') }}</th><th>{{ t('mail.subject') }}</th><th>{{ t('mail.purpose') }}</th><th>{{ t('mail.sent') }}</th><th>{{ t('mail.body') }}</th></tr></thead>
+            <tbody>
+              {% for row in rows %}
+              <tr>
+                <td data-label="{{ t('mail.when') }}">{{ row.created_at|ist }}</td>
+                <td data-label="{{ t('mail.to') }}">{{ row.to_address }}</td>
+                <td data-label="{{ t('mail.subject') }}">{{ row.subject }}</td>
+                <td data-label="{{ t('mail.purpose') }}">{{ row.purpose or "-" }}</td>
+                <td data-label="{{ t('mail.sent') }}"><span class="badge job-badge {{ 'completed' if row.sent_ok else 'failed' }}">{{ t('users.yes') if row.sent_ok else t('users.no') }}</span></td>
+                <td data-label="{{ t('mail.body') }}">
+                  <details>
+                    <summary class="small fw-semibold">{{ t('notes.open') }}</summary>
+                    <pre class="small admin-pre mt-2 mb-0">{{ row.body or "" }}</pre>
+                  </details>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="6">{{ t('mail.empty') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </section>

@@ -14,13 +14,20 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
   {% block meta %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}" {% if current_user.is_authenticated %}data-user="{{ current_user.id }}"{% endif %}>
+<body class="app-shell {% block body_class %}{% endblock %}" {% if current_user.is_authenticated %}data-user="{{ current_user.id }}"{% endif %}>
   <a class="skip-link" href="#content">{{ t('nav.skip') }}</a>
   {% include "includes/navbar.html" %}
-  <main id="content" tabindex="-1">
-    {% include "includes/alerts.html" %}
+
+  <div class="flash-region" aria-live="polite" aria-atomic="true">
+    <div class="container">
+      {% include "includes/alerts.html" %}
+    </div>
+  </div>
+
+  <main id="content" class="main-shell" tabindex="-1">
     {% block content %}{% endblock %}
   </main>
+
   {% include "includes/footer.html" %}
   {% include "includes/modals.html" %}
   <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>

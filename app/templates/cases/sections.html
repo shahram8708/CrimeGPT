@@ -1,45 +1,57 @@
 {% extends "base.html" %}
 {% block title %}{{ t('case.nav_sections') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('case.nav_sections') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
       <div class="col-lg-9">
-        <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
-        <div class="table-responsive mb-4">
-          <table class="table doc-table table-stack">
-            <thead><tr><th>{{ t('sec.family') }}</th><th>{{ t('sec.code') }}</th><th>{{ t('sec.title') }}</th><th>{{ t('cases.status') }}</th><th>{{ t('sec.source') }}</th><th></th></tr></thead>
-            <tbody>
-              {% for s in sections %}
-              <tr>
-                <td data-label="{{ t('sec.family') }}">{{ s.statute_family }}</td>
-                <td data-label="{{ t('sec.code') }}">{{ s.code }}</td>
-                <td data-label="{{ t('sec.title') }}">{{ s.title or "-" }}</td>
-                <td data-label="{{ t('cases.status') }}"><span class="badge job-badge {{ s.status }}">{{ s.status }}</span></td>
-                <td data-label="{{ t('sec.source') }}">{{ s.source }}{% if s.confirmed_by %} · {{ s.confirmed_by.full_name }}{% endif %}</td>
-                <td>
-                  {% if can_confirm and s.status == 'suggested' %}
-                  <form method="post" action="{{ url_for('cases.section_confirm', uuid=case.uuid, sid=s.uuid) }}" class="d-inline">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button class="btn btn-sm btn-navy" type="submit">{{ t('sec.confirm') }}</button>
-                  </form>
-                  {% endif %}
-                  {% if can_confirm %}
-                  <form method="post" action="{{ url_for('cases.section_remove', uuid=case.uuid, sid=s.uuid) }}" class="d-inline">
-                    {{ remove_form.hidden_tag() }}
-                    <input class="form-control form-control-sm d-inline-block" style="width:10rem" name="reason" placeholder="{{ t('sec.reason') }}" required>
-                    <button class="btn btn-sm btn-outline-danger" type="submit">{{ t('case.delete') }}</button>
-                  </form>
-                  {% endif %}
-                </td>
-              </tr>
-              {% else %}
-              <tr><td colspan="6">{{ t('sec.empty') }}</td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+        <div class="alert ai-disclaimer" role="status"><span class="ai-pill">AI</span> {{ t('intel.disclaimer') }}</div>
+        <article class="card-station mb-4">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table doc-table table-stack mb-0">
+                <thead><tr><th>{{ t('sec.family') }}</th><th>{{ t('sec.code') }}</th><th>{{ t('sec.title') }}</th><th>{{ t('cases.status') }}</th><th>{{ t('sec.source') }}</th><th></th></tr></thead>
+                <tbody>
+                  {% for s in sections %}
+                  <tr>
+                    <td data-label="{{ t('sec.family') }}">{{ s.statute_family }}</td>
+                    <td data-label="{{ t('sec.code') }}">{{ s.code }}</td>
+                    <td data-label="{{ t('sec.title') }}">{{ s.title or "-" }}</td>
+                    <td data-label="{{ t('cases.status') }}"><span class="badge job-badge {{ s.status }}">{{ s.status }}</span></td>
+                    <td data-label="{{ t('sec.source') }}">{{ s.source }}{% if s.confirmed_by %} · {{ s.confirmed_by.full_name }}{% endif %}</td>
+                    <td>
+                      {% if can_confirm and s.status == 'suggested' %}
+                      <form method="post" action="{{ url_for('cases.section_confirm', uuid=case.uuid, sid=s.uuid) }}" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-navy" type="submit">{{ t('sec.confirm') }}</button>
+                      </form>
+                      {% endif %}
+                      {% if can_confirm %}
+                      <form method="post" action="{{ url_for('cases.section_remove', uuid=case.uuid, sid=s.uuid) }}" class="d-inline d-flex flex-wrap gap-2 align-items-center mt-2 mt-md-0">
+                        {{ remove_form.hidden_tag() }}
+                        <input class="form-control form-control-sm" style="width:10rem" name="reason" placeholder="{{ t('sec.reason') }}" required>
+                        <button class="btn btn-sm btn-outline-danger" type="submit">{{ t('case.delete') }}</button>
+                      </form>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% else %}
+                  <tr><td colspan="6">{{ t('sec.empty') }}</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
 
         <div class="card-station mb-4">
           <div class="card-body">

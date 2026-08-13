@@ -1,48 +1,62 @@
 {% extends "base.html" %}
 {% block title %}{{ t('invite.title') }} - CrimeGPT{% endblock %}
-{% block body_class %}auth{% endblock %}
+{% block body_class %}auth auth-entry{% endblock %}
 {% block content %}
 <div class="auth-shell">
   <div class="container">
-    <div class="auth-card">
-      <h1>{{ t('invite.title') }}</h1>
-      <hr class="gold-rule">
+    <section class="auth-card" aria-labelledby="auth-invite-title">
+      <div class="auth-card-head">
+        <p class="auth-kicker mb-2">CrimeGPT</p>
+        <h1 id="auth-invite-title">{{ t('invite.title') }}</h1>
+        <hr class="gold-rule">
+      </div>
       {% if state != 'ok' or not user %}
-        <p>{{ t('invite.bad') }}</p>
-        <a class="btn btn-navy" href="{{ url_for('auth.login') }}">{{ t('login.submit') }}</a>
+        <div class="alert alert-warning mt-3" role="alert">{{ t('invite.bad') }}</div>
+        <a class="btn btn-navy w-100" href="{{ url_for('auth.login') }}">{{ t('login.submit') }}</a>
       {% else %}
-        <p class="mb-1"><strong>{{ t('invite.station') }}</strong> {{ user.station.name if user.station else t('dash.platform') }}</p>
-        <p><strong>{{ t('invite.role') }}</strong> {{ user.role_label }}</p>
+        <div class="auth-readonly-grid mt-3 mb-3">
+          <div class="auth-readonly-item">
+            <span class="small text-muted d-block">{{ t('invite.station') }}</span>
+            <strong>{{ user.station.name if user.station else t('dash.platform') }}</strong>
+          </div>
+          <div class="auth-readonly-item">
+            <span class="small text-muted d-block">{{ t('invite.role') }}</span>
+            <span class="role-badge role-{{ user.role }}">{{ user.role_label }}</span>
+          </div>
+        </div>
         <form method="post" novalidate>
           {{ form.hidden_tag() }}
           <div class="mb-3">
             <label class="form-label" for="full_name">{{ t('register.name') }}</label>
-            {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else ""), autocomplete="name") }}
+            {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else ""), id="full_name", autocomplete="name") }}
             {% if form.full_name.errors %}<div class="invalid-feedback d-block">{% for e in form.full_name.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
           <div class="mb-3">
             <label class="form-label" for="password">{{ t('register.password') }}</label>
             <div class="password-wrap">
-              {{ form.password(class="form-control js-pw-meter", id="password", autocomplete="new-password") }}
-              <button type="button" class="toggle-pass" data-password-toggle="password" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}">{{ t('login.show') }}</button>
+              {{ form.password(class="form-control js-pw-meter" + (" is-invalid" if form.password.errors else ""), id="password", autocomplete="new-password") }}
+              <button type="button" class="toggle-pass" data-password-toggle="password" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}" aria-label="{{ t('login.show') }}" aria-pressed="false">{{ t('login.show') }}</button>
             </div>
             <div class="pw-meter" aria-hidden="true"><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span><span class="pw-seg"></span></div>
             {% if form.password.errors %}<div class="invalid-feedback d-block">{% for e in form.password.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
           <div class="mb-3">
             <label class="form-label" for="confirm">{{ t('register.confirm') }}</label>
-            {{ form.confirm(class="form-control", id="confirm", autocomplete="new-password") }}
+            <div class="password-wrap">
+              {{ form.confirm(class="form-control" + (" is-invalid" if form.confirm.errors else ""), id="confirm", autocomplete="new-password") }}
+              <button type="button" class="toggle-pass" data-password-toggle="confirm" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}" aria-label="{{ t('login.show') }}" aria-pressed="false">{{ t('login.show') }}</button>
+            </div>
             {% if form.confirm.errors %}<div class="invalid-feedback d-block">{% for e in form.confirm.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
           <div class="form-check mb-3">
-            {{ form.understand(class="form-check-input", id="understand") }}
+            {{ form.understand(class="form-check-input" + (" is-invalid" if form.understand.errors else ""), id="understand") }}
             <label class="form-check-label" for="understand">{{ t('register.understand') }}</label>
             {% if form.understand.errors %}<div class="invalid-feedback d-block">{% for e in form.understand.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
           <button type="submit" class="btn btn-navy w-100">{{ t('invite.submit') }}</button>
         </form>
       {% endif %}
-    </div>
+    </section>
   </div>
 </div>
 {% endblock %}

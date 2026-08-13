@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Privacy - CrimeGPT{% endblock %}
+{% block body_class %}public-page{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
@@ -9,40 +10,60 @@
   </div>
 </header>
 <section class="section">
-  <div class="container prose">
-    <h2>Who we are</h2>
-    <p>CrimeGPT is operated as a station-grade assistance system for the Kanad S.H.I.E.L.D. Ahmedabad City Police Innovation Challenge 2026 (PS-69EEFDFB90B99). It is not a public chatbot and it is not offered to the general public as a consumer service.</p>
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <article class="card-station public-policy-aside">
+          <div class="card-body">
+            <h2 class="h5">Quick facts</h2>
+            <ul class="list-unstyled mb-0 public-policy-list">
+              <li><strong>Program:</strong> Ahmedabad City Police pilot</li>
+              <li><strong>Challenge:</strong> PS-69EEFDFB90B99</li>
+              <li><strong>Retention:</strong> {{ retention_days }} days (default operational window)</li>
+              <li><strong>Contact:</strong> <a href="{{ url_for('main.contact') }}">Send privacy query</a></li>
+            </ul>
+          </div>
+        </article>
+      </div>
+      <div class="col-lg-8">
+        <div class="prose public-prose-card card-station">
+          <div class="card-body">
+            <h2>Who we are</h2>
+            <p>CrimeGPT is operated as a station-grade assistance system for the Kanad S.H.I.E.L.D. Ahmedabad City Police Innovation Challenge 2026 (PS-69EEFDFB90B99). It is not a public chatbot and it is not offered to the general public as a consumer service.</p>
 
-    <h2>What is stored</h2>
-    <ul>
-      <li>Officer accounts: name, identifier, optional email and mobile, role, station, password hash, login timestamps, and lockout counters.</li>
-      <li>User preferences: interface language and later document-language choices.</li>
-      <li>Contact messages sent through this website, including IP and user agent.</li>
-      <li>Application settings, audit log rows, notifications, usage counters, and background job records.</li>
-      <li>In later steps: case facts, diary entries, and generated papers. Those records are not created in this foundation step.</li>
-    </ul>
+            <h2>What is stored</h2>
+            <ul>
+              <li>Officer accounts: name, identifier, optional email and mobile, role, station, password hash, login timestamps, and lockout counters.</li>
+              <li>User preferences: interface language and later document-language choices.</li>
+              <li>Contact messages sent through this website, including IP and user agent.</li>
+              <li>Application settings, audit log rows, notifications, usage counters, and background job records.</li>
+              <li>In later steps: case facts, diary entries, and generated papers. Those records are not created in this foundation step.</li>
+            </ul>
 
-    <h2>Where it is stored</h2>
-    <p>Data lives on the application server in a SQLite database under the instance directory and in local folders for uploads and generated files. Those folders are not published as static web assets. There is no consumer chatbot on a personal phone that retains station narratives.</p>
+            <h2>Where it is stored</h2>
+            <p>Data lives on the application server in a SQLite database under the instance directory and in local folders for uploads and generated files. Those folders are not published as static web assets. There is no consumer chatbot on a personal phone that retains station narratives.</p>
 
-    <h2>Who can see it</h2>
-    <p>Role-scoped officers at the bound station can see what their role permits once those modules exist. Super Admin can access platform-wide records and bypass station scope. Super Admin cannot impersonate another user’s session. Contact messages are visible to platform operators.</p>
+            <h2>Who can see it</h2>
+            <p>Role-scoped officers at the bound station can see what their role permits once those modules exist. Super Admin can access platform-wide records and bypass station scope. Super Admin cannot impersonate another user's session. Contact messages are visible to platform operators.</p>
 
-    <h2>What we do not do</h2>
-    <ul>
-      <li>We do not sell narratives, case facts, or contact messages.</li>
-      <li>We do not use station content for advertising.</li>
-      <li>We do not put GEMINI_API_KEY or other secrets in the browser.</li>
-    </ul>
+            <h2>What we do not do</h2>
+            <ul>
+              <li>We do not sell narratives, case facts, or contact messages.</li>
+              <li>We do not use station content for advertising.</li>
+            </ul>
 
-    <h2>Cookies and session</h2>
-    <p>A session cookie keeps you signed in. It is HTTP-only, SameSite Lax, and Secure in production. A language preference may be stored in the session for visitors who are not signed in. There is no third-party advertising cookie.</p>
+            <h2>Cookies and session</h2>
+            <p>A session cookie keeps you signed in. It is HTTP-only, SameSite Lax, and Secure in production. A language preference may be stored in the session for visitors who are not signed in. There is no third-party advertising cookie.</p>
 
-    <h2>Retention</h2>
-    <p>The configured retention window is {{ retention_days }} days for operational data unless a later lawful hold applies. Account deactivation can be requested through the <a href="{{ url_for('main.contact') }}">contact form</a> by a station administrator or the data subject’s authorised officer.</p>
+            <h2>Retention</h2>
+            <p>The configured retention window is {{ retention_days }} days for operational data unless a later lawful hold applies. Account deactivation can be requested through the <a href="{{ url_for('main.contact') }}">contact form</a> by a station administrator or the data subject's authorised officer.</p>
 
-    <h2>Contact</h2>
-    <p>Privacy questions for this pilot go through the contact form. Emergency reports must not be sent here.</p>
+            <h2>Contact</h2>
+            <p>Privacy questions for this pilot go through the contact form. Emergency reports must not be sent here.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}

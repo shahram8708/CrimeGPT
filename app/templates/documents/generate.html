@@ -1,23 +1,36 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ title }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
       <div class="col-lg-9">
-        <div class="alert alert-warning">{{ t('intel.disclaimer') }}</div>
-        <h1 class="h3">{{ title }}</h1>
-        <ul class="list-unstyled mb-4">
-          {% for m in pf.missing %}
-          <li class="text-danger">✗ <a href="{{ m.href }}">{{ m.label }}</a></li>
-          {% endfor %}
-          {% for w in pf.warnings %}
-          <li class="text-muted">! {{ w.label }}</li>
-          {% endfor %}
-          {% if pf.ready %}<li class="text-success">✓ {{ t('doc.ready') }}</li>{% endif %}
-        </ul>
-        <form method="post" class="card-station"><div class="card-body">
+        <div class="alert ai-disclaimer" role="status"><span class="ai-pill">AI</span> {{ t('intel.disclaimer') }}</div>
+        <article class="card-station docs-preflight mb-3">
+          <div class="card-body">
+            <h2 class="h6 mb-3">{{ t('ck.title') }}</h2>
+            <ul class="list-unstyled mb-0 docs-preflight-list">
+              {% for m in pf.missing %}
+              <li class="is-missing">&#10007; <a href="{{ m.href }}">{{ m.label }}</a></li>
+              {% endfor %}
+              {% for w in pf.warnings %}
+              <li class="is-warning">! {{ w.label }}</li>
+              {% endfor %}
+              {% if pf.ready %}<li class="is-ready">&#10003; {{ t('doc.ready') }}</li>{% endif %}
+            </ul>
+          </div>
+        </article>
+        <form method="post" class="card-station">
+          <div class="card-body">
           {{ form.hidden_tag() }}
           <input type="hidden" name="doc_type" value="{{ dtype }}">
           <input type="hidden" name="type" value="{{ dtype }}">
@@ -47,13 +60,23 @@
             <div class="col-md-4"><label class="form-label">{{ t('doc.date_to') }}</label>{{ form.date_to(class="form-control") }}</div>
             <div class="col-md-4"><label class="form-label">{{ t('doc.target') }}</label>{{ form.request_target(class="form-control") }}</div>
             {% endif %}
-            <div class="col-12 form-check">
-              {{ form.use_ai(class="form-check-input", id="use_ai") }}
-              <label class="form-check-label" for="use_ai">{{ t('doc.use_ai') }}</label>
-              <p class="small text-muted mb-0">{{ t('doc.use_ai_help') }}</p>
+            <div class="col-12">
+              <div class="card-station docs-ai-optin">
+                <div class="card-body py-3">
+                  <div class="form-check mb-0">
+                    {{ form.use_ai(class="form-check-input", id="use_ai") }}
+                    <label class="form-check-label" for="use_ai">{{ t('doc.use_ai') }}</label>
+                  </div>
+                  <p class="small text-muted mb-0 mt-1">{{ t('doc.use_ai_help') }}</p>
+                </div>
+              </div>
             </div>
-            {% if not gemini_ok %}<p class="small">{{ t('intel.missing_key') }}</p>{% endif %}
-            {% if quota %}<p class="small">{{ t('intel.quota') }}</p>{% endif %}
+            {% if not gemini_ok %}
+            <div class="col-12"><p class="small mb-0 text-danger">{{ t('intel.missing_key') }}</p></div>
+            {% endif %}
+            {% if quota %}
+            <div class="col-12"><p class="small mb-0 text-warning-emphasis">{{ t('intel.quota') }}</p></div>
+            {% endif %}
             {% if not pf.ready %}
             <div class="col-12 form-check">
               {{ form.allow_incomplete(class="form-check-input", id="allow_incomplete") }}
@@ -67,8 +90,12 @@
             </div>
             {% endif %}
           </div>
-          <button class="btn btn-navy mt-3" type="submit" {% if not pf.ready %}id="gen-btn"{% endif %}>{{ t('doc.generate') }}</button>
-        </div></form>
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <button class="btn btn-navy" type="submit" {% if not pf.ready %}id="gen-btn"{% endif %}>{{ t('doc.generate') }}</button>
+            <a class="btn btn-gold-outline" href="{{ url_for('documents.hub', uuid=case.uuid) }}">{{ t('doc.hub') }}</a>
+          </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

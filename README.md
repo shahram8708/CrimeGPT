@@ -1,0 +1,1 @@
+**Visual Refresh (2026-08-13):** Complete frontend UI/UX redesign applied to all templates using Bootstrap 5 + custom CSS. No functional changes: all routes, forms, data bindings, role checks, and features are preserved. Refer to FRONTEND_REDESIGN.md for the full template inventory.

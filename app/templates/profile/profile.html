@@ -1,23 +1,51 @@
 {% extends "base.html" %}
 {% from "includes/macros.html" import field %}
 {% block title %}{{ t('profile.nav_profile') }} - CrimeGPT{% endblock %}
+{% block body_class %}profile-page{% endblock %}
 {% block content %}
-<header class="page-hero"><div class="container"><h1>{{ t('profile.nav_profile') }}</h1><hr class="gold-rule"></div></header>
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('profile.nav_profile') }}</h1>
+    <hr class="gold-rule">
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
-      <div class="col-md-3">{% include "includes/profile_nav.html" %}</div>
-      <div class="col-md-8">
-        <p class="mb-1"><span class="text-muted">{{ t('login.identifier') }}</span> {{ current_user.identifier }}</p>
-        <p class="mb-1"><span class="role-badge text-dark border">{{ current_user.role_label }}</span></p>
-        <p class="mb-3"><span class="text-muted">{{ t('dash.station') }}</span> {{ current_user.station.name if current_user.station else t('dash.platform') }}</p>
-        <form method="post" novalidate class="card-station"><div class="card-body">
+      <div class="col-lg-3">{% include "includes/profile_nav.html" %}</div>
+      <div class="col-lg-9">
+        <article class="card-station profile-identity-card mb-3">
+          <div class="card-body">
+            <div class="row g-3 profile-meta-grid">
+              <div class="col-sm-6 col-lg-4">
+                <p class="small text-muted mb-1">{{ t('login.identifier') }}</p>
+                <p class="mb-0 profile-mono">{{ current_user.identifier }}</p>
+              </div>
+              <div class="col-sm-6 col-lg-4">
+                <p class="small text-muted mb-1">{{ t('register.role') }}</p>
+                <p class="mb-0"><span class="role-badge text-dark border">{{ current_user.role_label }}</span></p>
+              </div>
+              <div class="col-sm-12 col-lg-4">
+                <p class="small text-muted mb-1">{{ t('dash.station') }}</p>
+                <p class="mb-0">{{ current_user.station.name if current_user.station else t('dash.platform') }}</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <form method="post" novalidate class="card-station profile-form-card">
+          <div class="card-body">
           {{ form.hidden_tag() }}
           {{ field(form.full_name, t('profile.name'), autocomplete="name") }}
-          {{ field(form.rank_label, t('profile.rank')) }}
-          {{ field(form.belt_no, t('profile.belt')) }}
-          <button type="submit" class="btn btn-navy">{{ t('profile.save') }}</button>
-        </div></form>
+          <div class="row g-3">
+            <div class="col-md-6">{{ field(form.rank_label, t('profile.rank')) }}</div>
+            <div class="col-md-6">{{ field(form.belt_no, t('profile.belt')) }}</div>
+          </div>
+          <div class="profile-form-actions d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-navy">{{ t('profile.save') }}</button>
+          </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

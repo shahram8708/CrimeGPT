@@ -1,27 +1,65 @@
 {% extends "base.html" %}
 {% from "includes/macros.html" import status_badge %}
 {% block title %}{{ t('adm.jobs') }} - CrimeGPT{% endblock %}
+{% block body_class %}admin-page{% endblock %}
 {% block content %}
-<header class="page-hero admin-hero"><div class="container"><h1>{{ job.task_name }}</h1><hr class="gold-rule"></div></header>
+<header class="page-hero admin-hero">
+  <div class="container">
+    <h1>{{ job.task_name }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ t('adm.jobs') }} details</p>
+  </div>
+</header>
 <section class="section">
-  <div class="container" >
+  <div class="container">
     {% include "admin/_nav.html" %}
-    <p>{{ status_badge(job.status) }} · {{ job.progress }}%</p>
-    <p class="small text-muted">{{ job.uuid }}</p>
-    {% if job.error_message %}<p class="text-danger">{{ job.error_message }}</p>{% endif %}
+
+    <div class="row g-3">
+      <div class="col-lg-7">
+        <article class="card-station h-100">
+          <div class="card-body">
+            <p class="mb-2">{{ status_badge(job.status) }} <span class="ms-2 admin-mono">{{ job.uuid }}</span></p>
+            <div class="row g-3 small">
+              <div class="col-sm-6">
+                <p class="mb-1 text-muted">{{ t('history.started') }}</p>
+                <p class="mb-0">{{ (job.started_at or job.created_at)|ist }}</p>
+              </div>
+              <div class="col-sm-6">
+                <p class="mb-1 text-muted">{{ t('history.progress') }}</p>
+                <p class="mb-0">{{ job.progress }}%</p>
+              </div>
+            </div>
+            {% if job.error_message %}
+            <div class="alert alert-danger mt-3 mb-0" role="alert">{{ job.error_message }}</div>
+            {% endif %}
+          </div>
+        </article>
+      </div>
+      <div class="col-lg-5">
+        <article class="card-station h-100">
+          <div class="card-body d-flex flex-column gap-2">
+            <a class="btn btn-gold-outline" href="{{ url_for('admin.jobs') }}">{{ t('adm.jobs') }}</a>
+            {% if job.status == 'failed' %}
+            <form method="post" action="{{ url_for('admin.job_retry', job_uuid=job.uuid) }}">
+              {{ form.hidden_tag() }}
+              <button class="btn btn-navy w-100" type="submit">{{ t('btn.retry') }}</button>
+            </form>
+            {% endif %}
+          </div>
+        </article>
+      </div>
+    </div>
+
     {% if payload %}
-    <h2 class="h6">{{ t('adm.payload') }}</h2>
-    <ul>
-      {% for k, v in payload.items() %}
-      <li><code>{{ k }}</code> = {{ v }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-    {% if job.status == 'failed' %}
-    <form method="post" action="{{ url_for('admin.job_retry', job_uuid=job.uuid) }}">
-      {{ form.hidden_tag() }}
-      <button class="btn btn-navy" type="submit">{{ t('btn.retry') }}</button>
-    </form>
+    <article class="card-station mt-3">
+      <div class="card-body">
+        <h2 class="h6 mb-3">{{ t('adm.payload') }}</h2>
+        <details>
+          <summary class="fw-semibold">{{ t('notes.open') }}</summary>
+          <pre class="small admin-pre mt-3 mb-0">{{ payload | tojson(indent=2) }}</pre>
+        </details>
+      </div>
+    </article>
     {% endif %}
   </div>
 </section>

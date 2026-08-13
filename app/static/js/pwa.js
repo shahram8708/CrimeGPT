@@ -13,17 +13,18 @@
   var isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
 
   if (installBtn && !isStandalone) {
+    installBtn.classList.add("d-none");
     window.addEventListener("beforeinstallprompt", function (e) {
       e.preventDefault();
       deferred = e;
-      installBtn.hidden = false;
+      installBtn.classList.remove("d-none");
     });
     installBtn.addEventListener("click", function () {
       if (!deferred) return;
       deferred.prompt();
       deferred.userChoice.finally(function () {
         deferred = null;
-        installBtn.hidden = true;
+        installBtn.classList.add("d-none");
       });
     });
   }

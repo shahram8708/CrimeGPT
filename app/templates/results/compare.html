@@ -3,7 +3,7 @@
 {% block content %}
 <header class="page-hero">
   <div class="container">
-    <h1 class="h3 mb-1">{{ t('cmp.result') }}</h1>
+    <h1 class="h1 mb-1">{{ t('cmp.result') }}</h1>
     <p class="small text-white-50 mb-0">Document Comparison & Audit Analysis</p>
     <hr class="gold-rule">
   </div>
@@ -11,7 +11,7 @@
 
 <section class="section">
   <div class="container" style="max-width: 62rem;">
-    <div class="alert alert-warning mb-4" role="status">{{ t('intel.disclaimer') }}</div>
+    <div class="alert ai-disclaimer mb-4" role="status"><span class="ai-pill">AI</span> {{ t('intel.disclaimer') }}</div>
 
     {% set det = data.deterministic or {} %}
     {% set diff = data.text_diff or {} %}

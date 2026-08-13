@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Terms of use - CrimeGPT{% endblock %}
+{% block body_class %}public-page{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
@@ -9,29 +10,50 @@
   </div>
 </header>
 <section class="section">
-  <div class="container prose">
-    <h2>Authorised users only</h2>
-    <p>CrimeGPT is a station workspace. Accounts are provisioned by a station administrator or Super Admin. Self-registration is not offered in this step. You may use the system only if you are an authorised member of a participating unit or an evaluator given access for PS-69EEFDFB90B99.</p>
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <article class="card-station public-policy-aside">
+          <div class="card-body">
+            <h2 class="h5">Terms snapshot</h2>
+            <ul class="list-unstyled mb-0 public-policy-list">
+              <li><strong>Access:</strong> authorised officers and evaluators only</li>
+              <li><strong>Control:</strong> station admin and Super Admin governance</li>
+              <li><strong>AI role:</strong> draft assistance only</li>
+              <li><strong>Reference:</strong> PS-69EEFDFB90B99</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+      <div class="col-lg-8">
+        <div class="prose public-prose-card card-station">
+          <div class="card-body">
+            <h2>Authorised users only</h2>
+            <p>CrimeGPT is a station workspace. Accounts are provisioned by a station administrator or Super Admin. Self-registration is not offered in this step. You may use the system only if you are an authorised member of a participating unit or an evaluator given access for PS-69EEFDFB90B99.</p>
 
-    <h2>Draft assistance, not a filing system</h2>
-    <p>The product helps draft statutory police papers and a case diary. It does not file an FIR, does not write to CCTNS or ICJS, and does not replace a Magistrate or public prosecutor. AI-generated legal information may contain errors.</p>
+            <h2>Draft assistance, not a filing system</h2>
+            <p>The product helps draft statutory police papers and a case diary. It does not file an FIR, does not write to CCTNS or ICJS, and does not replace a Magistrate or public prosecutor. AI-generated legal information may contain errors.</p>
 
-    <h2>Officer remains responsible</h2>
-    <p>You remain responsible for the statutory accuracy of every paper that leaves the station. Confirm BNS, BNSS, BSA provisions, gazette notifications, and court records before you rely on a suggestion. Do not treat a generated section list as a charging decision.</p>
+            <h2>Officer remains responsible</h2>
+            <p>You remain responsible for the statutory accuracy of every paper that leaves the station. Confirm BNS, BNSS, BSA provisions, gazette notifications, and court records before you rely on a suggestion. Do not treat a generated section list as a charging decision.</p>
 
-    <h2>Acceptable use</h2>
-    <ul>
-      <li>Do not paste case facts into public consumer AI tools.</li>
-      <li>Do not share credentials or leave a signed-in session unattended in a public area of the station.</li>
-      <li>Do not scrape, probe, or attempt to bypass role or station scope.</li>
-      <li>Do not upload material you are not authorised to hold on a station system.</li>
-    </ul>
+            <h2>Acceptable use</h2>
+            <ul>
+              <li>Do not paste case facts into public consumer AI tools.</li>
+              <li>Do not share credentials or leave a signed-in session unattended in a public area of the station.</li>
+              <li>Do not scrape, probe, or attempt to bypass role or station scope.</li>
+              <li>Do not upload material you are not authorised to hold on a station system.</li>
+            </ul>
 
-    <h2>Access control</h2>
-    <p>Super Admin may revoke access, lock an account, or change station bindings. Impersonation of another user’s session is forbidden, including by Super Admin.</p>
+            <h2>Access control</h2>
+            <p>Super Admin may revoke access, lock an account, or change station bindings. Impersonation of another user's session is forbidden, including by Super Admin.</p>
 
-    <h2>Availability</h2>
-    <p>This is a pilot. Service may be interrupted for maintenance or challenge operations. Do not use CrimeGPT as the only copy of a court-bound paper.</p>
+            <h2>Availability</h2>
+            <p>This is a pilot. Service may be interrupted for maintenance or challenge operations. Do not use CrimeGPT as the only copy of a court-bound paper.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}

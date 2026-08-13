@@ -1,38 +1,71 @@
 {% extends "base.html" %}
 {% block title %}{{ t('adm.audit') }} - CrimeGPT{% endblock %}
+{% block body_class %}admin-page{% endblock %}
 {% block content %}
-<header class="page-hero admin-hero"><div class="container"><h1>{{ t('adm.audit') }}</h1><hr class="gold-rule"></div></header>
+<header class="page-hero admin-hero">
+  <div class="container">
+    <h1>{{ t('adm.audit') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">System action history for operational review.</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     {% include "admin/_nav.html" %}
-    <form class="row g-2 mb-3" method="get">
-      <div class="col-md-2"><label class="form-label" for="action">{{ t('activity.action') }}</label><input class="form-control" id="action" name="action" value="{{ filters.get('action','') }}"></div>
-      <div class="col-md-2"><label class="form-label" for="actor">{{ t('history.user') }}</label><input class="form-control" id="actor" name="actor" value="{{ filters.get('actor','') }}"></div>
-      <div class="col-md-2"><label class="form-label" for="case">{{ t('history.case') }}</label><input class="form-control" id="case" name="case" value="{{ filters.get('case','') }}"></div>
-      <div class="col-md-2"><label class="form-label" for="station">{{ t('dash.station') }}</label><input class="form-control" id="station" name="station" value="{{ filters.get('station','') }}"></div>
-      <div class="col-md-2"><label class="form-label" for="date_from">{{ t('history.from') }}</label><input class="form-control" type="date" id="date_from" name="date_from" value="{{ filters.get('date_from','') }}"></div>
-      <div class="col-md-2 d-flex align-items-end"><button class="btn btn-navy" type="submit">{{ t('history.filter') }}</button></div>
-    </form>
-    {% if can_export %}<p><a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.audit_export') }}">{{ t('adm.export_csv') }}</a></p>{% endif %}
-    <div class="table-responsive">
-      <table class="table doc-table table-stack">
-        <thead><tr><th>{{ t('activity.time') }}</th><th>{{ t('history.user') }}</th><th>{{ t('activity.action') }}</th><th>{{ t('activity.object') }}</th><th>{{ t('activity.ip') }}</th></tr></thead>
-        <tbody>
-          {% for r in rows %}
-          <tr>
-            <td>{{ r.created_at|ist }}</td>
-            <td>{{ r.actor.identifier if r.actor else "-" }}</td>
-            <td>{{ r.action }}</td>
-            <td>{{ r.object_type }} {{ r.object_id or "" }}</td>
-            <td>{{ r.ip or "-" }}</td>
-          </tr>
-          {% else %}
-          <tr><td colspan="5">{{ t('adm.none') }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="card-station admin-filter-card mb-3">
+      <div class="card-body">
+        <form class="row g-3" method="get">
+          <div class="col-md-2"><label class="form-label" for="action">{{ t('activity.action') }}</label><input class="form-control" id="action" name="action" value="{{ filters.get('action','') }}"></div>
+          <div class="col-md-2"><label class="form-label" for="actor">{{ t('history.user') }}</label><input class="form-control" id="actor" name="actor" value="{{ filters.get('actor','') }}"></div>
+          <div class="col-md-2"><label class="form-label" for="case">{{ t('history.case') }}</label><input class="form-control" id="case" name="case" value="{{ filters.get('case','') }}"></div>
+          <div class="col-md-2"><label class="form-label" for="station">{{ t('dash.station') }}</label><input class="form-control" id="station" name="station" value="{{ filters.get('station','') }}"></div>
+          <div class="col-md-2"><label class="form-label" for="date_from">{{ t('history.from') }}</label><input class="form-control" type="date" id="date_from" name="date_from" value="{{ filters.get('date_from','') }}"></div>
+          <div class="col-md-2"><label class="form-label" for="date_to">{{ t('history.to') }}</label><input class="form-control" type="date" id="date_to" name="date_to" value="{{ filters.get('date_to','') }}"></div>
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button class="btn btn-navy" type="submit">{{ t('history.filter') }}</button>
+            <a class="btn btn-gold-outline" href="{{ url_for('admin.audit') }}">{{ t('history.any') }}</a>
+            {% if can_export %}<a class="btn btn-gold-outline" href="{{ url_for('admin.audit_export') }}">{{ t('adm.export_csv') }}</a>{% endif %}
+          </div>
+        </form>
+      </div>
     </div>
-    <p class="small text-muted">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+
+    <div class="card-station">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table doc-table table-stack mb-0">
+            <thead><tr><th>{{ t('activity.time') }}</th><th>{{ t('history.user') }}</th><th>{{ t('activity.action') }}</th><th>{{ t('activity.object') }}</th><th>{{ t('activity.ip') }}</th></tr></thead>
+            <tbody>
+              {% for r in rows %}
+              <tr>
+                <td data-label="{{ t('activity.time') }}">{{ r.created_at|ist }}</td>
+                <td data-label="{{ t('history.user') }}">{{ r.actor.identifier if r.actor else "-" }}</td>
+                <td data-label="{{ t('activity.action') }}"><span class="admin-mono">{{ r.action }}</span></td>
+                <td data-label="{{ t('activity.object') }}">{{ r.object_type }} {{ r.object_id or "" }}</td>
+                <td data-label="{{ t('activity.ip') }}">{{ r.ip or "-" }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5">{{ t('adm.none') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+      <p class="small text-muted mb-0">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+      {% if pages > 1 %}
+      <nav class="d-flex gap-2" aria-label="Audit pagination">
+        {% if page > 1 %}
+        <a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.audit', action=filters.get('action',''), actor=filters.get('actor',''), case=filters.get('case',''), station=filters.get('station',''), date_from=filters.get('date_from',''), date_to=filters.get('date_to',''), page=page-1) }}">{{ t('history.prev') }}</a>
+        {% endif %}
+        {% if page < pages %}
+        <a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.audit', action=filters.get('action',''), actor=filters.get('actor',''), case=filters.get('case',''), station=filters.get('station',''), date_from=filters.get('date_from',''), date_to=filters.get('date_to',''), page=page+1) }}">{{ t('history.next') }}</a>
+        {% endif %}
+      </nav>
+      {% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

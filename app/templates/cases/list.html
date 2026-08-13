@@ -1,76 +1,120 @@
 {% extends "base.html" %}
 {% block title %}{{ page_title }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
     <h1>{{ page_title }}</h1>
     <hr class="gold-rule">
+    <p class="mb-0">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
   </div>
 </header>
 <section class="section">
   <div class="container">
-    <div class="d-flex flex-wrap gap-2 mb-3">
-      {% if can_new %}
-      <a class="btn btn-gold btn-new-case" href="{{ url_for('cases.case_new') }}">{{ t('btn.new_case') }}</a>
-      {% endif %}
-      <a class="btn btn-gold-outline" href="{{ url_for('cases.case_search') }}">{{ t('case.search') }}</a>
-    </div>
-    <form class="row g-2 mb-3" method="get" action="{{ url_for('cases.case_list') }}">
-      <div class="col-md-3"><label class="form-label" for="q">{{ t('cases.q') }}</label><input class="form-control" id="q" name="q" value="{{ filters.q }}"></div>
-      <div class="col-md-2"><label class="form-label" for="status">{{ t('cases.status') }}</label>
-        <select class="form-select" id="status" name="status">
-          <option value="">{{ t('history.any') }}</option>
-          {% for s in ['draft','open','in_court','closed','archived'] %}
-          <option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ s }}</option>
-          {% endfor %}
-        </select>
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+      <div class="small text-muted">{{ total }} {{ t('nav.cases') }}</div>
+      <div class="d-flex flex-wrap gap-2">
+        {% if can_new %}
+        <a class="btn btn-gold btn-new-case" href="{{ url_for('cases.case_new') }}">{{ t('btn.new_case') }}</a>
+        {% endif %}
+        <a class="btn btn-gold-outline" href="{{ url_for('cases.case_search') }}">{{ t('case.search') }}</a>
       </div>
-      <div class="col-md-2"><label class="form-label" for="year">{{ t('cases.year') }}</label><input class="form-control" id="year" name="year" value="{{ filters.year }}"></div>
-      <div class="col-md-2"><label class="form-label" for="category">{{ t('cases.category') }}</label>
-        <select class="form-select" id="category" name="category">
-          <option value="">{{ t('history.any') }}</option>
-          {% for key, label in categories.items() %}
-          <option value="{{ key }}" {% if filters.category == key %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-2 d-flex align-items-end"><button class="btn btn-navy" type="submit">{{ t('history.filter') }}</button></div>
-    </form>
-    <div class="table-responsive">
-      <table class="table doc-table table-stack">
-        <thead>
-          <tr>
-            <th>CR</th>
-            <th>{{ t('cases.incident') }}</th>
-            <th>{{ t('cases.accused') }}</th>
-            <th>{{ t('cases.complete') }}</th>
-            <th>{{ t('cases.status') }}</th>
-            <th>{{ t('case.io') }}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in cases %}
-          {% set c = row.case %}
-          <tr>
-            <td data-label="CR">{{ c.display_cr }}</td>
-            <td data-label="{{ t('cases.incident') }}">{{ c.incident_at|ist }}</td>
-            <td data-label="{{ t('cases.accused') }}">{{ c.live_parties('accused')|length }}</td>
-            <td data-label="{{ t('cases.complete') }}">
-              <div class="thin-bar" aria-hidden="true"><span style="width:{{ row.completeness.percent }}%"></span></div>
-              <span class="small">{{ row.completeness.percent }}%</span>
-            </td>
-            <td data-label="{{ t('cases.status') }}"><span class="badge job-badge {{ c.status }}">{{ c.status }}</span></td>
-            <td data-label="{{ t('case.io') }}">{{ c.assigned_io.full_name if c.assigned_io else "-" }}</td>
-            <td><a href="{{ url_for('cases.overview', uuid=c.uuid) }}">{{ t('notes.open') }}</a></td>
-          </tr>
-          {% else %}
-          <tr><td colspan="7">No cases yet. Create the first case for this station.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
     </div>
-    <p class="small text-muted">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+
+    <div class="card-station case-filter-card mb-3">
+      <div class="card-body">
+        <form class="row g-3" method="get" action="{{ url_for('cases.case_list') }}">
+          <div class="col-md-3"><label class="form-label" for="q">{{ t('cases.q') }}</label><input class="form-control" id="q" name="q" value="{{ filters.q }}"></div>
+          <div class="col-md-2"><label class="form-label" for="status">{{ t('cases.status') }}</label>
+            <select class="form-select" id="status" name="status">
+              <option value="">{{ t('history.any') }}</option>
+              {% for s in ['draft','open','in_court','closed','archived'] %}
+              <option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2"><label class="form-label" for="year">{{ t('cases.year') }}</label><input class="form-control" id="year" name="year" value="{{ filters.year }}"></div>
+          <div class="col-md-3"><label class="form-label" for="category">{{ t('cases.category') }}</label>
+            <select class="form-select" id="category" name="category">
+              <option value="">{{ t('history.any') }}</option>
+              {% for key, label in categories.items() %}
+              <option value="{{ key }}" {% if filters.category == key %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2 d-flex align-items-end"><button class="btn btn-navy w-100" type="submit">{{ t('history.filter') }}</button></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card-station">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table doc-table table-stack mb-0">
+            <thead>
+              <tr>
+                <th>CR</th>
+                <th>{{ t('cases.incident') }}</th>
+                <th>{{ t('cases.accused') }}</th>
+                <th>{{ t('cases.complete') }}</th>
+                <th>{{ t('cases.status') }}</th>
+                <th>{{ t('case.io') }}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in cases %}
+              {% set c = row.case %}
+              {% set pct = row.completeness.percent %}
+              {% if pct >= 100 %}
+                {% set comp_label = 'Complete' %}
+                {% set comp_color = '#1A5C3A' %}
+              {% elif pct >= 75 %}
+                {% set comp_label = 'Good' %}
+                {% set comp_color = '#1B6B6B' %}
+              {% elif pct >= 50 %}
+                {% set comp_label = 'Partial' %}
+                {% set comp_color = '#8A6200' %}
+              {% else %}
+                {% set comp_label = 'Low' %}
+                {% set comp_color = '#7A1F2B' %}
+              {% endif %}
+              <tr>
+                <td data-label="CR"><span class="cr-chip">{{ c.display_cr }}</span></td>
+                <td data-label="{{ t('cases.incident') }}">{{ c.incident_at|ist }}</td>
+                <td data-label="{{ t('cases.accused') }}">{{ c.live_parties('accused')|length }}</td>
+                <td data-label="{{ t('cases.complete') }}">
+                  <div class="thin-bar" aria-hidden="true"><span style="width:{{ pct }}%; background: {{ comp_color }}"></span></div>
+                  <span class="small">{{ pct }}% complete · {{ comp_label }}</span>
+                </td>
+                <td data-label="{{ t('cases.status') }}"><span class="badge job-badge {{ c.status }}">{{ c.status }}</span></td>
+                <td data-label="{{ t('case.io') }}">{{ c.assigned_io.full_name if c.assigned_io else "-" }}</td>
+                <td data-label="{{ t('notes.open') }}"><a class="btn btn-gold-outline btn-sm" href="{{ url_for('cases.overview', uuid=c.uuid) }}">{{ t('notes.open') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="7">No cases yet. Create the first case for this station.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {% if pages > 1 %}
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+      <p class="small text-muted mb-0">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+      <nav class="d-flex gap-2" aria-label="{{ t('history.page') }}">
+        {% if page > 1 %}
+        <a class="btn btn-gold-outline btn-sm" href="{{ url_for('cases.case_list', q=filters.q, status=filters.status, year=filters.year, category=filters.category, page=page-1) }}">{{ t('history.prev') }}</a>
+        {% endif %}
+        {% if page < pages %}
+        <a class="btn btn-gold-outline btn-sm" href="{{ url_for('cases.case_list', q=filters.q, status=filters.status, year=filters.year, category=filters.category, page=page+1) }}">{{ t('history.next') }}</a>
+        {% endif %}
+      </nav>
+    </div>
+    {% else %}
+    <p class="small text-muted mt-3 mb-0">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+    {% endif %}
   </div>
 </section>
 {% endblock %}

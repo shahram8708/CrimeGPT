@@ -1,3 +1,4 @@
+import re
 import time
 
 from flask import current_app
@@ -27,16 +28,23 @@ SYSTEM_PREAMBLE = (
 )
 
 SCHEMA_HINT = (
-    "Return a single JSON object with keys: "
-    "bns (list of {code, title, rationale, confidence, elements_present, elements_missing}), "
-    "bnss (list of {code, title, rationale, confidence}), "
-    "bsa (list of {code, title, rationale, confidence}), "
-    "crosswalk (list of {old, new, note}), "
-    "judgments (list of {title, citation, holding, why_relevant, confidence, needs_verification}), "
-    "overall_confidence (integer 0-100), "
-    "limitations (list of strings), "
-    "disclaimer (string containing the platform disclaimer). "
-    "Per-item confidence is 0 to 100. "
+    "Return a single JSON object with these EXACT lowercase keys: "
+    '"bns" (array of Bharatiya Nyaya Sanhita 2023 provisions, each: '
+    '{"code": bare number e.g. "103(1)", "title", "rationale", "confidence": 0-100, '
+    '"elements_present": [strings], "elements_missing": [strings]}), '
+    '"bnss" (array of Bharatiya Nagarik Suraksha Sanhita 2023 provisions, each: '
+    '{"code", "title", "rationale", "confidence": 0-100}), '
+    '"bsa" (array of Bharatiya Sakshya Adhiniyam 2023 provisions, each: '
+    '{"code", "title", "rationale", "confidence": 0-100}), '
+    '"crosswalk" (array of {"old", "new", "note"} mapping old IPC/CrPC/IEA to new codes), '
+    '"judgments" (array of {"title", "citation", "holding", "why_relevant", '
+    '"confidence": 0-100, "needs_verification": bool}), '
+    '"overall_confidence" (integer 0-100), '
+    '"limitations" (array of strings), '
+    '"disclaimer" (string with the platform disclaimer). '
+    "IMPORTANT: You MUST return all three arrays bns, bnss, and bsa separately. "
+    "Never merge them into one key. Each code must be the bare section number "
+    "without 'Section', 'BNS', 'BNSS', or 'BSA' prefix. "
     "Set needs_verification true on judgments unless certainty is high. "
     "If you must refuse, return {\"refusal\": true, \"limitations\": [\"reason\"], "
     "\"bns\": [], \"bnss\": [], \"bsa\": [], \"crosswalk\": [], \"judgments\": [], "
@@ -190,13 +198,106 @@ def _looks_like_refusal(text, data):
     return any(m in limits for m in ("fabricat", "refuse", "will not hide"))
 
 
+_CODE_STRIP_RE = re.compile(
+    r"^(?:section|sec\.?|s\.?|dhara|\u0927\u093e\u0930\u093e)\s+", re.IGNORECASE
+)
+_CODE_FAMILY_TAIL_RE = re.compile(
+    r"\s*(?:of\s+)?(?:the\s+)?(?:BNS|BNSS|BSA|IPC|CrPC|IEA)(?:\s+\d{4})?\s*$",
+    re.IGNORECASE,
+)
+
+
+def _clean_code(raw):
+    c = (raw or "").strip()
+    c = _CODE_STRIP_RE.sub("", c)
+    c = _CODE_FAMILY_TAIL_RE.sub("", c)
+    return c.strip(" .,;:-") or (raw or "").strip()
+
+
+_KEY_ALIASES = {
+    "bns_provisions": "bns",
+    "bns_sections": "bns",
+    "bharatiya_nyaya_sanhita": "bns",
+    "bnss_provisions": "bnss",
+    "bnss_sections": "bnss",
+    "bharatiya_nagarik_suraksha_sanhita": "bnss",
+    "bsa_provisions": "bsa",
+    "bsa_sections": "bsa",
+    "bharatiya_sakshya_adhiniyam": "bsa",
+    "cross_walk": "crosswalk",
+    "ipc_crosswalk": "crosswalk",
+    "crosswalk_table": "crosswalk",
+    "case_law": "judgments",
+    "relevant_judgments": "judgments",
+    "overallconfidence": "overall_confidence",
+    "overall_score": "overall_confidence",
+}
+
+
+def _normalize_data_keys(data):
+    if not isinstance(data, dict):
+        return data
+    out = {}
+    for k, v in data.items():
+        low = k.lower().strip()
+        mapped = _KEY_ALIASES.get(low, low)
+        if mapped in out:
+            if not out[mapped] and v:
+                out[mapped] = v
+        else:
+            out[mapped] = v
+    return out
+
+
+def _split_merged_provisions(data):
+    if not isinstance(data, dict):
+        return data
+    if any(data.get(k) for k in ("bns", "bnss", "bsa")):
+        return data
+    merged = None
+    for alt in ("provisions", "sections", "offences", "offenses"):
+        merged = data.get(alt)
+        if isinstance(merged, list) and merged:
+            break
+    if not isinstance(merged, list) or not merged:
+        return data
+    bns, bnss, bsa = [], [], []
+    for item in merged:
+        if not isinstance(item, dict):
+            continue
+        hint = " ".join(
+            str(item.get(f) or "") for f in ("family", "statute", "act", "code", "law")
+        ).upper()
+        if "BNSS" in hint or "CRPC" in hint or "NAGARIK" in hint:
+            bnss.append(item)
+        elif "BSA" in hint or "IEA" in hint or "SAKSHYA" in hint:
+            bsa.append(item)
+        else:
+            bns.append(item)
+    data["bns"] = bns
+    data["bnss"] = bnss
+    data["bsa"] = bsa
+    return data
+
+
 def _normalize_offence(item, family):
+    if isinstance(item, str) and item.strip():
+        item = {"code": item.strip()}
     if not isinstance(item, dict):
         return None
-    code = _as_str(item.get("code"), 40)
-    title = _as_str(item.get("title"), 240)
-    rationale = _as_str(item.get("rationale"), 4000)
-    confidence = _as_int(item.get("confidence"), 0)
+    raw_code = _as_str(
+        item.get("code") or item.get("section") or item.get("provision"), 80
+    )
+    code = _clean_code(raw_code)[:40]
+    title = _as_str(
+        item.get("title") or item.get("name") or item.get("description"), 240
+    )
+    rationale = _as_str(
+        item.get("rationale") or item.get("reason") or item.get("explanation"), 4000
+    )
+    confidence = _as_int(item.get("confidence") or item.get("score"), 0)
+    if not code and not title and not rationale:
+        return None
     row = {
         "code": code,
         "title": title,
@@ -205,12 +306,13 @@ def _normalize_offence(item, family):
         "family": family,
     }
     if family == "BNS":
-        row["elements_present"] = _as_str_list(item.get("elements_present"))
-        row["elements_missing"] = _as_str_list(item.get("elements_missing"))
-    applyable = bool(code) and statute_token_ok(code, family)
-    row["applyable"] = applyable
-    if not applyable:
-        row["unparsed"] = True
+        ep = item.get("elements_present")
+        em = item.get("elements_missing")
+        if ep is None and em is None and isinstance(item.get("elements"), list):
+            ep = item.get("elements")
+        row["elements_present"] = _as_str_list(ep)
+        row["elements_missing"] = _as_str_list(em)
+    row["applyable"] = bool(code) and statute_token_ok(code, family)
     return row
 
 
@@ -232,6 +334,8 @@ def _normalize_judgment(item):
 def normalize_legal_result(data, raw_text=""):
     if not isinstance(data, dict):
         raise GeminiError("Model returned unreadable output.")
+    data = _normalize_data_keys(data)
+    data = _split_merged_provisions(data)
     unparsed = []
     groups = {}
     for key, family in (("bns", "BNS"), ("bnss", "BNSS"), ("bsa", "BSA")):
@@ -240,10 +344,7 @@ def normalize_legal_result(data, raw_text=""):
             row = _normalize_offence(item, family)
             if row is None:
                 continue
-            if row.get("unparsed"):
-                unparsed.append({"family": family, "raw": item, "code": row.get("code") or ""})
-            else:
-                kept.append(row)
+            kept.append(row)
         groups[key] = kept
     crosswalk = []
     for item in _as_list(data.get("crosswalk")):

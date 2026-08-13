@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-dark navbar-crime" aria-label="Primary">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-crime" aria-label="Primary navigation">
   <div class="container">
-    <a class="navbar-brand" href="{{ url_for('dashboard.index') if current_user.is_authenticated else url_for('main.landing') }}">
+    <a class="navbar-brand" href="{{ url_for('dashboard.index') if current_user.is_authenticated else url_for('main.landing') }}" aria-label="CrimeGPT home">
       <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
         <path fill="#C4A35A" d="M16 2.5l11 4.2v8.6c0 7.1-4.6 13.2-11 14.7C9.6 28.5 5 22.4 5 15.3V6.7L16 2.5z"/>
         <path fill="#0B1F3A" d="M16 11.1l1.7 3.5 3.8.6-2.8 2.7.7 3.8L16 19.7l-3.4 1.8.7-3.8-2.8-2.7 3.8-.6L16 11.1z"/>
@@ -51,8 +51,8 @@
         </li>
         {% endif %}
       </ul>
-      <div class="d-flex flex-wrap align-items-center gap-2">
-        <button type="button" class="btn btn-gold-outline btn-sm" id="btn-install-app" hidden>{{ t('nav.install') }}</button>
+      <div class="d-flex flex-wrap align-items-center gap-2 ms-lg-2">
+        <button type="button" class="btn btn-gold-outline btn-sm d-none" id="btn-install-app">{{ t('nav.install') }}</button>
         <label class="visually-hidden" for="lang-switch">Language</label>
         <select id="lang-switch" class="lang-select" data-base="{{ url_for('main.set_lang', code='') }}" aria-label="Language">
           <option value="en" {% if current_lang() == 'en' %}selected{% endif %}>{{ t('lang.en') }}</option>
@@ -71,7 +71,7 @@
         <div class="dropdown user-dd">
           <button class="btn btn-gold-outline btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             {{ current_user.full_name.split(' ')[0] }}
-            <span class="role-badge">{{ current_user.role_label }}</span>
+            <span class="role-badge role-{{ current_user.role }}">{{ current_user.role_label }}</span>
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><span class="dropdown-item-text small text-muted">{{ current_user.full_name }}</span></li>
@@ -97,8 +97,8 @@
     </div>
   </div>
 </nav>
-<div id="ios-install-hint" class="container d-none">
-  <div class="ios-hint d-flex justify-content-between align-items-start gap-2 my-2">
+<div id="ios-install-hint" class="container d-none" aria-live="polite">
+  <div class="ios-hint d-flex justify-content-between align-items-start gap-2 my-2" role="status">
     <p class="mb-0 small">{{ t('ios.hint') }}</p>
     <button type="button" class="btn btn-sm btn-link" id="ios-hint-dismiss">{{ t('ios.dismiss') }}</button>
   </div>

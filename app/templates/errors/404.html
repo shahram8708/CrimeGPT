@@ -2,15 +2,18 @@
 {% block title %}Page not found - CrimeGPT{% endblock %}
 {% block content %}
 <section class="section">
-  <div class="container prose">
-    <h1>Page not found</h1>
-    <hr class="gold-rule">
-    <p>That address is not on this server. If you followed a link from inside CrimeGPT, the destination may belong to a later step that is not installed yet.</p>
+  <div class="container">
+    <div class="error-shell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0B1F3A" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+      <h1 class="h3 mt-3">Page not found</h1>
+      <hr class="gold-rule">
+      <p>Check the URL or return to your dashboard.</p>
     {% if current_user.is_authenticated %}
       <a class="btn btn-navy" href="{{ url_for('dashboard.index') }}">{{ t('btn.dashboard') }}</a>
     {% else %}
       <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
     {% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

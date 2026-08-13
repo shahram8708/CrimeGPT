@@ -1,23 +1,43 @@
 {% extends "base.html" %}
 {% block title %}{{ t('case.nav_facts') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('case.nav_facts') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
       <div class="col-lg-9">
         {% if locked or not form %}
-          <div class="alert alert-warning">{{ t('case.locked_edit') }} {% if case.locked_by %}{{ case.locked_by.full_name }}{% endif %}</div>
+          <article class="card-station">
+            <div class="card-body">
+              <div class="alert alert-warning mb-0">{{ t('case.locked_edit') }} {% if case.locked_by %}{{ case.locked_by.full_name }}{% endif %}</div>
+            </div>
+          </article>
         {% else %}
           {% if diffs %}
-          <div class="alert alert-danger" role="alert">
-            <p class="mb-2">{{ t('case.stale') }}</p>
-            <ul>{% for d in diffs %}<li>{{ d.field }}: {{ d.old }} → {{ d.new }}</li>{% endfor %}</ul>
-            <a class="btn btn-navy btn-sm" href="{{ url_for('cases.case_edit', uuid=case.uuid) }}">{{ t('case.reload') }}</a>
-          </div>
+          <article class="card-station mb-3">
+            <div class="card-body">
+              <div class="alert alert-danger mb-0" role="alert">
+                <p class="mb-2">{{ t('case.stale') }}</p>
+                <ul>{% for d in diffs %}<li>{{ d.field }}: {{ d.old }} → {{ d.new }}</li>{% endfor %}</ul>
+                <a class="btn btn-navy btn-sm" href="{{ url_for('cases.case_edit', uuid=case.uuid) }}">{{ t('case.reload') }}</a>
+              </div>
+            </div>
+          </article>
           {% endif %}
           <form method="post" novalidate class="card-station"><div class="card-body">
             {{ form.hidden_tag() }}
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+              <h2 class="h5 mb-0">{{ t('case.edit_facts') }}</h2>
+              <a class="btn btn-gold-outline btn-sm" href="{{ url_for('cases.overview', uuid=case.uuid) }}">{{ t('case.nav_overview') }}</a>
+            </div>
             <div class="row g-3">
               <div class="col-md-3"><label class="form-label" for="year">{{ t('cases.year') }}</label>{{ form.year(class="form-control") }}</div>
               <div class="col-md-3"><label class="form-label" for="cr_number">{{ t('wiz.cr') }}</label>{{ form.cr_number(class="form-control") }}{% if form.cr_number.errors %}<div class="invalid-feedback d-block">{{ form.cr_number.errors[0] }}</div>{% endif %}</div>
@@ -33,7 +53,10 @@
               <div class="col-12"><label class="form-label" for="narrative">{{ t('wiz.narrative') }}</label>{{ form.narrative(class="form-control", rows="10") }}</div>
               <div class="col-md-4"><label class="form-label" for="narrative_language">{{ t('wiz.nar_lang') }}</label>{{ form.narrative_language(class="form-select") }}</div>
             </div>
-            <button class="btn btn-navy mt-3" type="submit">{{ t('case.save_pool') }}</button>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <button class="btn btn-navy" type="submit">{{ t('case.save_pool') }}</button>
+              <a class="btn btn-gold-outline" href="{{ url_for('cases.overview', uuid=case.uuid) }}">{{ t('wiz.stay') }}</a>
+            </div>
           </div></form>
         {% endif %}
       </div>

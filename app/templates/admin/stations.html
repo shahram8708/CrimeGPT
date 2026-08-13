@@ -1,31 +1,46 @@
 {% extends "base.html" %}
 {% block title %}{{ t('adm.stations') }} - CrimeGPT{% endblock %}
+{% block body_class %}admin-page{% endblock %}
 {% block content %}
-<header class="page-hero admin-hero"><div class="container"><h1>{{ t('adm.stations') }}</h1><hr class="gold-rule"></div></header>
+<header class="page-hero admin-hero">
+  <div class="container">
+    <h1>{{ t('adm.stations') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">Station directory and plan visibility.</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     {% include "admin/_nav.html" %}
-    <p><a class="btn btn-gold" href="{{ url_for('admin.station_new') }}">{{ t('adm.station_new') }}</a></p>
-    <div class="table-responsive">
-      <table class="table doc-table table-stack">
-        <thead><tr><th>{{ t('register.name') }}</th><th>{{ t('adm.code') }}</th><th>{{ t('adm.district') }}</th><th>{{ t('users.active') }}</th><th>{{ t('dash.users') }}</th><th>{{ t('nav.cases') }}</th><th>{{ t('adm.plan') }}</th><th></th></tr></thead>
-        <tbody>
-          {% for c in cards %}
-          <tr>
-            <td>{{ c.station.name }}</td>
-            <td>{{ c.station.code }}</td>
-            <td>{{ c.station.district or "-" }}</td>
-            <td>{{ t('users.yes') if c.station.is_active else t('users.no') }}</td>
-            <td>{{ c.users }}</td>
-            <td>{{ c.cases }}</td>
-            <td>{{ c.station.plan_key }}</td>
-            <td><a href="{{ url_for('admin.station_edit', uuid=c.station.uuid) }}">{{ t('users.open') }}</a></td>
-          </tr>
-          {% else %}
-          <tr><td colspan="8">{{ t('adm.none') }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div class="small text-muted">{{ cards|length }} station records</div>
+      <a class="btn btn-gold" href="{{ url_for('admin.station_new') }}">{{ t('adm.station_new') }}</a>
+    </div>
+
+    <div class="card-station">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table doc-table table-stack mb-0">
+            <thead><tr><th>{{ t('register.name') }}</th><th>{{ t('adm.code') }}</th><th>{{ t('adm.district') }}</th><th>{{ t('users.active') }}</th><th>{{ t('dash.users') }}</th><th>{{ t('nav.cases') }}</th><th>{{ t('adm.plan') }}</th><th></th></tr></thead>
+            <tbody>
+              {% for c in cards %}
+              <tr>
+                <td data-label="{{ t('register.name') }}"><strong>{{ c.station.name }}</strong></td>
+                <td data-label="{{ t('adm.code') }}"><span class="admin-mono">{{ c.station.code }}</span></td>
+                <td data-label="{{ t('adm.district') }}">{{ c.station.district or "-" }}</td>
+                <td data-label="{{ t('users.active') }}"><span class="badge job-badge {{ 'completed' if c.station.is_active else 'failed' }}">{{ t('users.yes') if c.station.is_active else t('users.no') }}</span></td>
+                <td data-label="{{ t('dash.users') }}">{{ c.users }}</td>
+                <td data-label="{{ t('nav.cases') }}">{{ c.cases }}</td>
+                <td data-label="{{ t('adm.plan') }}">{{ c.station.plan_key }}</td>
+                <td data-label="{{ t('users.open') }}"><a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.station_edit', uuid=c.station.uuid) }}">{{ t('users.open') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="8">{{ t('adm.none') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </section>

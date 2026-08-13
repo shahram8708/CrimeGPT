@@ -1,64 +1,73 @@
 {% extends "base.html" %}
 {% from "includes/macros.html" import status_badge %}
 {% block title %}Dashboard - CrimeGPT{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
     <h1>{{ t('dash.greeting_' + greeting) }}, {{ current_user.full_name }}</h1>
     <hr class="gold-rule">
     {% if current_user.role == 'super_admin' %}
-      <p>{{ t('dash.platform') }}</p>
+      <p class="dash-hero-meta mb-0">{{ t('dash.platform') }}</p>
     {% elif current_user.station %}
-      <p>{{ current_user.station.name }} · {{ current_user.role_label }}</p>
+      <p class="dash-hero-meta mb-0">{{ current_user.station.name }} · {{ current_user.role_label }}</p>
     {% else %}
-      <p>{{ current_user.role_label }}</p>
+      <p class="dash-hero-meta mb-0">{{ current_user.role_label }}</p>
     {% endif %}
   </div>
 </header>
 <section class="section">
   <div class="container">
-    <div class="row g-3 mb-4">
-      <div class="col-6 col-lg-3"><div class="stat-card"><div class="label">{{ t('dash.role') }}</div><div class="value">{{ current_user.role_label }}</div></div></div>
-      <div class="col-6 col-lg-3"><div class="stat-card"><div class="label">{{ t('dash.station') }}</div><div class="value">{{ station_code }}</div></div></div>
-      <div class="col-6 col-lg-3"><div class="stat-card"><div class="label">{{ t('dash.ran') }}</div><div class="value">{{ jobs_ran }}</div></div></div>
-      <div class="col-6 col-lg-3"><div class="stat-card"><div class="label">{{ t('dash.failed') }}</div><div class="value">{{ jobs_failed }}</div></div></div>
+    <div class="row g-3 mb-4 dash-kpi-grid">
+      <div class="col-6 col-lg-3"><article class="stat-card"><div class="label">{{ t('dash.role') }}</div><div class="value">{{ current_user.role_label }}</div></article></div>
+      <div class="col-6 col-lg-3"><article class="stat-card"><div class="label">{{ t('dash.station') }}</div><div class="value">{{ station_code }}</div></article></div>
+      <div class="col-6 col-lg-3"><article class="stat-card"><div class="label">{{ t('dash.ran') }}</div><div class="value">{{ jobs_ran }}</div></article></div>
+      <div class="col-6 col-lg-3"><article class="stat-card"><div class="label">{{ t('dash.failed') }}</div><div class="value">{{ jobs_failed }}</div></article></div>
     </div>
 
-    <form method="post" action="{{ url_for('dashboard.ping') }}" class="mb-4">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button type="submit" class="btn btn-gold">{{ t('btn.ping') }}</button>
-    </form>
-
-    <h2 class="h4">{{ t('dash.recent') }}</h2>
-    <hr class="gold-rule">
-    {% if not jobs %}
-      <p class="text-muted">{{ t('dash.jobs_empty') }}</p>
-    {% else %}
-      <div class="table-responsive">
-        <table class="table doc-table table-stack">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Started</th>
-              <th>Progress</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for job in jobs %}
-            <tr>
-              <td data-label="Type">{{ job.task_name }}</td>
-              <td data-label="Status">{{ status_badge(job.status) }}</td>
-              <td data-label="Started">{{ job.started_at|ist if job.started_at else job.created_at|ist }}</td>
-              <td data-label="Progress">{{ job.progress }}%</td>
-              <td data-label="Open"><a href="{{ url_for('jobs.progress', job_uuid=job.uuid) }}">Open</a></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <article class="card-station dash-action-card mb-4">
+      <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <p class="small text-muted mb-0">{{ t('dash.recent') }}</p>
+        <form method="post" action="{{ url_for('dashboard.ping') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-gold">{{ t('btn.ping') }}</button>
+        </form>
       </div>
-    {% endif %}
+    </article>
+
+    <article class="card-station">
+      <div class="card-body p-0">
+        <div class="px-3 px-md-4 pt-3"><h2 class="h5 mb-0">{{ t('dash.recent') }}</h2></div>
+        {% if not jobs %}
+          <p class="text-muted px-3 px-md-4 py-4 mb-0">{{ t('dash.jobs_empty') }}</p>
+        {% else %}
+          <div class="table-responsive mt-3">
+            <table class="table doc-table table-stack mb-0">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Started</th>
+                  <th>Progress</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for job in jobs %}
+                <tr>
+                  <td data-label="Type">{{ job.task_name }}</td>
+                  <td data-label="Status">{{ status_badge(job.status) }}</td>
+                  <td data-label="Started">{{ job.started_at|ist if job.started_at else job.created_at|ist }}</td>
+                  <td data-label="Progress">{{ job.progress }}%</td>
+                  <td data-label="Open"><a class="btn btn-gold-outline btn-sm" href="{{ url_for('jobs.progress', job_uuid=job.uuid) }}">{{ t('notes.open') }}</a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    </article>
   </div>
 </section>
 {% endblock %}

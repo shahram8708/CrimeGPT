@@ -1,14 +1,25 @@
 {% extends "base.html" %}
 {% block title %}{{ t('profile.nav_security') }} - CrimeGPT{% endblock %}
+{% block body_class %}profile-page{% endblock %}
 {% block content %}
-<header class="page-hero"><div class="container"><h1>{{ t('profile.nav_security') }}</h1><hr class="gold-rule"></div></header>
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('profile.nav_security') }}</h1>
+    <hr class="gold-rule">
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
-      <div class="col-md-3">{% include "includes/profile_nav.html" %}</div>
-      <div class="col-md-8">
-        <p class="text-muted">{{ t('profile.session_note') }}</p>
-        <form method="post" novalidate class="card-station"><div class="card-body">
+      <div class="col-lg-3">{% include "includes/profile_nav.html" %}</div>
+      <div class="col-lg-9">
+        <article class="card-station profile-security-note mb-3">
+          <div class="card-body py-3">
+            <p class="text-muted mb-0">{{ t('profile.session_note') }}</p>
+          </div>
+        </article>
+        <form method="post" novalidate class="card-station profile-form-card">
+          <div class="card-body">
           {{ form.hidden_tag() }}
           <div class="mb-3">
             <label class="form-label" for="current_password">{{ t('profile.current') }}</label>
@@ -29,11 +40,17 @@
           </div>
           <div class="mb-3">
             <label class="form-label" for="confirm">{{ t('register.confirm') }}</label>
-            {{ form.confirm(class="form-control", id="confirm", autocomplete="new-password") }}
+            <div class="password-wrap">
+              {{ form.confirm(class="form-control", id="confirm", autocomplete="new-password") }}
+              <button type="button" class="toggle-pass" data-password-toggle="confirm" data-show="{{ t('login.show') }}" data-hide="{{ t('login.hide') }}">{{ t('login.show') }}</button>
+            </div>
             {% if form.confirm.errors %}<div class="invalid-feedback d-block">{% for e in form.confirm.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
-          <button type="submit" class="btn btn-navy">{{ t('profile.save') }}</button>
-        </div></form>
+          <div class="profile-form-actions d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-navy">{{ t('profile.save') }}</button>
+          </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

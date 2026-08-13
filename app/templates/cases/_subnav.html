@@ -1,39 +1,43 @@
-<div class="case-head">
-  <div>
-    <strong>{{ case.display_cr }}</strong>
-    <span class="badge job-badge {{ case.status }}">{{ case.status }}</span>
-    {% if case.is_locked %}
-    <span class="lock-icon" title="{{ t('case.locked') }}">🔒</span>
-    {% endif %}
-    <span class="text-muted small">{{ case.station.code if case.station else "" }}</span>
+<aside class="case-shell-nav">
+  <div class="case-head case-head-shell">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <strong class="cr-chip">{{ case.display_cr }}</strong>
+      <span class="badge job-badge {{ case.status }}">{{ case.status }}</span>
+      {% if case.is_locked %}
+      <span class="lock-icon" title="{{ t('case.locked') }}" aria-label="{{ t('case.locked') }}">🔒</span>
+      {% endif %}
+    </div>
+    <p class="small text-muted mb-0 mt-2">{{ case.station.code if case.station else "" }}</p>
   </div>
-</div>
-<nav class="case-subnav" aria-label="{{ t('case.nav') }}">
-  <a class="{% if request.endpoint == 'cases.overview' %}active{% endif %}" href="{{ url_for('cases.overview', uuid=case.uuid) }}">{{ t('case.nav_overview') }}</a>
-  <a class="{% if request.endpoint == 'cases.case_edit' %}active{% endif %}" href="{{ url_for('cases.case_edit', uuid=case.uuid) }}">{{ t('case.nav_facts') }}</a>
-  <a class="{% if request.endpoint and 'part' in request.endpoint %}active{% endif %}" href="{{ url_for('cases.parties', uuid=case.uuid) }}">{{ t('case.nav_parties') }}</a>
-  <a class="{% if request.endpoint and 'item' in request.endpoint %}active{% endif %}" href="{{ url_for('cases.items', uuid=case.uuid) }}">{{ t('case.nav_items') }}</a>
-  <a class="{% if request.endpoint == 'cases.arrests' %}active{% endif %}" href="{{ url_for('cases.arrests', uuid=case.uuid) }}">{{ t('case.nav_arrest') }}</a>
-  <a class="{% if request.endpoint == 'cases.medical' %}active{% endif %}" href="{{ url_for('cases.medical', uuid=case.uuid) }}">{{ t('case.nav_medical') }}</a>
-  <a class="{% if request.endpoint and request.endpoint.startswith('evidence') %}active{% endif %}" href="{{ url_for('evidence.gallery', uuid=case.uuid) }}">{{ t('case.nav_evidence') }}</a>
-  <a class="{% if request.endpoint and request.endpoint.startswith('diary') %}active{% endif %}" href="{{ url_for('diary.timeline', uuid=case.uuid) }}">{{ t('case.nav_diary') }}</a>
-  <a class="{% if request.endpoint and 'section' in request.endpoint %}active{% endif %}" href="{{ url_for('cases.sections', uuid=case.uuid) }}">{{ t('case.nav_sections') }}</a>
-  <a class="{% if request.endpoint and request.endpoint.startswith('documents') %}active{% endif %}" href="{{ url_for('documents.hub', uuid=case.uuid) }}">{{ t('case.nav_docs') }}</a>
-  {% if can_run_legal_intel %}
-  <a class="{% if request.endpoint == 'assist.checklist' %}active{% endif %}" href="{{ url_for('assist.checklist', uuid=case.uuid) }}">{{ t('case.nav_checklist') }}</a>
-  <a class="{% if request.endpoint == 'assist.gaps' %}active{% endif %}" href="{{ url_for('assist.gaps', uuid=case.uuid) }}">{{ t('case.nav_gaps') }}</a>
+
+  <nav class="case-subnav case-subnav-pills" aria-label="{{ t('case.nav') }}">
+    <a class="case-subnav-link {% if request.endpoint == 'cases.overview' %}active{% endif %}" href="{{ url_for('cases.overview', uuid=case.uuid) }}">{{ t('case.nav_overview') }}</a>
+    <a class="case-subnav-link {% if request.endpoint == 'cases.case_edit' %}active{% endif %}" href="{{ url_for('cases.case_edit', uuid=case.uuid) }}">{{ t('case.nav_facts') }}</a>
+    <a class="case-subnav-link {% if request.endpoint and 'part' in request.endpoint %}active{% endif %}" href="{{ url_for('cases.parties', uuid=case.uuid) }}">{{ t('case.nav_parties') }}</a>
+    <a class="case-subnav-link {% if request.endpoint and 'item' in request.endpoint %}active{% endif %}" href="{{ url_for('cases.items', uuid=case.uuid) }}">{{ t('case.nav_items') }}</a>
+    <a class="case-subnav-link {% if request.endpoint == 'cases.arrests' %}active{% endif %}" href="{{ url_for('cases.arrests', uuid=case.uuid) }}">{{ t('case.nav_arrest') }}</a>
+    <a class="case-subnav-link {% if request.endpoint == 'cases.medical' %}active{% endif %}" href="{{ url_for('cases.medical', uuid=case.uuid) }}">{{ t('case.nav_medical') }}</a>
+    <a class="case-subnav-link {% if request.endpoint and request.endpoint.startswith('evidence') %}active{% endif %}" href="{{ url_for('evidence.gallery', uuid=case.uuid) }}">{{ t('case.nav_evidence') }}</a>
+    <a class="case-subnav-link {% if request.endpoint and request.endpoint.startswith('diary') %}active{% endif %}" href="{{ url_for('diary.timeline', uuid=case.uuid) }}">{{ t('case.nav_diary') }}</a>
+    <a class="case-subnav-link {% if request.endpoint and 'section' in request.endpoint %}active{% endif %}" href="{{ url_for('cases.sections', uuid=case.uuid) }}">{{ t('case.nav_sections') }}</a>
+    <a class="case-subnav-link {% if request.endpoint and request.endpoint.startswith('documents') %}active{% endif %}" href="{{ url_for('documents.hub', uuid=case.uuid) }}">{{ t('case.nav_docs') }}</a>
+    {% if can_run_legal_intel %}
+    <a class="case-subnav-link {% if request.endpoint == 'assist.checklist' %}active{% endif %}" href="{{ url_for('assist.checklist', uuid=case.uuid) }}">{{ t('case.nav_checklist') }}</a>
+    <a class="case-subnav-link {% if request.endpoint == 'assist.gaps' %}active{% endif %}" href="{{ url_for('assist.gaps', uuid=case.uuid) }}">{{ t('case.nav_gaps') }}</a>
+    {% endif %}
+  </nav>
+
+  {% if case.is_locked %}
+  <div class="alert alert-warning lock-banner mt-2" role="status">
+    {{ t('case.lock_banner') }}
+    {{ case.locked_by.full_name if case.locked_by else "" }}
+    {% if case.locked_at %} · {{ case.locked_at|ist }}{% endif %}
+    {% if current_user.role in ('io', 'sho', 'admin', 'super_admin') %}
+    <form method="post" action="{{ url_for('cases.case_unlock', uuid=case.uuid) }}" class="d-inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-sm btn-navy ms-2" type="submit">{{ t('case.unlock') }}</button>
+    </form>
+    {% endif %}
+  </div>
   {% endif %}
-</nav>
-{% if case.is_locked %}
-<div class="alert alert-warning lock-banner" role="status">
-  {{ t('case.lock_banner') }}
-  {{ case.locked_by.full_name if case.locked_by else "" }}
-  {% if case.locked_at %} · {{ case.locked_at|ist }}{% endif %}
-  {% if current_user.role in ('io', 'sho', 'admin', 'super_admin') %}
-  <form method="post" action="{{ url_for('cases.case_unlock', uuid=case.uuid) }}" class="d-inline">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button class="btn btn-sm btn-navy ms-2" type="submit">{{ t('case.unlock') }}</button>
-  </form>
-  {% endif %}
-</div>
-{% endif %}
+</aside>

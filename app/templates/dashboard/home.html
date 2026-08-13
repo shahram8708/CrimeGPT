@@ -1,27 +1,66 @@
 {% extends "base.html" %}
 {% from "includes/macros.html" import status_badge %}
 {% block title %}{{ t('nav.dashboard') }} - CrimeGPT{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
     <h1>{{ t('dash.greeting_' + greeting) }}, {{ current_user.full_name }}</h1>
     <hr class="gold-rule">
     {% if current_user.role == 'super_admin' %}
-      <p>{{ t('dash.platform') }}</p>
+      <p class="dash-hero-meta mb-0">{{ t('dash.platform') }}</p>
     {% elif current_user.station %}
-      <p>{{ current_user.station.name }} · {{ current_user.role_label }}</p>
+      <p class="dash-hero-meta mb-0">{{ current_user.station.name }} · {{ current_user.role_label }}</p>
     {% else %}
-      <p>{{ current_user.role_label }}</p>
+      <p class="dash-hero-meta mb-0">{{ current_user.role_label }}</p>
     {% endif %}
   </div>
 </header>
 <section class="section">
   <div class="container">
-    <div class="row g-3 mb-4">
-      <div class="col-6 col-xl-3"><div class="stat-card"><div class="label">{{ t('dash.open_cases') }}</div><div class="value">{{ open_cases }}</div></div></div>
-      <div class="col-6 col-xl-3"><div class="stat-card"><div class="label">{{ t('dash.docs_week') }}</div><div class="value">{{ documents_week }}</div></div></div>
-      <div class="col-6 col-xl-3"><div class="stat-card"><div class="label">{{ t('dash.pending_jobs') }}</div><div class="value">{{ pending_jobs }}</div></div></div>
-      <div class="col-6 col-xl-3"><div class="stat-card"><div class="label">{{ t('dash.need_sections') }}</div><div class="value">{{ needing_sections }}</div></div></div>
+    <article class="card-station dash-action-card mb-4">
+      <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <p class="small text-muted mb-0">{{ t('dash.continue') }}</p>
+        <div class="d-flex flex-wrap gap-2 dash-action-row">
+          {% if can_new %}
+          <a class="btn btn-gold btn-new-case" href="{{ url_for('cases.case_new') }}">{{ t('btn.new_case') }}</a>
+          {% endif %}
+          <form method="post" action="{{ url_for('dashboard.ping') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-gold-outline">{{ t('btn.ping') }}</button>
+          </form>
+          {% if show_users %}
+          <a class="btn btn-gold-outline" href="{{ url_for('admin_users.users_list') }}">{{ t('nav.users') }}</a>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+
+    <div class="row g-3 mb-4 dash-kpi-grid">
+      <div class="col-6 col-xl-3">
+        <article class="stat-card">
+          <div class="label">{{ t('dash.open_cases') }}</div>
+          <div class="value">{{ open_cases }}</div>
+        </article>
+      </div>
+      <div class="col-6 col-xl-3">
+        <article class="stat-card">
+          <div class="label">{{ t('dash.docs_week') }}</div>
+          <div class="value">{{ documents_week }}</div>
+        </article>
+      </div>
+      <div class="col-6 col-xl-3">
+        <article class="stat-card">
+          <div class="label">{{ t('dash.pending_jobs') }}</div>
+          <div class="value">{{ pending_jobs }}</div>
+        </article>
+      </div>
+      <div class="col-6 col-xl-3">
+        <article class="stat-card">
+          <div class="label">{{ t('dash.need_sections') }}</div>
+          <div class="value">{{ needing_sections }}</div>
+        </article>
+      </div>
     </div>
 
     {% include "includes/quota_banner.html" %}
@@ -41,72 +80,87 @@
     </div>
     {% endif %}
 
-    <div class="d-flex flex-wrap gap-2 mb-4">
-      {% if can_new %}
-      <a class="btn btn-gold btn-new-case" href="{{ url_for('cases.case_new') }}">{{ t('btn.new_case') }}</a>
-      {% endif %}
-      <form method="post" action="{{ url_for('dashboard.ping') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn btn-gold-outline">{{ t('btn.ping') }}</button>
-      </form>
-      {% if show_users %}
-      <a class="btn btn-gold-outline" href="{{ url_for('admin_users.users_list') }}">{{ t('nav.users') }}</a>
-      {% endif %}
-    </div>
-
     <div class="row g-4">
       <div class="col-lg-8">
-        <h2 class="h5">{{ t('dash.continue') }}</h2>
-        {% if recent_cases %}
-          <ul class="list-unstyled">
-            {% for c in recent_cases %}
-            <li class="mb-2"><a href="{{ url_for('cases.overview', uuid=c.uuid) }}">{{ c.display_cr }}</a> · {{ c.incident_at|ist }} · {{ c.category_label }}</li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <div class="empty-dash">{{ t('dash.no_cases') }}{% if can_new %} <a href="{{ url_for('cases.case_new') }}">{{ t('btn.new_case') }}</a>{% endif %}</div>
-        {% endif %}
+        <article class="card-station dash-section-card">
+          <div class="card-body">
+            <h2 class="h5">{{ t('dash.continue') }}</h2>
+            {% if recent_cases %}
+              <ul class="list-unstyled mb-0 dash-case-list">
+                {% for c in recent_cases %}
+                <li>
+                  <a class="d-inline-flex align-items-center gap-2" href="{{ url_for('cases.overview', uuid=c.uuid) }}">
+                    <span class="cr-chip">{{ c.display_cr }}</span>
+                    <strong>{{ c.category_label }}</strong>
+                  </a>
+                  <p class="small text-muted mb-0 mt-1">{{ c.incident_at|ist }}</p>
+                </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <div class="empty-dash mb-0">{{ t('dash.no_cases') }}{% if can_new %} <a href="{{ url_for('cases.case_new') }}">{{ t('btn.new_case') }}</a>{% endif %}</div>
+            {% endif %}
+          </div>
+        </article>
       </div>
       <div class="col-lg-4">
-        <h2 class="h5">{{ t('dash.running') }}</h2>
-        {% if running_jobs %}
-          <ul class="list-unstyled mb-0">
-            {% for job in running_jobs %}
-            <li class="mb-2">{{ status_badge(job.status) }} <a href="{{ url_for('jobs.progress', job_uuid=job.uuid) }}">{{ job.task_name }}</a></li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p class="text-muted mb-0">{{ t('dash.no_running') }}</p>
-        {% endif %}
+        <article class="card-station dash-section-card">
+          <div class="card-body">
+            <h2 class="h5">{{ t('dash.running') }}</h2>
+            {% if running_jobs %}
+              <ul class="list-unstyled mb-0 dash-running-list">
+                {% for job in running_jobs %}
+                <li>
+                  <div class="d-flex flex-wrap justify-content-between gap-2">
+                    {{ status_badge(job.status) }}
+                    <a href="{{ url_for('jobs.progress', job_uuid=job.uuid) }}">{{ t('notes.open') }}</a>
+                  </div>
+                  <p class="mb-0 small mt-1">{{ job.task_name }}</p>
+                </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-muted mb-0">{{ t('dash.no_running') }}</p>
+            {% endif %}
+          </div>
+        </article>
       </div>
     </div>
 
     {% if show_queue %}
-    <h2 class="h5 mt-4">{{ t('dash.queue') }}</h2>
-    <div class="table-responsive">
-      <table class="table doc-table table-stack">
-        <thead><tr><th>CR</th><th>IO</th><th>{{ t('dash.missing') }}</th><th>{{ t('dash.incident') }}</th></tr></thead>
-        <tbody>
-          {% if queue_rows %}
-            {% for row in queue_rows %}
-            <tr><td>{{ row }}</td><td></td><td></td><td></td></tr>
-            {% endfor %}
-          {% else %}
-            <tr><td colspan="4">{{ t('dash.queue_empty') }}</td></tr>
-          {% endif %}
-        </tbody>
-      </table>
-    </div>
+    <article class="card-station mt-4">
+      <div class="card-body p-0">
+        <div class="px-3 px-md-4 pt-3"><h2 class="h5 mb-0">{{ t('dash.queue') }}</h2></div>
+        <div class="table-responsive mt-3">
+          <table class="table doc-table table-stack mb-0">
+            <thead><tr><th>CR</th><th>IO</th><th>{{ t('dash.missing') }}</th><th>{{ t('dash.incident') }}</th></tr></thead>
+            <tbody>
+              {% if queue_rows %}
+                {% for row in queue_rows %}
+                <tr><td data-label="CR">{{ row }}</td><td data-label="IO">-</td><td data-label="{{ t('dash.missing') }}">-</td><td data-label="{{ t('dash.incident') }}">-</td></tr>
+                {% endfor %}
+              {% else %}
+                <tr><td colspan="4">{{ t('dash.queue_empty') }}</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
     {% endif %}
 
     {% if remand_rows %}
-    <h2 class="h5 mt-4">{{ t('dash.remand') }}</h2>
-    <p class="small text-muted">{{ t('dash.remand_help') }}</p>
-    <ul>
-      {% for row in remand_rows %}
-      <li><a href="{{ url_for('cases.overview', uuid=row.case.uuid) }}">{{ row.case.display_cr }}</a> · {{ row.arrest.arrest_at|ist }}</li>
-      {% endfor %}
-    </ul>
+    <article class="card-station mt-4">
+      <div class="card-body">
+        <h2 class="h5 mb-1">{{ t('dash.remand') }}</h2>
+        <p class="small text-muted">{{ t('dash.remand_help') }}</p>
+        <ul class="mb-0 dash-remand-list">
+          {% for row in remand_rows %}
+          <li><a href="{{ url_for('cases.overview', uuid=row.case.uuid) }}">{{ row.case.display_cr }}</a> · {{ row.arrest.arrest_at|ist }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </article>
     {% endif %}
   </div>
 </section>

@@ -1,74 +1,102 @@
 {% extends "base.html" %}
 {% block title %}{{ t('users.title') }} - CrimeGPT{% endblock %}
+{% block body_class %}admin-page{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
     <h1>{{ t('users.title') }}</h1>
     <hr class="gold-rule">
+    <p class="mb-0">Account and role management for station operations.</p>
   </div>
 </header>
 <section class="section">
   <div class="container">
     {% include "admin/_nav.html" %}
-    <p><a class="btn btn-gold" href="{{ url_for('admin_users.users_new') }}">{{ t('users.invite') }}</a></p>
-    <form class="row g-2 mb-3" method="get">
-      <div class="col-md-3"><label class="form-label" for="q">{{ t('cases.q') }}</label><input class="form-control" id="q" name="q" value="{{ filters.get('q','') }}"></div>
-      <div class="col-md-2"><label class="form-label" for="role">{{ t('invite.role') }}</label>
-        <select class="form-select" id="role" name="role">
-          <option value="">{{ t('history.any') }}</option>
-          {% for r in roles %}<option value="{{ r }}" {% if filters.get('role')==r %}selected{% endif %}>{{ r }}</option>{% endfor %}
-        </select>
-      </div>
-      <div class="col-md-2"><label class="form-label" for="active">{{ t('users.active') }}</label>
-        <select class="form-select" id="active" name="active">
-          <option value="">{{ t('history.any') }}</option>
-          <option value="1" {% if filters.get('active')=='1' %}selected{% endif %}>{{ t('users.yes') }}</option>
-          <option value="0" {% if filters.get('active')=='0' %}selected{% endif %}>{{ t('users.no') }}</option>
-        </select>
-      </div>
-      {% if current_user.role in ('admin', 'super_admin') %}
-      <div class="col-md-3"><label class="form-label" for="station">{{ t('dash.station') }}</label>
-        <select class="form-select" id="station" name="station">
-          <option value="">{{ t('history.any') }}</option>
-          {% for s in stations %}<option value="{{ s.id }}" {% if filters.get('station')|string == s.id|string %}selected{% endif %}>{{ s.code }}</option>{% endfor %}
-        </select>
-      </div>
-      {% endif %}
-      <div class="col-md-2 d-flex align-items-end"><button class="btn btn-navy" type="submit">{{ t('history.filter') }}</button></div>
-    </form>
-    <div class="table-responsive">
-      <table class="table doc-table table-stack">
-        <thead>
-          <tr>
-            <th>{{ t('register.name') }}</th>
-            <th>{{ t('login.identifier') }}</th>
-            <th>{{ t('invite.role') }}</th>
-            <th>{{ t('dash.station') }}</th>
-            <th>{{ t('users.active') }}</th>
-            <th>{{ t('users.verified') }}</th>
-            <th>{{ t('users.last') }}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for u in users %}
-          <tr>
-            <td data-label="{{ t('register.name') }}">{{ u.full_name }}{% if not u.is_active %} <span class="badge job-badge processing">{{ t('users.awaiting') }}</span>{% endif %}</td>
-            <td data-label="{{ t('login.identifier') }}">{{ u.identifier }}</td>
-            <td data-label="{{ t('invite.role') }}">{{ u.role_label }}</td>
-            <td data-label="{{ t('dash.station') }}">{{ u.station.code if u.station else "-" }}</td>
-            <td data-label="{{ t('users.active') }}">{{ t('users.yes') if u.is_active else t('users.no') }}</td>
-            <td data-label="{{ t('users.verified') }}">{{ t('users.yes') if u.email_verified_at else t('users.no') }}</td>
-            <td data-label="{{ t('users.last') }}">{{ u.last_login_at|ist if u.last_login_at else "-" }}</td>
-            <td><a href="{{ url_for('admin_users.users_edit', uuid=u.uuid) }}">{{ t('users.open') }}</a></td>
-          </tr>
-          {% else %}
-          <tr><td colspan="8">{{ t('users.empty') }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div class="small text-muted">{{ total }} user records</div>
+      <a class="btn btn-gold" href="{{ url_for('admin_users.users_new') }}">{{ t('users.invite') }}</a>
     </div>
-    <p class="small text-muted">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+
+    <div class="card-station admin-filter-card mb-3">
+      <div class="card-body">
+        <form class="row g-3" method="get">
+          <div class="col-md-3"><label class="form-label" for="q">{{ t('cases.q') }}</label><input class="form-control" id="q" name="q" value="{{ filters.get('q','') }}"></div>
+          <div class="col-md-2"><label class="form-label" for="role">{{ t('invite.role') }}</label>
+            <select class="form-select" id="role" name="role">
+              <option value="">{{ t('history.any') }}</option>
+              {% for r in roles %}<option value="{{ r }}" {% if filters.get('role')==r %}selected{% endif %}>{{ r }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2"><label class="form-label" for="active">{{ t('users.active') }}</label>
+            <select class="form-select" id="active" name="active">
+              <option value="">{{ t('history.any') }}</option>
+              <option value="1" {% if filters.get('active')=='1' %}selected{% endif %}>{{ t('users.yes') }}</option>
+              <option value="0" {% if filters.get('active')=='0' %}selected{% endif %}>{{ t('users.no') }}</option>
+            </select>
+          </div>
+          {% if current_user.role in ('admin', 'super_admin') %}
+          <div class="col-md-3"><label class="form-label" for="station">{{ t('dash.station') }}</label>
+            <select class="form-select" id="station" name="station">
+              <option value="">{{ t('history.any') }}</option>
+              {% for s in stations %}<option value="{{ s.id }}" {% if filters.get('station')|string == s.id|string %}selected{% endif %}>{{ s.code }}</option>{% endfor %}
+            </select>
+          </div>
+          {% endif %}
+          <div class="col-md-2 d-flex align-items-end"><button class="btn btn-navy w-100" type="submit">{{ t('history.filter') }}</button></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card-station">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table doc-table table-stack mb-0">
+            <thead>
+              <tr>
+                <th>{{ t('register.name') }}</th>
+                <th>{{ t('login.identifier') }}</th>
+                <th>{{ t('invite.role') }}</th>
+                <th>{{ t('dash.station') }}</th>
+                <th>{{ t('users.active') }}</th>
+                <th>{{ t('users.verified') }}</th>
+                <th>{{ t('users.last') }}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in users %}
+              <tr>
+                <td data-label="{{ t('register.name') }}"><strong>{{ u.full_name }}</strong>{% if not u.is_active %} <span class="badge job-badge processing">{{ t('users.awaiting') }}</span>{% endif %}</td>
+                <td data-label="{{ t('login.identifier') }}">{{ u.identifier }}</td>
+                <td data-label="{{ t('invite.role') }}"><span class="role-badge role-{{ u.role }}">{{ u.role_label }}</span></td>
+                <td data-label="{{ t('dash.station') }}">{{ u.station.code if u.station else "-" }}</td>
+                <td data-label="{{ t('users.active') }}"><span class="badge job-badge {{ 'completed' if u.is_active else 'failed' }}">{{ t('users.yes') if u.is_active else t('users.no') }}</span></td>
+                <td data-label="{{ t('users.verified') }}"><span class="badge job-badge {{ 'completed' if u.email_verified_at else 'pending' }}">{{ t('users.yes') if u.email_verified_at else t('users.no') }}</span></td>
+                <td data-label="{{ t('users.last') }}">{{ u.last_login_at|ist if u.last_login_at else "-" }}</td>
+                <td data-label="{{ t('users.open') }}"><a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin_users.users_edit', uuid=u.uuid) }}">{{ t('users.open') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="8">{{ t('users.empty') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+      <p class="small text-muted mb-0">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+      {% if pages > 1 %}
+      <nav class="d-flex gap-2" aria-label="Users pagination">
+        {% if page > 1 %}
+        <a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin_users.users_list', q=filters.get('q',''), role=filters.get('role',''), active=filters.get('active',''), station=filters.get('station',''), page=page-1) }}">{{ t('history.prev') }}</a>
+        {% endif %}
+        {% if page < pages %}
+        <a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin_users.users_list', q=filters.get('q',''), role=filters.get('role',''), active=filters.get('active',''), station=filters.get('station',''), page=page+1) }}">{{ t('history.next') }}</a>
+        {% endif %}
+      </nav>
+      {% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

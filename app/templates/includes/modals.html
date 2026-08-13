@@ -2,27 +2,79 @@
   <div class="modal-dialog"><div class="modal-content d-none"></div></div>
 </div>
 <div class="modal fade" id="intelModal" tabindex="-1" aria-labelledby="intelModalTitle">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h2 class="h5 modal-title" id="intelModalTitle">{{ t('intel.modal_title') }}</h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p>{{ t('intel.disclaimer') }}</p>
+        <p><span class="ai-pill">AI</span> {{ t('intel.disclaimer') }}</p>
         <ul>
           <li>{{ t('onboard.limit1') }}</li>
           <li>{{ t('onboard.limit2') }}</li>
           <li>{{ t('intel.verify_bns') }}</li>
         </ul>
-        <div class="form-check">
+        <div class="form-check mb-2">
           <input class="form-check-input" type="checkbox" id="intel-hide-again">
           <label class="form-check-label" for="intel-hide-again">{{ t('intel.hide_again') }}</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="intel-ready">
+          <label class="form-check-label" for="intel-ready">{{ t('onboard.i_understand') }}</label>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-gold-outline" data-bs-dismiss="modal">{{ t('wiz.stay') }}</button>
-        <button type="button" class="btn btn-navy" id="intel-ack">{{ t('onboard.i_understand') }}</button>
+        <button type="button" class="btn btn-navy" id="intel-ack" disabled>{{ t('onboard.i_understand') }}</button>
       </div>
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="h5 modal-title" id="confirmDeleteTitle">Confirm Deletion</h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        This item will be permanently removed from the case workspace.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-gold-outline" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="iosInstallModal" tabindex="-1" aria-labelledby="iosInstallTitle" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="h6 modal-title" id="iosInstallTitle">Install CrimeGPT</h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body small">
+        Tap Share in Safari, then choose Add to Home Screen.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-navy btn-sm" data-bs-dismiss="modal">Got it</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var gate = document.getElementById("intel-ready");
+    var ack = document.getElementById("intel-ack");
+    if (!gate || !ack) return;
+    function paint() {
+      ack.disabled = !gate.checked;
+    }
+    gate.addEventListener("change", paint);
+    paint();
+  });
+</script>

@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% block title %}{{ t('case.nav_medical') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('case.nav_medical') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
@@ -8,6 +16,10 @@
       <div class="col-lg-9">
         <form method="post" class="card-station"><div class="card-body">
           {{ form.hidden_tag() }}
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+            <h2 class="h5 mb-0">{{ t('case.nav_medical') }}</h2>
+            {% if not can_edit %}<span class="badge job-badge locked">{{ t('case.locked') }}</span>{% endif %}
+          </div>
           <fieldset {% if not can_edit %}disabled{% endif %}>
           <div class="row g-3">
             <div class="col-md-6"><label class="form-label" for="injured_party_id">{{ t('med.injured') }}</label>{{ form.injured_party_id(class="form-select") }}</div>

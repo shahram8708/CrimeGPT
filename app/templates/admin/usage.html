@@ -1,31 +1,49 @@
 {% extends "base.html" %}
 {% block title %}{{ t('adm.usage') }} - CrimeGPT{% endblock %}
+{% block body_class %}admin-page{% endblock %}
 {% block content %}
-<header class="page-hero admin-hero"><div class="container"><h1>{{ t('adm.usage') }}</h1><hr class="gold-rule"></div></header>
+<header class="page-hero admin-hero">
+  <div class="container">
+    <h1>{{ t('adm.usage') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">Daily AI and document generation activity.</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     {% include "admin/_nav.html" %}
     {% if snap %}
-    <p>{{ t('adm.month_left') }} {{ snap.monthly_remaining }} / {{ snap.monthly_cap }} · {{ t('adm.daily_limit') }} {{ snap.daily_used }} / {{ snap.daily_limit }}</p>
+    <article class="card-station mb-3">
+      <div class="card-body d-flex flex-wrap justify-content-between gap-2 align-items-center">
+        <p class="mb-0">{{ t('adm.month_left') }} {{ snap.monthly_remaining }} / {{ snap.monthly_cap }} · {{ t('adm.daily_limit') }} {{ snap.daily_used }} / {{ snap.daily_limit }}</p>
+        {% if platform %}<a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.usage_export') }}">{{ t('adm.export_csv') }}</a>{% endif %}
+      </div>
+    </article>
+    {% elif platform %}
+    <p class="mb-3"><a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.usage_export') }}">{{ t('adm.export_csv') }}</a></p>
     {% endif %}
-    {% if platform %}<p><a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.usage_export') }}">{{ t('adm.export_csv') }}</a></p>{% endif %}
-    <div class="table-responsive">
-      <table class="table doc-table table-stack">
-        <thead><tr><th>{{ t('history.from') }}</th><th>{{ t('dash.station') }}</th><th>{{ t('history.user') }}</th><th>{{ t('adm.gemini') }}</th><th>{{ t('nav.documents') }}</th></tr></thead>
-        <tbody>
-          {% for r in rows %}
-          <tr>
-            <td>{{ r.day }}</td>
-            <td>{{ stations[r.station_id].code if stations.get(r.station_id) else r.station_id }}</td>
-            <td>{{ r.user_id or "-" }}</td>
-            <td>{{ r.gemini_calls }}</td>
-            <td>{{ r.doc_generations }}</td>
-          </tr>
-          {% else %}
-          <tr><td colspan="5">{{ t('adm.none') }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+
+    <div class="card-station">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table doc-table table-stack mb-0">
+            <thead><tr><th>{{ t('history.from') }}</th><th>{{ t('dash.station') }}</th><th>{{ t('history.user') }}</th><th>{{ t('adm.gemini') }}</th><th>{{ t('nav.documents') }}</th></tr></thead>
+            <tbody>
+              {% for r in rows %}
+              <tr>
+                <td data-label="{{ t('history.from') }}">{{ r.day }}</td>
+                <td data-label="{{ t('dash.station') }}">{{ stations[r.station_id].code if stations.get(r.station_id) else r.station_id }}</td>
+                <td data-label="{{ t('history.user') }}">{{ r.user_id or "-" }}</td>
+                <td data-label="{{ t('adm.gemini') }}">{{ r.gemini_calls }}</td>
+                <td data-label="{{ t('nav.documents') }}">{{ r.doc_generations }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5">{{ t('adm.none') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </section>

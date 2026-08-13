@@ -1,12 +1,23 @@
 {% extends "base.html" %}
 {% block title %}{{ t('profile.nav_activity') }} - CrimeGPT{% endblock %}
+{% block body_class %}profile-page{% endblock %}
 {% block content %}
-<header class="page-hero"><div class="container"><h1>{{ t('profile.nav_activity') }}</h1><hr class="gold-rule"></div></header>
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('profile.nav_activity') }}</h1>
+    <hr class="gold-rule">
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
-      <div class="col-md-3">{% include "includes/profile_nav.html" %}</div>
-      <div class="col-md-9">
+      <div class="col-lg-3">{% include "includes/profile_nav.html" %}</div>
+      <div class="col-lg-9">
+        <article class="card-station profile-activity-card mb-3">
+          <div class="card-body py-3">
+            <p class="small text-muted mb-0">{{ t('profile.nav_activity') }}</p>
+          </div>
+        </article>
         <div class="table-responsive">
           <table class="table doc-table table-stack">
             <thead><tr><th>{{ t('activity.action') }}</th><th>{{ t('activity.time') }}</th><th>{{ t('activity.ip') }}</th><th>{{ t('activity.object') }}</th></tr></thead>

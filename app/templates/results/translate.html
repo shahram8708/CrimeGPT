@@ -1,20 +1,40 @@
 {% extends "base.html" %}
 {% block title %}{{ t('ex.result') }} - CrimeGPT{% endblock %}
+{% block body_class %}results-page{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
     <h1>{{ t('ex.result') }} <span class="ai-pill">AI</span></h1>
     <hr class="gold-rule">
-    <p>{{ row.mode }} · {{ row.target_lang }}</p>
+    <p>{{ row.mode|upper }} → {{ row.target_lang }}</p>
   </div>
 </header>
 <section class="section">
-  <div class="container" style="max-width:46rem">
-    <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
-    <p class="small text-muted">{{ t('ex.detected') }}: {{ row.detected_language or "-" }}</p>
-    <div class="card-station mb-3"><div class="card-body">{{ (row.output_text or "")|nl2br }}</div></div>
-    {% if row.notes %}<p class="small">{{ t('ex.notes') }}: {{ row.notes }}</p>{% endif %}
-    <a class="btn btn-gold-outline" href="{{ url_for('tools.explain') }}">{{ t('ex.again') }}</a>
+  <div class="container result-container">
+    <div class="alert ai-disclaimer mb-4" role="status"><span class="ai-pill">AI</span> {{ t('intel.disclaimer') }}</div>
+
+    <article class="card-station result-card mb-4">
+      <div class="card-body">
+        <h2 class="h6 text-muted text-uppercase">{{ t('ex.detected') }}</h2>
+        <p class="mb-0 small">{{ row.detected_language or "-" }}</p>
+      </div>
+    </article>
+
+    <article class="card-station result-card mb-4">
+      <div class="card-body">
+        <h2 class="h5 mb-3">{{ t('ex.result') }}</h2>
+        <div class="result-output">{{ (row.output_text or "")|nl2br }}</div>
+        {% if row.notes %}
+        <p class="small text-muted mt-3 mb-0"><strong>{{ t('ex.notes') }}:</strong> {{ row.notes }}</p>
+        {% endif %}
+      </div>
+    </article>
+
+    <article class="card-station result-card">
+      <div class="card-body d-grid gap-2">
+        <a class="btn btn-gold-outline" href="{{ url_for('tools.explain') }}">{{ t('ex.again') }}</a>
+      </div>
+    </article>
     <p class="small text-muted mt-3">{{ t('ex.next') }}</p>
   </div>
 </section>

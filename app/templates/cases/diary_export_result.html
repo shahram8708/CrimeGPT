@@ -1,21 +1,32 @@
 {% extends "base.html" %}
 {% block title %}{{ t('diary.export') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
-<section class="section">
-  <div class="container" >
-    <h1>{{ t('diary.export_ready') }}</h1>
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('diary.export') }}</h1>
     <hr class="gold-rule">
-    <div class="alert alert-warning">{{ t('diary.export_notice') }}</div>
-    <p>{{ t('diary.export_full') }} {{ exp.date_from }} – {{ exp.date_to }}</p>
-    <div class="d-flex flex-wrap gap-2">
-      {% if exp.docx_path %}
-      <a class="btn btn-navy" href="{{ url_for('downloads.docx', uuid=exp.uuid) }}">{{ t('diary.dl_docx') }}</a>
-      {% endif %}
-      {% if exp.pdf_path %}
-      <a class="btn btn-gold-outline" href="{{ url_for('downloads.pdf', uuid=exp.uuid) }}">{{ t('diary.dl_pdf') }}</a>
-      {% endif %}
-      <a class="btn btn-link" href="{{ url_for('diary.timeline', uuid=case.uuid) }}">{{ t('case.nav_diary') }}</a>
-    </div>
+    <p class="mb-0">{{ case.display_cr }}</p>
   </div>
+</header>
+<section class="section">
+  <div class="container">
+    <article class="card-station">
+      <div class="card-body">
+        <h2 class="h4">{{ t('diary.export_ready') }}</h2>
+        <div class="alert alert-warning">{{ t('diary.export_notice') }}</div>
+        <p>{{ t('diary.export_full') }} {{ exp.date_from }} – {{ exp.date_to }}</p>
+        <div class="d-flex flex-wrap gap-2">
+          {% if exp.docx_path %}
+          <a class="btn btn-navy" href="{{ url_for('downloads.docx', uuid=exp.uuid) }}">{{ t('diary.dl_docx') }}</a>
+          {% endif %}
+          {% if exp.pdf_path %}
+          <a class="btn btn-gold-outline" href="{{ url_for('downloads.pdf', uuid=exp.uuid) }}">{{ t('diary.dl_pdf') }}</a>
+          {% endif %}
+          <a class="btn btn-link" href="{{ url_for('diary.timeline', uuid=case.uuid) }}">{{ t('case.nav_diary') }}</a>
+        </div>
+      </div>
+    </article>
+    </div>
 </section>
 {% endblock %}

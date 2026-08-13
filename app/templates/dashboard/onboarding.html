@@ -1,73 +1,117 @@
 {% extends "base.html" %}
 {% block title %}{{ t('onboard.title') }} - CrimeGPT{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
 {% block content %}
-<section class="section">
-  <div class="container" >
+<header class="page-hero">
+  <div class="container">
     <h1>{{ t('onboard.title') }}</h1>
     <hr class="gold-rule">
-    <ol class="stepper" aria-label="{{ t('onboard.title') }}">
-      <li class="{% if step > 1 %}done{% elif step == 1 %}current{% endif %}">{{ t('onboard.step1') }}</li>
-      <li class="{% if step > 2 %}done{% elif step == 2 %}current{% endif %}">{{ t('onboard.step2') }}</li>
-      <li class="{% if step == 3 %}current{% endif %}">{{ t('onboard.step3') }}</li>
-    </ol>
-    <form method="post" action="{{ url_for('dashboard.onboarding') }}">
-      {{ form.hidden_tag() }}
-      <input type="hidden" name="step" value="{{ step }}">
-      {% if step == 1 %}
-        <fieldset>
-          <legend class="h5">{{ t('onboard.lang') }}</legend>
-          <div class="row g-3">
-            {% for val, label in form.ui_language.choices %}
-            <div class="col-md-4">
-              <label class="radio-card">
-                <input type="radio" name="ui_language" value="{{ val }}" {% if form.ui_language.data == val %}checked{% endif %}>
-                <span>{{ label }}</span>
-              </label>
+  </div>
+</header>
+<section class="section">
+  <div class="container">
+    <article class="card-station auth-card-wide mx-auto">
+      <div class="card-body p-4 p-md-5">
+        <ol class="stepper" aria-label="{{ t('onboard.title') }}">
+          <li class="{% if step > 1 %}done{% elif step == 1 %}current{% endif %}">{{ t('onboard.step1') }}</li>
+          <li class="{% if step > 2 %}done{% elif step == 2 %}current{% endif %}">{{ t('onboard.step2') }}</li>
+          <li class="{% if step == 3 %}current{% endif %}">{{ t('onboard.step3') }}</li>
+        </ol>
+
+        <form method="post" action="{{ url_for('dashboard.onboarding') }}">
+          {{ form.hidden_tag() }}
+          <input type="hidden" name="step" value="{{ step }}">
+
+          {% if step == 1 %}
+          <fieldset>
+            <legend class="h5">{{ t('onboard.lang') }}</legend>
+            <div class="row g-3">
+              {% for val, label in form.ui_language.choices %}
+              <div class="col-md-4">
+                <label class="radio-card" for="lang-{{ val }}">
+                  <input type="radio" name="ui_language" id="lang-{{ val }}" value="{{ val }}" {% if form.ui_language.data == val %}checked{% endif %}>
+                  <span>{{ label }}</span>
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+          </fieldset>
+
+          <div class="d-flex justify-content-between align-items-center mt-4 gap-2 flex-wrap">
+            <button type="submit" name="action" value="continue" class="btn btn-navy">{{ t('onboard.continue') }}</button>
+            <button type="submit" name="action" value="skip" class="btn btn-link">{{ t('onboard.skip') }}</button>
+          </div>
+
+          {% elif step == 2 %}
+          <h2 class="h5">{{ t('onboard.disclaimer') }}</h2>
+          <div class="disclaimer-box" id="onboard-disclaimer-box" data-require-scroll="1">
+            <p>{{ disclaimer_en }}</p>
+            <ul>
+              <li>{{ t('onboard.limit1') }}</li>
+              <li>{{ t('onboard.limit2') }}</li>
+              <li>{{ t('onboard.limit3') }}</li>
+            </ul>
+          </div>
+          <div class="form-check my-3">
+            {{ form.understand(class="form-check-input", id="understand", disabled=true) }}
+            <label class="form-check-label" for="understand">{{ t('onboard.i_understand') }}</label>
+          </div>
+          <button type="submit" name="action" value="continue" class="btn btn-navy" id="onboard-continue" disabled>{{ t('onboard.i_understand') }}</button>
+
+          {% else %}
+          <h2 class="h5">{{ t('onboard.tour') }}</h2>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4"><div class="wireframe"><div class="bar"></div><div class="line" style="width:80%"></div><div class="line" style="width:50%"></div><p class="small mb-0 mt-2">{{ t('onboard.wire_case') }}</p></div></div>
+            <div class="col-md-4"><div class="wireframe"><div class="bar"></div><div class="line" style="width:70%"></div><div class="line" style="width:60%"></div><p class="small mb-0 mt-2">{{ t('onboard.wire_intel') }}</p></div></div>
+            <div class="col-md-4"><div class="wireframe"><div class="bar"></div><div class="line" style="width:65%"></div><div class="line" style="width:40%"></div><p class="small mb-0 mt-2">{{ t('onboard.wire_docs') }}</p></div></div>
+          </div>
+          <fieldset>
+            <legend class="h6">{{ t('onboard.drafts') }}</legend>
+            {% for val, label in form.offline_drafts.choices %}
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="offline_drafts" id="od{{ val }}" value="{{ val }}" {% if form.offline_drafts.data == val %}checked{% endif %}>
+              <label class="form-check-label" for="od{{ val }}">{{ label }}</label>
             </div>
             {% endfor %}
+          </fieldset>
+          <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
+            <button type="submit" name="action" value="continue" class="btn btn-navy">{{ t('onboard.continue') }}</button>
+            <button type="submit" name="action" value="skip" class="btn btn-link">{{ t('onboard.skip') }}</button>
           </div>
-        </fieldset>
-        <div class="d-flex justify-content-between mt-4">
-          <button type="submit" name="action" value="continue" class="btn btn-navy">{{ t('onboard.continue') }}</button>
-          <button type="submit" name="action" value="skip" class="btn btn-link">{{ t('onboard.skip') }}</button>
-        </div>
-      {% elif step == 2 %}
-        <h2 class="h5">{{ t('onboard.disclaimer') }}</h2>
-        <div class="disclaimer-box">
-          <p>{{ disclaimer_en }}</p>
-          <ul>
-            <li>{{ t('onboard.limit1') }}</li>
-            <li>{{ t('onboard.limit2') }}</li>
-            <li>{{ t('onboard.limit3') }}</li>
-          </ul>
-        </div>
-        <div class="form-check my-3">
-          {{ form.understand(class="form-check-input", id="understand") }}
-          <label class="form-check-label" for="understand">{{ t('onboard.i_understand') }}</label>
-        </div>
-        <button type="submit" name="action" value="continue" class="btn btn-navy">{{ t('onboard.i_understand') }}</button>
-      {% else %}
-        <h2 class="h5">{{ t('onboard.tour') }}</h2>
-        <div class="row g-3 mb-3">
-          <div class="col-md-4"><div class="wireframe"><div class="bar"></div><div class="line" style="width:80%"></div><div class="line" style="width:50%"></div><p class="small mb-0 mt-2">{{ t('onboard.wire_case') }}</p></div></div>
-          <div class="col-md-4"><div class="wireframe"><div class="bar"></div><div class="line" style="width:70%"></div><div class="line" style="width:60%"></div><p class="small mb-0 mt-2">{{ t('onboard.wire_intel') }}</p></div></div>
-          <div class="col-md-4"><div class="wireframe"><div class="bar"></div><div class="line" style="width:65%"></div><div class="line" style="width:40%"></div><p class="small mb-0 mt-2">{{ t('onboard.wire_docs') }}</p></div></div>
-        </div>
-        <fieldset>
-          <legend class="h6">{{ t('onboard.drafts') }}</legend>
-          {% for val, label in form.offline_drafts.choices %}
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="offline_drafts" id="od{{ val }}" value="{{ val }}" {% if form.offline_drafts.data == val %}checked{% endif %}>
-            <label class="form-check-label" for="od{{ val }}">{{ label }}</label>
-          </div>
-          {% endfor %}
-        </fieldset>
-        <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
-          <button type="submit" name="action" value="continue" class="btn btn-navy">{{ t('onboard.continue') }}</button>
-          <button type="submit" name="action" value="skip" class="btn btn-link">{{ t('onboard.skip') }}</button>
-        </div>
-      {% endif %}
-    </form>
+
+          {% endif %}
+        </form>
+      </div>
+    </article>
   </div>
 </section>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var box = document.getElementById("onboard-disclaimer-box");
+    var check = document.getElementById("understand");
+    var btn = document.getElementById("onboard-continue");
+    if (!box || !check || !btn) return;
+
+    function atBottom() {
+      return box.scrollTop + box.clientHeight >= box.scrollHeight - 2;
+    }
+
+    function unlockCheck() {
+      if (atBottom()) {
+        check.disabled = false;
+      }
+    }
+
+    function paintBtn() {
+      btn.disabled = !(check.checked && !check.disabled);
+    }
+
+    box.addEventListener("scroll", unlockCheck);
+    check.addEventListener("change", paintBtn);
+    unlockCheck();
+    paintBtn();
+  });
+</script>
 {% endblock %}

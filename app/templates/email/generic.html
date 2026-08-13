@@ -1,4 +1,10 @@
 {% extends "email/base.html" %}
 {% block content %}
-{{ body_html }}
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border:1px solid #d7d0c4;background-color:#f7f4ee;">
+	<tr>
+		<td style="padding:14px 16px;border-left:3px solid #c4a35a;">
+			{{ body_html }}
+		</td>
+	</tr>
+</table>
 {% endblock %}

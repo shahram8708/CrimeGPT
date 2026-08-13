@@ -523,7 +523,7 @@
   "cmp.open_right": "Open right",
   "cmp.again": "Compare again",
   "cmp.need_two": "Choose two different papers.",
-  "cmp.no_ai": "Gemini is off. Deterministic compare still runs for generated papers.",
+  "cmp.no_ai": "AI is off. Deterministic compare still runs for generated papers.",
   "idfy.title": "ક્ષેત્ર અને ખામી",
   "idfy.run": "Identify fields and defects",
   "idfy.open": "Open last clause map",

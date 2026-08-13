@@ -437,13 +437,33 @@ def run_analyze_document(job_uuid, analysis_id=None, user_id=None):
         _mark(job, progress=55, message="Reading the paper")
         from app.services import gemini_service
 
-        result = gemini_service.analyze_document(
-            text=src.get("text") or "",
-            image_bytes=src.get("bytes"),
-            mime=src.get("mime"),
-            case_json=facts,
-            language=row.language or "en",
-        )
+        delays = (0, 4, 8)
+        last_err = None
+        result = None
+        for attempt, wait in enumerate(delays):
+            if wait and not current_app.config.get("TESTING"):
+                time.sleep(wait)
+            try:
+                result = gemini_service.analyze_document(
+                    text=src.get("text") or "",
+                    image_bytes=src.get("bytes"),
+                    mime=src.get("mime"),
+                    case_json=facts,
+                    language=row.language or "en",
+                )
+                last_err = None
+                break
+            except RetryableGeminiError as exc:
+                last_err = exc
+                current_app.logger.warning(
+                    "analyze_document attempt %d failed: %s", attempt + 1, exc
+                )
+                if attempt == len(delays) - 1:
+                    raise
+            except GeminiError:
+                raise
+        if result is None and last_err:
+            raise last_err
         increment_gemini_calls(user, row.case)
         row.result_json = json.dumps(
             {
@@ -494,7 +514,15 @@ def run_analyze_document(job_uuid, analysis_id=None, user_id=None):
         return {"ok": False}
 
 
-@celery.task(name="crimegpt.analyze_document", soft_time_limit=160, time_limit=180)
+@celery.task(
+    name="crimegpt.analyze_document",
+    autoretry_for=(RetryableGeminiError,),
+    retry_backoff=5,
+    retry_backoff_max=60,
+    max_retries=3,
+    soft_time_limit=300,
+    time_limit=360,
+)
 def analyze_document_task(job_uuid, analysis_id=None, user_id=None):
     return run_analyze_document(job_uuid, analysis_id=analysis_id, user_id=user_id)
 

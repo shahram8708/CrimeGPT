@@ -2,12 +2,22 @@
 {% block title %}Something went wrong - CrimeGPT{% endblock %}
 {% block content %}
 <section class="section">
-  <div class="container prose">
-    <h1>Something went wrong</h1>
-    <hr class="gold-rule">
-    <p>The server could not finish this request. A reference has been written to the audit log.</p>
-    {% if reference %}<p class="text-muted">Reference {{ reference }}</p>{% endif %}
-    <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+  <div class="container">
+    <div class="error-shell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#7A1F2B" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 8l8 8"/><path d="M16 8l-8 8"/></svg>
+      <h1 class="h3 mt-3">Something went wrong</h1>
+      <hr class="gold-rule">
+      <p>The team has been notified. Return to the dashboard or try again in a moment.</p>
+      {% if reference %}<p class="text-muted">Reference ID: {{ reference }}</p>{% endif %}
+      <div class="d-flex flex-wrap gap-2">
+        {% if current_user.is_authenticated %}
+        <a class="btn btn-navy" href="{{ url_for('dashboard.index') }}">{{ t('btn.dashboard') }}</a>
+        {% else %}
+        <a class="btn btn-navy" href="{{ url_for('main.landing') }}">Home</a>
+        {% endif %}
+        <button type="button" class="btn btn-gold-outline" onclick="location.reload()">Try again</button>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}

@@ -10,7 +10,7 @@
 </header>
 <section class="section">
   <div class="container" style="max-width:46rem">
-    <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+    <div class="alert ai-disclaimer" role="status"><span class="ai-pill">AI</span> {{ t('intel.disclaimer') }}</div>
     {% if quota %}<div class="alert alert-danger">{{ t('intel.quota') }}</div>{% endif %}
     {% if not gemini_ok %}<div class="alert alert-info">{{ t('intel.missing_key') }}</div>{% endif %}
     <form method="post" class="card-station">
@@ -35,7 +35,7 @@
             {{ form.case_id(class="form-select") }}
           </div>
         </div>
-        <button class="btn btn-navy mt-3" type="submit" {% if not gemini_ok or quota %}disabled{% endif %}>{{ t('ex.submit') }}</button>
+        <button class="btn btn-gold-outline mt-3" type="submit" {% if not gemini_ok or quota %}disabled{% endif %}>{{ t('ex.submit') }}</button>
       </div>
     </form>
   </div>

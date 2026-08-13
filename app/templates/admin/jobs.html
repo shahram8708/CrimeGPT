@@ -1,44 +1,74 @@
 {% extends "base.html" %}
 {% from "includes/macros.html" import status_badge %}
 {% block title %}{{ t('adm.jobs') }} - CrimeGPT{% endblock %}
+{% block body_class %}admin-page{% endblock %}
 {% block content %}
-<header class="page-hero admin-hero"><div class="container"><h1>{{ t('adm.jobs') }}</h1><hr class="gold-rule"></div></header>
+<header class="page-hero admin-hero">
+  <div class="container">
+    <h1>{{ t('adm.jobs') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">Background queue operations and retry access.</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     {% include "admin/_nav.html" %}
-    <form class="row g-2 mb-3" method="get">
-      <div class="col-md-3"><label class="form-label" for="task">{{ t('history.task') }}</label><input class="form-control" id="task" name="task" value="{{ filters.get('task','') }}"></div>
-      <div class="col-md-2"><label class="form-label" for="status">{{ t('history.status') }}</label>
-        <select class="form-select" id="status" name="status">
-          <option value="">{{ t('history.any') }}</option>
-          {% for s in ['queued','processing','completed','failed'] %}
-          <option value="{{ s }}" {% if filters.get('status')==s %}selected{% endif %}>{{ s }}</option>
-          {% endfor %}
-        </select>
+    <div class="card-station admin-filter-card mb-3">
+      <div class="card-body">
+        <form class="row g-3" method="get">
+          <div class="col-md-4"><label class="form-label" for="task">{{ t('history.task') }}</label><input class="form-control" id="task" name="task" value="{{ filters.get('task','') }}"></div>
+          <div class="col-md-3"><label class="form-label" for="status">{{ t('history.status') }}</label>
+            <select class="form-select" id="status" name="status">
+              <option value="">{{ t('history.any') }}</option>
+              {% for s in ['queued','processing','completed','failed'] %}
+              <option value="{{ s }}" {% if filters.get('status')==s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-3"><label class="form-label" for="user">{{ t('history.user') }}</label><input class="form-control" id="user" name="user" value="{{ filters.get('user','') }}"></div>
+          <div class="col-md-2 d-flex align-items-end"><button class="btn btn-navy w-100" type="submit">{{ t('history.filter') }}</button></div>
+        </form>
       </div>
-      <div class="col-md-3"><label class="form-label" for="user">{{ t('history.user') }}</label><input class="form-control" id="user" name="user" value="{{ filters.get('user','') }}"></div>
-      <div class="col-md-2 d-flex align-items-end"><button class="btn btn-navy" type="submit">{{ t('history.filter') }}</button></div>
-    </form>
-    <div class="table-responsive">
-      <table class="table doc-table table-stack">
-        <thead><tr><th>uuid</th><th>{{ t('history.task') }}</th><th>{{ t('history.user') }}</th><th>{{ t('history.status') }}</th><th>{{ t('history.progress') }}</th><th></th></tr></thead>
-        <tbody>
-          {% for j in rows %}
-          <tr>
-            <td>{{ j.uuid[:8] }}</td>
-            <td>{{ j.task_name }}</td>
-            <td>{{ j.user.identifier if j.user else "-" }}</td>
-            <td>{{ status_badge(j.status) }}</td>
-            <td>{{ j.progress }}%</td>
-            <td><a href="{{ url_for('admin.job_detail', job_uuid=j.uuid) }}">{{ t('notes.open') }}</a></td>
-          </tr>
-          {% else %}
-          <tr><td colspan="6">{{ t('adm.none') }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
     </div>
-    <p class="small text-muted">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+
+    <div class="card-station">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table doc-table table-stack mb-0">
+            <thead><tr><th>ID</th><th>{{ t('history.task') }}</th><th>{{ t('history.user') }}</th><th>{{ t('history.started') }}</th><th>{{ t('history.status') }}</th><th>{{ t('history.progress') }}</th><th></th></tr></thead>
+            <tbody>
+              {% for j in rows %}
+              <tr>
+                <td data-label="ID"><span class="admin-mono">{{ j.uuid[:8] }}</span></td>
+                <td data-label="{{ t('history.task') }}">{{ j.task_name }}</td>
+                <td data-label="{{ t('history.user') }}">{{ j.user.identifier if j.user else "-" }}</td>
+                <td data-label="{{ t('history.started') }}">{{ (j.started_at or j.created_at)|ist }}</td>
+                <td data-label="{{ t('history.status') }}">{{ status_badge(j.status) }}</td>
+                <td data-label="{{ t('history.progress') }}">{{ j.progress }}%</td>
+                <td data-label="{{ t('users.open') }}"><a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.job_detail', job_uuid=j.uuid) }}">{{ t('users.open') }}</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="7">{{ t('adm.none') }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+      <p class="small text-muted mb-0">{{ t('history.page') }} {{ page }} / {{ pages }}</p>
+      {% if pages > 1 %}
+      <nav class="d-flex gap-2" aria-label="Job pagination">
+        {% if page > 1 %}
+        <a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.jobs', task=filters.get('task',''), status=filters.get('status',''), user=filters.get('user',''), page=page-1) }}">{{ t('history.prev') }}</a>
+        {% endif %}
+        {% if page < pages %}
+        <a class="btn btn-gold-outline btn-sm" href="{{ url_for('admin.jobs', task=filters.get('task',''), status=filters.get('status',''), user=filters.get('user',''), page=page+1) }}">{{ t('history.next') }}</a>
+        {% endif %}
+      </nav>
+      {% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

@@ -13,7 +13,7 @@
 </header>
 <section class="section">
   <div class="container">
-    <div class="alert alert-warning" role="status">{{ data.disclaimer or t('intel.disclaimer') }}</div>
+    <div class="alert ai-disclaimer" role="status"><span class="ai-pill">AI</span> {{ data.disclaimer or t('intel.disclaimer') }}</div>
     {% if data.refused %}
     <div class="alert alert-danger">{{ t('intel.ethics') }}</div>
     {% endif %}

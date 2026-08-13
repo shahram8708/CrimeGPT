@@ -1,54 +1,74 @@
 {% extends "base.html" %}
 {% block title %}{{ t('job.title') }} - CrimeGPT{% endblock %}
 {% block content %}
-<section class="section">
-  <div class="container" >
-    <h1>{{ t('job.title') }}</h1>
+<header class="page-hero">
+  <div class="container">
+    <h1>Generating your document...</h1>
     <hr class="gold-rule">
-    <p class="text-muted">{{ job.task_name }}</p>
+    <p class="text-white-50 mb-0">{{ job.task_name }}</p>
+  </div>
+</header>
 
-    <div class="text-center my-3" id="job-spin">
-      <div class="spinner-border spinner-navy" role="status"><span class="visually-hidden">Working</span></div>
-    </div>
+<section class="section">
+  <div class="container" style="max-width:46rem">
+    <div class="card-station masthead">
+      <div class="card-body">
+        <div class="text-center my-2" id="job-spin">
+          <div class="spinner-border spinner-navy" role="status"><span class="visually-hidden">Working</span></div>
+        </div>
 
-    <div class="d-flex justify-content-between small mb-2">
-      <span id="job-status">{{ job.status }}</span>
-      <span>Elapsed <time id="job-elapsed">00:00</time></span>
-    </div>
-    <div class="progress progress-navy mb-3" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ job.progress }}">
-      <div class="progress-bar" id="job-bar" style="width: {{ job.progress }}%">{{ job.progress }}%</div>
-    </div>
-    <p id="job-message">{{ job.progress_message or "" }}</p>
-    <p class="small text-muted">
-      {% if job.task_name == 'crimegpt.legal_intel' %}{{ t('job.intel_wait') }}
-      {% elif job.task_name == 'crimegpt.compare_documents' %}{{ t('job.cmp_wait') }}
-      {% elif job.task_name == 'crimegpt.generate_document' %}{{ t('job.doc_wait') }}
-      {% elif job.task_name == 'crimegpt.export_diary' %}{{ t('job.export_wait') }}
-      {% elif job.task_name == 'crimegpt.qa_turn' %}{{ t('job.qa_wait') }}
-      {% elif job.task_name == 'crimegpt.analyze_document' %}{{ t('job.an_wait') }}
-      {% elif job.task_name == 'crimegpt.translate' %}{{ t('job.ex_wait') }}
-      {% elif job.task_name == 'crimegpt.generate_checklist' %}{{ t('job.ck_wait') }}
-      {% elif job.task_name == 'crimegpt.gap_analysis' %}{{ t('job.gap_wait') }}
-      {% else %}{{ t('job.leave') }}{% endif %}
-    </p>
-    <p id="job-still" class="d-none">{{ t('job.still') }}</p>
-    <p id="job-refresh" class="d-none"><button type="button" class="btn btn-gold-outline" onclick="location.reload()">{{ t('btn.refresh') }}</button></p>
+        <div class="d-flex justify-content-between small mb-2">
+          <strong id="job-status">{{ job.status }}</strong>
+          <span>Elapsed <time id="job-elapsed">00:00</time></span>
+        </div>
 
-    <div id="job-ok" class="alert alert-success d-none" role="status">{{ t('job.done') }}</div>
-    <div id="job-fail" class="alert alert-danger d-none" role="alert">
-      <p class="mb-2">{{ t('job.failed') }}</p>
-      <p id="job-error" class="mb-3"></p>
-      {% if job.task_name == 'crimegpt.legal_intel' %}
-      <form method="post" action="{{ url_for('jobs.retry', job_uuid=job.uuid) }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn btn-navy">{{ t('btn.retry') }}</button>
-      </form>
-      {% else %}
-      <form method="post" action="{{ url_for('dashboard.ping') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn btn-navy">{{ t('btn.retry') }}</button>
-      </form>
-      {% endif %}
+        <div class="progress progress-navy mb-3" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ job.progress }}">
+          <div class="progress-bar" id="job-bar" style="width: {{ job.progress }}%">{{ job.progress }}%</div>
+        </div>
+
+        <div class="bg-light border rounded-3 p-3 mb-3" aria-live="polite">
+          <p class="small text-uppercase text-muted mb-1">Status Log</p>
+          <p id="job-message" class="mb-0 font-monospace small">{{ job.progress_message or "Waiting for worker..." }}</p>
+        </div>
+
+        <p class="small text-muted mb-2">
+          {% if job.task_name == 'crimegpt.legal_intel' %}{{ t('job.intel_wait') }}
+          {% elif job.task_name == 'crimegpt.compare_documents' %}{{ t('job.cmp_wait') }}
+          {% elif job.task_name == 'crimegpt.generate_document' %}{{ t('job.doc_wait') }}
+          {% elif job.task_name == 'crimegpt.export_diary' %}{{ t('job.export_wait') }}
+          {% elif job.task_name == 'crimegpt.qa_turn' %}{{ t('job.qa_wait') }}
+          {% elif job.task_name == 'crimegpt.analyze_document' %}{{ t('job.an_wait') }}
+          {% elif job.task_name == 'crimegpt.translate' %}{{ t('job.ex_wait') }}
+          {% elif job.task_name == 'crimegpt.generate_checklist' %}{{ t('job.ck_wait') }}
+          {% elif job.task_name == 'crimegpt.gap_analysis' %}{{ t('job.gap_wait') }}
+          {% else %}{{ t('job.leave') }}{% endif %}
+        </p>
+        <p class="small text-muted">Typical remand draft: 20-45 seconds. Complex charge sheets may take up to 90 seconds.</p>
+        <p id="job-still" class="d-none text-warning fw-semibold">{{ t('job.still') }}</p>
+        <p id="job-refresh" class="d-none"><button type="button" class="btn btn-gold-outline" onclick="location.reload()">{{ t('btn.refresh') }}</button></p>
+
+        <div id="job-ok" class="alert alert-success d-none" role="status">
+          <strong>Document ready!</strong> {{ t('job.done') }}
+        </div>
+
+        <div id="job-fail" class="alert alert-danger d-none" role="alert">
+          <p class="mb-2 fw-semibold">{{ t('job.failed') }}</p>
+          <p id="job-error" class="mb-3"></p>
+          {% if job.task_name == 'crimegpt.legal_intel' %}
+          <form method="post" action="{{ url_for('jobs.retry', job_uuid=job.uuid) }}" class="d-flex flex-wrap gap-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-navy">{{ t('btn.retry') }}</button>
+            <a href="{{ url_for('main.contact') }}" class="btn btn-gold-outline">Contact support</a>
+          </form>
+          {% else %}
+          <form method="post" action="{{ url_for('dashboard.ping') }}" class="d-flex flex-wrap gap-2">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-navy">{{ t('btn.retry') }}</button>
+            <a href="{{ url_for('main.contact') }}" class="btn btn-gold-outline">Contact support</a>
+          </form>
+          {% endif %}
+        </div>
+      </div>
     </div>
   </div>
 </section>

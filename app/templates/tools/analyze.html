@@ -10,7 +10,7 @@
 </header>
 <section class="section">
   <div class="container">
-    <div class="alert alert-warning" role="status">{{ t('intel.disclaimer') }}</div>
+    <div class="alert ai-disclaimer" role="status"><span class="ai-pill">AI</span> {{ t('intel.disclaimer') }}</div>
     {% if quota %}<div class="alert alert-danger">{{ t('intel.quota') }}</div>{% endif %}
     {% if not gemini_ok %}<div class="alert alert-info">{{ t('intel.missing_key') }}</div>{% endif %}
     <form method="post" enctype="multipart/form-data" class="card-station">
@@ -34,7 +34,7 @@
           <label class="form-check-label" for="consent">{{ t('ev.consent_box') }}</label>
         </div>
         {% endif %}
-        <button class="btn btn-navy mt-3" type="submit" {% if not gemini_ok or quota %}disabled{% endif %}>{{ t('an.submit') }}</button>
+        <button class="btn btn-gold-outline mt-3" type="submit" {% if not gemini_ok or quota %}disabled{% endif %}>{{ t('an.submit') }}</button>
         <p class="small text-muted mt-2">{{ t('an.help') }}</p>
       </div>
     </form>

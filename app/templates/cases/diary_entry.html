@@ -1,18 +1,29 @@
 {% extends "base.html" %}
 {% block title %}{{ t('case.nav_diary') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('case.nav_diary') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
       <div class="col-lg-9">
-        <article class="card-station"><div class="card-body">
+        <article class="card-station mb-3"><div class="card-body">
           {% if entry.corrects_entry_id %}
           <p class="strike-banner">{{ t('diary.correction_of') }}</p>
           {% endif %}
           <p><span class="type-badge type-{{ entry.entry_type }}">{{ entry.entry_type }}</span> <span class="badge job-badge {{ entry.status }}">{{ entry.status }}</span></p>
           <p class="text-muted">{{ entry.occurred_at|ist }} · {{ entry.author.full_name if entry.author else "" }}{% if entry.place %} · {{ entry.place }}{% endif %}</p>
           <p>{{ entry.body|nl2br }}</p>
+        </div></article>
+
+        <article class="card-station"><div class="card-body">
           <div class="d-flex flex-wrap gap-2">
             {% if can_sign %}
             <form method="post" action="{{ url_for('diary.diary_sign', uuid=case.uuid, eid=entry.uuid) }}">
@@ -23,6 +34,7 @@
             {% if can_correct %}
             <button type="button" class="btn btn-gold-outline" data-bs-toggle="modal" data-bs-target="#corr">{{ t('diary.correct') }}</button>
             {% endif %}
+            <a class="btn btn-gold-outline" href="{{ url_for('diary.timeline', uuid=case.uuid) }}">{{ t('case.nav_diary') }}</a>
           </div>
         </div></article>
       </div>

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}CrimeGPT features{% endblock %}
+{% block body_class %}public-page{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
@@ -10,12 +11,17 @@
 </header>
 <section class="section">
   <div class="container">
+    <article class="card-station public-feature-intro mb-4">
+      <div class="card-body">
+        <p class="mb-0">The platform is designed as a station register: predictable workflow, constrained AI assistance, and auditable handoffs. No section is auto-filed and no external system write-back is performed from this product surface.</p>
+      </div>
+    </article>
     <div class="row g-4">
       {% set cards = [
         ("Unified case pool", "Parties, exhibits, medical notes, and arrest facts sit in one record that feeds every paper."),
         ("Seven document types", "Purvani chargesheet through face-identification form, generated from confirmed fields."),
         ("Case diary", "Dated entries that remain with the file when the investigating officer changes."),
-        ("Legal section intelligence", "Gemini-assisted BNS / BNSS / BSA suggestions. Officer confirmation is mandatory."),
+        ("Legal section intelligence", "AI-assisted BNS / BNSS / BSA suggestions. Officer confirmation is mandatory."),
         ("Multilingual", "English, Hindi, and Gujarati for chrome and for later narrative analysis."),
         ("Evidence locker", "Station-scoped file storage on the server, never in the public static folder."),
         ("Role-based access", "Constable through SHO, station admin, and a platform Super Admin who bypasses station scope."),
@@ -24,7 +30,10 @@
       ] %}
       {% for title, body in cards %}
       <div class="col-md-4">
-        <article class="card-station"><div class="card-body">
+        <article class="card-station public-feature-card h-100"><div class="card-body">
+          <div class="public-icon-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M3 6h18v12H3zm2 2v8h14V8zm2 2h6v2H7zm0 3h10v2H7z"></path></svg>
+          </div>
           <h2 class="h5">{{ title }}</h2>
           <p class="mb-0">{{ body }}</p>
         </div></article>
@@ -35,23 +44,27 @@
 </section>
 <section class="section section-paper">
   <div class="container">
-    <h2>Seven papers, one purpose each</h2>
-    <hr class="gold-rule">
-    <div class="table-responsive">
-      <table class="table doc-table table-stack">
-        <thead><tr><th>Document</th><th>One-line purpose</th></tr></thead>
-        <tbody>
-          <tr><td data-label="Document">Purvani Chargesheet</td><td data-label="Purpose">Opening charge papers from the confirmed pool.</td></tr>
-          <tr><td data-label="Document">Medical Treatment Letter</td><td data-label="Purpose">Hospital referral tied to the person on record.</td></tr>
-          <tr><td data-label="Document">Remand Request (PC)</td><td data-label="Purpose">Police-custody prayer with dated grounds.</td></tr>
-          <tr><td data-label="Document">Seizure Receipt</td><td data-label="Purpose">Exhibits, place, and panchas in one receipt.</td></tr>
-          <tr><td data-label="Document">Court Custody Letter</td><td data-label="Purpose">Production note for judicial custody.</td></tr>
-          <tr><td data-label="Document">Accused Panchanama</td><td data-label="Purpose">Personal search with named witnesses.</td></tr>
-          <tr><td data-label="Document">Face Identification Form</td><td data-label="Purpose">Identification particulars captured once.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="row g-3 mt-2">
+    <article class="card-station public-doc-register">
+      <div class="card-body">
+        <h2>Seven papers, one purpose each</h2>
+        <hr class="gold-rule">
+        <div class="table-responsive">
+          <table class="table doc-table table-stack mb-0">
+            <thead><tr><th>Document</th><th>One-line purpose</th></tr></thead>
+            <tbody>
+              <tr><td data-label="Document">Purvani Chargesheet</td><td data-label="Purpose">Opening charge papers from the confirmed pool.</td></tr>
+              <tr><td data-label="Document">Medical Treatment Letter</td><td data-label="Purpose">Hospital referral tied to the person on record.</td></tr>
+              <tr><td data-label="Document">Remand Request (PC)</td><td data-label="Purpose">Police-custody prayer with dated grounds.</td></tr>
+              <tr><td data-label="Document">Seizure Receipt</td><td data-label="Purpose">Exhibits, place, and panchas in one receipt.</td></tr>
+              <tr><td data-label="Document">Court Custody Letter</td><td data-label="Purpose">Production note for judicial custody.</td></tr>
+              <tr><td data-label="Document">Accused Panchanama</td><td data-label="Purpose">Personal search with named witnesses.</td></tr>
+              <tr><td data-label="Document">Face Identification Form</td><td data-label="Purpose">Identification particulars captured once.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+    <div class="row g-3 mt-1">
       <div class="col-md-6">
         <div class="wireframe" aria-hidden="true">
           <div class="bar"></div>
@@ -63,7 +76,11 @@
         <p class="small text-muted mt-2 mb-0">Wireframe of a fact-pool card - not a live case screen.</p>
       </div>
       <div class="col-md-6">
-        <p>Officer confirmation and the published disclaimer sit on every surface that discusses AI. CrimeGPT does not give legal advice. Suggested sections can be wrong. Gazette notifications and court records remain the source of truth.</p>
+        <article class="card-station public-feature-note h-100">
+          <div class="card-body">
+            <p class="mb-0">Officer confirmation and the published disclaimer sit on every surface that discusses AI. CrimeGPT does not give legal advice. Suggested sections can be wrong. Gazette notifications and court records remain the source of truth.</p>
+          </div>
+        </article>
       </div>
     </div>
   </div>

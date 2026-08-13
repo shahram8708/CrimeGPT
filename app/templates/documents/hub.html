@@ -1,13 +1,28 @@
 {% extends "base.html" %}
 {% block title %}{{ t('case.nav_docs') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('case.nav_docs') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
       <div class="col-lg-9">
-        <div class="alert alert-warning">{{ t('intel.disclaimer') }}</div>
-        <div class="row g-3">
+        <div class="alert ai-disclaimer" role="status"><span class="ai-pill">AI</span> {{ t('intel.disclaimer') }}</div>
+        <article class="card-station mb-3">
+          <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <p class="small text-muted mb-0">{{ cards|length }} {{ t('case.nav_docs') }}</p>
+            <a class="btn btn-gold-outline btn-sm" href="{{ url_for('documents.cross_list') }}">{{ t('nav.documents') }}</a>
+          </div>
+        </article>
+
+        <div class="row g-3 docs-hub-grid">
           {% for c in cards %}
           <div class="col-md-6">
             <div class="card-station doc-card {% if not c.live %}muted{% elif c.ready %}ready{% else %}missing{% endif %}{% if c.last and c.last.status == 'final' %} final{% endif %}">
@@ -16,7 +31,7 @@
                 {% if c.gated %}
                 <p class="small mb-0">{{ t('adm.doc_gated') }}</p>
                 {% elif c.live %}
-                <p class="small mb-2">{% if c.ready %}{{ t('doc.ready') }}{% else %}{{ c.missing }} {{ t('doc.missing_n') }}{% endif %}
+                <p class="small mb-2">{% if c.ready %}<span class="badge job-badge completed">{{ t('doc.ready') }}</span>{% else %}<span class="badge job-badge pending">{{ c.missing }} {{ t('doc.missing_n') }}</span>{% endif %}
                   {% if c.last %} · v{{ c.last.version_number }} {{ c.last.status }}{% endif %}</p>
                 <div class="d-flex flex-wrap gap-2">
                   {% if can_generate %}

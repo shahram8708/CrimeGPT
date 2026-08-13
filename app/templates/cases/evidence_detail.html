@@ -1,43 +1,57 @@
 {% extends "base.html" %}
 {% block title %}{{ item.original_filename }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
+<header class="page-hero">
+  <div class="container">
+    <h1>{{ t('case.nav_evidence') }}</h1>
+    <hr class="gold-rule">
+    <p class="mb-0">{{ case.display_cr }}</p>
+  </div>
+</header>
 <section class="section">
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-3">{% include "cases/_subnav.html" %}</div>
       <div class="col-lg-9">
-        <div class="card-station mb-3"><div class="card-body text-center">
+        <article class="card-station mb-3"><div class="card-body text-center">
           {% if item.mime and item.mime.startswith('image/') %}
           <img class="img-fluid" src="{{ url_for('downloads.thumb', uuid=item.uuid) }}" alt="">
           {% else %}
           <p class="mb-0">{{ t('ev.pdf_notice') }}</p>
           {% endif %}
-        </div></div>
-        <dl class="row">
-          <dt class="col-sm-4">{{ t('ev.caption') }}</dt><dd class="col-sm-8">{{ item.caption or "-" }}</dd>
-          <dt class="col-sm-4">{{ t('ev.tag') }}</dt><dd class="col-sm-8">{{ item.tag or "-" }}</dd>
-          <dt class="col-sm-4">{{ t('item.exhibit') }}</dt><dd class="col-sm-8">{{ item.exhibit_no or "-" }}</dd>
-          <dt class="col-sm-4">{{ t('ev.taken') }}</dt><dd class="col-sm-8">{{ item.taken_at|ist if item.taken_at else "-" }}</dd>
-          <dt class="col-sm-4">{{ t('ev.uploader') }}</dt><dd class="col-sm-8">{{ item.uploader.full_name if item.uploader else "-" }}</dd>
-          <dt class="col-sm-4">{{ t('ev.size') }}</dt><dd class="col-sm-8">{{ item.size_bytes }} {{ t('ev.bytes') }}</dd>
-          <dt class="col-sm-4">{{ t('ev.keep_exif') }}</dt><dd class="col-sm-8">{{ t('users.yes') if item.keep_exif else t('users.no') }}</dd>
-          <dt class="col-sm-4">{{ t('ev.item') }}</dt><dd class="col-sm-8">{{ item.case_item.description if item.case_item else "-" }}</dd>
-        </dl>
-        <div class="d-flex flex-wrap gap-2">
-          <a class="btn btn-navy" href="{{ url_for('downloads.original', uuid=item.uuid) }}">{{ t('ev.download') }}</a>
-          {% if can_analyse and gemini_ok %}
-          <form method="post" action="{{ url_for('evidence.send_analyser', uuid=case.uuid, eid=item.uuid) }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="btn btn-gold-outline">{{ t('ev.analyser') }}</button>
-          </form>
-          {% else %}
-          <button type="button" class="btn btn-gold-outline" disabled aria-disabled="true" title="{{ t('ev.analyser_help') }}">{{ t('ev.analyser') }}</button>
-          {% endif %}
-          {% if can_delete %}
-          <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delEv">{{ t('case.delete') }}</button>
-          {% endif %}
-        </div>
-        <p class="small text-muted mt-2">{{ t('ev.analyser_help') }}</p>
+        </div></article>
+
+        <article class="card-station mb-3"><div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-sm-4">{{ t('ev.caption') }}</dt><dd class="col-sm-8">{{ item.caption or "-" }}</dd>
+            <dt class="col-sm-4">{{ t('ev.tag') }}</dt><dd class="col-sm-8">{{ item.tag or "-" }}</dd>
+            <dt class="col-sm-4">{{ t('item.exhibit') }}</dt><dd class="col-sm-8">{{ item.exhibit_no or "-" }}</dd>
+            <dt class="col-sm-4">{{ t('ev.taken') }}</dt><dd class="col-sm-8">{{ item.taken_at|ist if item.taken_at else "-" }}</dd>
+            <dt class="col-sm-4">{{ t('ev.uploader') }}</dt><dd class="col-sm-8">{{ item.uploader.full_name if item.uploader else "-" }}</dd>
+            <dt class="col-sm-4">{{ t('ev.size') }}</dt><dd class="col-sm-8">{{ item.size_bytes }} {{ t('ev.bytes') }}</dd>
+            <dt class="col-sm-4">{{ t('ev.keep_exif') }}</dt><dd class="col-sm-8">{{ t('users.yes') if item.keep_exif else t('users.no') }}</dd>
+            <dt class="col-sm-4">{{ t('ev.item') }}</dt><dd class="col-sm-8">{{ item.case_item.description if item.case_item else "-" }}</dd>
+          </dl>
+        </div></article>
+
+        <article class="card-station"><div class="card-body">
+          <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-navy" href="{{ url_for('downloads.original', uuid=item.uuid) }}">{{ t('ev.download') }}</a>
+            {% if can_analyse and gemini_ok %}
+            <form method="post" action="{{ url_for('evidence.send_analyser', uuid=case.uuid, eid=item.uuid) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-gold-outline">{{ t('ev.analyser') }}</button>
+            </form>
+            {% else %}
+            <button type="button" class="btn btn-gold-outline" disabled aria-disabled="true" title="{{ t('ev.analyser_help') }}">{{ t('ev.analyser') }}</button>
+            {% endif %}
+            {% if can_delete %}
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delEv">{{ t('case.delete') }}</button>
+            {% endif %}
+          </div>
+          <p class="small text-muted mt-2 mb-0">{{ t('ev.analyser_help') }}</p>
+        </div></article>
       </div>
     </div>
   </div>

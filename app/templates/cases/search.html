@@ -1,30 +1,38 @@
 {% extends "base.html" %}
 {% block title %}{{ t('case.search') }} - CrimeGPT{% endblock %}
+{% block body_class %}case-workspace{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
     <h1>{{ t('case.search') }}</h1>
     <hr class="gold-rule">
-    <p>{{ t('case.search_help') }}</p>
+    <p class="mb-0">{{ t('case.search_help') }}</p>
   </div>
 </header>
 <section class="section">
-  <div class="container" >
-    <form method="get" class="input-group mb-4">
-      <label class="visually-hidden" for="q">{{ t('case.search') }}</label>
-      <input class="form-control" id="q" name="q" value="{{ q }}" minlength="2" required>
-      <button class="btn btn-navy" type="submit">{{ t('case.search') }}</button>
-    </form>
+  <div class="container">
+    <div class="card-station case-filter-card mb-4">
+      <div class="card-body">
+        <form method="get" class="input-group">
+          <label class="visually-hidden" for="q">{{ t('case.search') }}</label>
+          <input class="form-control" id="q" name="q" value="{{ q }}" minlength="2" required>
+          <button class="btn btn-navy" type="submit">{{ t('case.search') }}</button>
+        </form>
+      </div>
+    </div>
+
     {% if results is none %}
-      <p class="text-muted">{{ t('case.search_prompt') }}</p>
+      <article class="card-station"><div class="card-body"><p class="text-muted mb-0">{{ t('case.search_prompt') }}</p></div></article>
     {% elif not results %}
-      <p>{{ t('case.search_empty') }}</p>
+      <article class="card-station"><div class="card-body"><p class="mb-0">{{ t('case.search_empty') }}</p></div></article>
     {% else %}
       {% for row in results %}
       <article class="card-station mb-3">
         <div class="card-body">
-          <a href="{{ url_for('cases.overview', uuid=row.case.uuid) }}"><strong>{{ row.case.display_cr }}</strong></a>
-          <span class="text-muted small">{{ row.case.incident_at|ist }}</span>
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <a href="{{ url_for('cases.overview', uuid=row.case.uuid) }}"><strong class="cr-chip">{{ row.case.display_cr }}</strong></a>
+            <span class="text-muted small">{{ row.case.incident_at|ist }}</span>
+          </div>
           <p class="mb-0 mt-2">{{ row.snippet }}</p>
         </div>
       </article>

@@ -60,20 +60,29 @@ def extract_json(text):
     if not text or not str(text).strip():
         raise ValueError("Empty model output")
     raw = str(text).strip()
-    if raw.startswith("```"):
-        raw = re.sub(r"^```(?:json)?\s*", "", raw, flags=re.IGNORECASE)
-        raw = re.sub(r"\s*```$", "", raw)
+    raw = re.sub(r"```(?:json)?\s*", "", raw, flags=re.IGNORECASE)
+    raw = re.sub(r"```", "", raw).strip()
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
-        start = raw.find("{")
-        end = raw.rfind("}")
-        if start >= 0 and end > start:
-            try:
-                return json.loads(raw[start : end + 1])
-            except json.JSONDecodeError:
-                pass
-        raise ValueError("Model returned unreadable output")
+        pass
+    start = raw.find("{")
+    end = raw.rfind("}")
+    if start >= 0 and end > start:
+        try:
+            return json.loads(raw[start : end + 1])
+        except json.JSONDecodeError:
+            pass
+    start = raw.find("[")
+    end = raw.rfind("]")
+    if start >= 0 and end > start:
+        try:
+            parsed = json.loads(raw[start : end + 1])
+            if isinstance(parsed, list):
+                return parsed
+        except json.JSONDecodeError:
+            pass
+    raise ValueError("Model returned unreadable output")
 
 
 def redact_sensitive(text):
@@ -84,8 +93,20 @@ def redact_sensitive(text):
     return out
 
 
+_STATUTE_STRIP_RE = re.compile(
+    r"^(?:section|sec\.?|s\.?|dhara|धारा)\s+", re.IGNORECASE
+)
+_STATUTE_TAIL_RE = re.compile(
+    r"\s+(?:of\s+)?(?:the\s+)?(?:BNS|BNSS|BSA|IPC|CrPC|IEA)(?:\s+\d{4})?\s*$", re.IGNORECASE
+)
+
+
 def statute_token_ok(code, family=None):
     token = (code or "").strip()
+    if not token:
+        return False
+    token = _STATUTE_STRIP_RE.sub("", token)
+    token = _STATUTE_TAIL_RE.sub("", token).strip()
     if not token:
         return False
     match = STATUTE_RE.match(token)

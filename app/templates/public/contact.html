@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% from "includes/macros.html" import field %}
 {% block title %}Contact CrimeGPT{% endblock %}
+{% block body_class %}public-page{% endblock %}
 {% block content %}
 <header class="page-hero">
   <div class="container">
@@ -14,15 +15,20 @@
     <div class="row g-4">
       <div class="col-lg-7">
         {% if sent %}
-          <div class="card-station">
+          <div class="card-station public-contact-success">
             <div class="card-body">
-              <div class="alert alert-success mb-3" role="status">{{ t('contact.success') }}</div>
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="badge job-badge completed">Delivered</span>
+                <p class="mb-0">{{ t('contact.success') }}</p>
+              </div>
               <a class="btn btn-navy" href="{{ url_for('main.contact') }}">{{ t('btn.send_another') }}</a>
             </div>
           </div>
         {% else %}
-          <form method="post" action="{{ url_for('main.contact') }}" novalidate class="card-station">
+          <form method="post" action="{{ url_for('main.contact') }}" novalidate class="card-station public-contact-form-card">
             <div class="card-body">
+              <h2 class="h5">Send a message</h2>
+              <p class="text-muted">Messages are logged with timestamp and source IP for pilot operations.</p>
               {{ form.hidden_tag() }}
               {{ field(form.name, t('contact.name'), autocomplete="name") }}
               {{ field(form.email, t('contact.email'), type="email", autocomplete="email") }}
@@ -39,10 +45,16 @@
         {% endif %}
       </div>
       <div class="col-lg-5">
-        <aside class="card-station">
+        <aside class="card-station public-contact-aside mb-3">
           <div class="card-body">
             <h2 class="h5">Duty desk</h2>
             <p>Use this form for the Ahmedabad City Police Innovation Challenge pilot and for evaluator questions about CrimeGPT. Messages are stored on the server and emailed when mail is configured.</p>
+            <p class="mb-0">Response time depends on pilot support windows. Include your station, role, and issue summary for faster triage.</p>
+          </div>
+        </aside>
+        <aside class="card-station public-contact-alert">
+          <div class="card-body">
+            <h2 class="h6 text-uppercase text-muted">Emergency notice</h2>
             <p class="mb-0"><strong>In danger, call the local emergency number.</strong> This form is not a police control room and will not dispatch a unit.</p>
           </div>
         </aside>
