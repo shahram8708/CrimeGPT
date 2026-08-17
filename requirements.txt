@@ -23,4 +23,3 @@ click
 bleach
 google-genai
 pytest
-wsgi
